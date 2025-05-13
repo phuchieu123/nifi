@@ -113,7 +113,7 @@ public class PutHDFS extends AbstractHadoopProcessor {
 
     public static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("Files that have been successfully written to HDFS are transferred to this relationship")
+            .description("Các tập tin đã được ghi thành công vào HDFS được chuyển sang mối quan hệ này")
             .build();
 
     public static final Relationship REL_FAILURE = new Relationship.Builder()

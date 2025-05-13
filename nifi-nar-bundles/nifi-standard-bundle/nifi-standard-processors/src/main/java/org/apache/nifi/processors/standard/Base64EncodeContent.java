@@ -53,7 +53,7 @@ import org.apache.nifi.util.StopWatch;
 @SideEffectFree
 @SupportsBatching
 @Tags({"encode", "base64"})
-@CapabilityDescription("Encodes or decodes content to and from base64")
+@CapabilityDescription("Mã hóa hoặc giải mã nội dung sang và từ base64")
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @DeprecationNotice(
         alternatives = EncodeContent.class,

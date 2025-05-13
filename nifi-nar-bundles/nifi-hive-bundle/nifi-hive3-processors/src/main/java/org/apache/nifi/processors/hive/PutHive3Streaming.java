@@ -227,7 +227,7 @@ public class PutHive3Streaming extends AbstractProcessor {
 
     static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("kerberos-credentials-service")
-            .displayName("Kerberos Credentials Service")
+            .displayName("Dịch vụ chứng thực Kerberos")
             .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
             .identifiesControllerService(KerberosCredentialsService.class)
             .required(false)

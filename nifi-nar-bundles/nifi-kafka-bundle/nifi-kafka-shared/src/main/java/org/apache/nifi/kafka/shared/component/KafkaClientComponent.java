@@ -157,7 +157,7 @@ public interface KafkaClientComponent {
 
     PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("kerberos-credentials-service")
-            .displayName("Kerberos Credentials Service")
+            .displayName("Dịch vụ chứng thực Kerberos")
             .description("Service supporting generalized credentials authentication with Kerberos")
             .identifiesControllerService(KerberosCredentialsService.class)
             .required(false)

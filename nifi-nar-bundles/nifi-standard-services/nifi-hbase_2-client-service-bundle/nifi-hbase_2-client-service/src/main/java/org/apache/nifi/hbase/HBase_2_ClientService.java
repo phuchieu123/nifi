@@ -111,7 +111,7 @@ public class HBase_2_ClientService extends AbstractControllerService implements 
 
     static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
         .name("kerberos-credentials-service")
-        .displayName("Kerberos Credentials Service")
+        .displayName("Dịch vụ chứng thực Kerberos")
         .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
         .identifiesControllerService(KerberosCredentialsService.class)
         .required(false)
@@ -304,7 +304,7 @@ public class HBase_2_ClientService extends AbstractControllerService implements 
             problems.add(new ValidationResult.Builder()
                 .subject("Kerberos Credentials")
                 .valid(false)
-                .explanation("Cannot specify a Kerberos Credentials Service while also specifying a Kerberos Principal, Kerberos Keytab, or Kerberos Password")
+                .explanation("Cannot specify a Dịch vụ chứng thực Kerberos while also specifying a Kerberos Principal, Kerberos Keytab, or Kerberos Password")
                 .build());
         }
 
@@ -320,7 +320,7 @@ public class HBase_2_ClientService extends AbstractControllerService implements 
             problems.add(new ValidationResult.Builder()
                     .subject("Kerberos User")
                     .valid(false)
-                    .explanation("Cannot specify a Kerberos User Service while also specifying a Kerberos Credentials Service")
+                    .explanation("Cannot specify a Kerberos User Service while also specifying a Dịch vụ chứng thực Kerberos")
                     .build());
         }
 
@@ -329,7 +329,7 @@ public class HBase_2_ClientService extends AbstractControllerService implements 
                 .subject("Kerberos Credentials")
                 .valid(false)
                 .explanation("The '" + ALLOW_EXPLICIT_KEYTAB + "' system environment variable is configured to forbid explicitly configuring Kerberos Keytab in processors. "
-                    + "The Kerberos Credentials Service should be used instead of setting the Kerberos Keytab or Kerberos Principal property.")
+                    + "The Dịch vụ chứng thực Kerberos should be used instead of setting the Kerberos Keytab or Kerberos Principal property.")
                 .build());
         }
 
@@ -427,7 +427,7 @@ public class HBase_2_ClientService extends AbstractControllerService implements 
         String keyTab = context.getProperty(kerberosProperties.getKerberosKeytab()).evaluateAttributeExpressions().getValue();
         String password = context.getProperty(kerberosProperties.getKerberosPassword()).getValue();
 
-        // If the Kerberos Credentials Service is specified, we need to use its configuration, not the explicit properties for principal/keytab.
+        // If the Dịch vụ chứng thực Kerberos is specified, we need to use its configuration, not the explicit properties for principal/keytab.
         // The customValidate method ensures that only one can be set, so we know that the principal & keytab above are null.
         final KerberosCredentialsService credentialsService = context.getProperty(KERBEROS_CREDENTIALS_SERVICE).asControllerService(KerberosCredentialsService.class);
         if (credentialsService != null) {

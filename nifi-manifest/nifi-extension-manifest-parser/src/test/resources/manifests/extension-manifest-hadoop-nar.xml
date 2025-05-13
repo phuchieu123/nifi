@@ -50,7 +50,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -379,7 +379,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -799,7 +799,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -1176,7 +1176,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -1420,7 +1420,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -1648,7 +1648,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -1895,7 +1895,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -2106,7 +2106,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -2557,7 +2557,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>
@@ -2985,7 +2985,7 @@
                 </property>
                 <property>
                     <name>kerberos-credentials-service</name>
-                    <displayName>Kerberos Credentials Service</displayName>
+                    <displayName>Dịch vụ chứng thực Kerberos</displayName>
                     <description>Specifies the Kerberos Credentials Controller Service that should be used for
                         authenticating with Kerberos
                     </description>

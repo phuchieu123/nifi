@@ -1165,7 +1165,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                         if (incomingConnCount != 0) {
                             results.add(new ValidationResult.Builder().explanation(
                                 "Processor does not allow upstream connections but currently has " + incomingConnCount)
-                                .subject("Upstream Connections").valid(false).build());
+                                .subject("Kết nối ngược dòng").valid(false).build());
                         }
                         break;
                     }
@@ -1173,7 +1173,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                         if (getIncomingNonLoopConnections().isEmpty()) {
                             results.add(new ValidationResult.Builder()
                                 .explanation("Processor requires an upstream connection but currently has none")
-                                .subject("Upstream Connections").valid(false).build());
+                                .subject("Kết nối ngược dòng").valid(false).build());
                         }
                         break;
                     }

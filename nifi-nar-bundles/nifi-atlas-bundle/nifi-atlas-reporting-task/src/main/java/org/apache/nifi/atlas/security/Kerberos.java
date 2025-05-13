@@ -64,7 +64,7 @@ public class Kerberos implements AtlasAuthN {
                 problems.add(new ValidationResult.Builder()
                         .subject("Kerberos Credentials")
                         .valid(false)
-                        .explanation("Both the Principal and the Keytab must be specified when using Kerberos authentication, either via the explicit properties or the Kerberos Credentials Service.")
+                        .explanation("Both the Principal and the Keytab must be specified when using Kerberos authentication, either via the explicit properties or the Dịch vụ chứng thực Kerberos.")
                         .build());
             }
         }
@@ -73,7 +73,7 @@ public class Kerberos implements AtlasAuthN {
             problems.add(new ValidationResult.Builder()
                 .subject("Kerberos Credentials")
                 .valid(false)
-                .explanation("Cannot specify both a Kerberos Credentials Service and a principal/keytab")
+                .explanation("Cannot specify both a Dịch vụ chứng thực Kerberos and a principal/keytab")
                 .build());
         }
 
@@ -83,7 +83,7 @@ public class Kerberos implements AtlasAuthN {
                 .subject("Kerberos Credentials")
                 .valid(false)
                 .explanation("The '" + ALLOW_EXPLICIT_KEYTAB + "' system environment variable is configured to forbid explicitly configuring principal/keytab in processors. "
-                    + "The Kerberos Credentials Service should be used instead of setting the Kerberos Keytab or Kerberos Principal property.")
+                    + "The Dịch vụ chứng thực Kerberos should be used instead of setting the Kerberos Keytab or Kerberos Principal property.")
                 .build());
         }
 

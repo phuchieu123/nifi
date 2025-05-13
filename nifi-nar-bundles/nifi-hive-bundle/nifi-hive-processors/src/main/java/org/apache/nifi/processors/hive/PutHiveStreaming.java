@@ -294,7 +294,7 @@ public class PutHiveStreaming extends AbstractSessionFactoryProcessor {
 
     static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
         .name("kerberos-credentials-service")
-        .displayName("Kerberos Credentials Service")
+        .displayName("Dịch vụ chứng thực Kerberos")
         .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
         .identifiesControllerService(KerberosCredentialsService.class)
         .required(false)
@@ -414,7 +414,7 @@ public class PutHiveStreaming extends AbstractSessionFactoryProcessor {
                 problems.add(new ValidationResult.Builder()
                     .subject("Kerberos Credentials")
                     .valid(false)
-                        .explanation("Cannot specify a Kerberos Credentials Service while also specifying a Kerberos Principal, Kerberos Keytab, or Kerberos Password")
+                        .explanation("Cannot specify a Dịch vụ chứng thực Kerberos while also specifying a Kerberos Principal, Kerberos Keytab, or Kerberos Password")
                     .build());
             }
 
@@ -423,7 +423,7 @@ public class PutHiveStreaming extends AbstractSessionFactoryProcessor {
                     .subject("Kerberos Credentials")
                     .valid(false)
                     .explanation("The '" + ALLOW_EXPLICIT_KEYTAB + "' system environment variable is configured to forbid explicitly configuring Kerberos Keytab in processors. "
-                            + "The Kerberos Credentials Service should be used instead of setting the Kerberos Keytab or Kerberos Principal property.")
+                            + "The Dịch vụ chứng thực Kerberos should be used instead of setting the Kerberos Keytab or Kerberos Principal property.")
                     .build());
             }
         }

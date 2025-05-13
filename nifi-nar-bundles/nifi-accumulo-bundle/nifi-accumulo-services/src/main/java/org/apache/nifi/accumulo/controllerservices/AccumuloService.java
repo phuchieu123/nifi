@@ -126,7 +126,7 @@ public class AccumuloService extends AbstractControllerService implements BaseAc
 
     protected static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("kerberos-credentials-service")
-            .displayName("Kerberos Credentials Service")
+            .displayName("Dịch vụ chứng thực Kerberos")
             .description("Specifies the Kerberos Credentials Controller Service that should be used for principal + keytab Kerberos authentication")
             .identifiesControllerService(KerberosCredentialsService.class)
             .dependsOn(AUTHENTICATION_TYPE, AuthenticationType.KERBEROS.toString())

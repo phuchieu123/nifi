@@ -91,7 +91,7 @@ public abstract class AbstractKuduProcessor extends AbstractProcessor {
 
     static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new Builder()
             .name("kerberos-credentials-service")
-            .displayName("Kerberos Credentials Service")
+            .displayName("Dịch vụ chứng thực Kerberos")
             .description("Specifies the Kerberos Credentials to use for authentication")
             .required(false)
             .identifiesControllerService(KerberosCredentialsService.class)

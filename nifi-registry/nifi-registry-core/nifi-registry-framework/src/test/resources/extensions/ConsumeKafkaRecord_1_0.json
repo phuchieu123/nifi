@@ -163,7 +163,7 @@
       },
       "defaultValue": "",
       "description": "Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos",
-      "displayName": "Kerberos Credentials Service",
+      "displayName": "Dịch vụ chứng thực Kerberos",
       "dynamic": false,
       "dynamicallyModifiesClasspath": false,
       "expressionLanguageScope": "NONE",
@@ -324,7 +324,7 @@
     },
     {
       "autoTerminated": false,
-      "description": "If a message from Kafka cannot be parsed using the configured Record Reader, the contents of the message will be routed to this Relationship as its own individual FlowFile.",
+      "description": "Nếu không thể phân tích cú pháp tin nhắn từ Kafka bằng Record Reader đã cấu hình, nội dung của tin nhắn sẽ được định tuyến đến Mối quan hệ này dưới dạng FlowFile riêng của nó.",
       "name": "parse.failure"
     }
   ],

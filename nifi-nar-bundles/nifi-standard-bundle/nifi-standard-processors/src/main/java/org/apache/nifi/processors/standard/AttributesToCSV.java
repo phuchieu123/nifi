@@ -82,14 +82,9 @@ public class AttributesToCSV extends AbstractProcessor {
 
     public static final PropertyDescriptor ATTRIBUTES_LIST = new PropertyDescriptor.Builder()
             .name("attribute-list")
-            .displayName("Attribute List")
-            .description("Comma separated list of attributes to be included in the resulting CSV. If this value " +
-                    "is left empty then all existing Attributes will be included. This list of attributes is " +
-                    "case sensitive and supports attribute names that contain commas. If an attribute specified in the list is not found it will be emitted " +
-                    "to the resulting CSV with an empty string or null depending on the 'Null Value' property. " +
-                    "If a core attribute is specified in this list " +
-                    "and the 'Include Core Attributes' property is false, the core attribute will be included. The attribute list " +
-                    "ALWAYS wins.")
+            .displayName("Danh sách thuộc tính")
+           .description("Danh sách các thuộc tính được phân tách bằng dấu phẩy sẽ được đưa vào CSV kết quả. Nếu giá trị này để trống, tất cả các thuộc tính hiện có sẽ được bao gồm. Danh sách thuộc tính này phân biệt chữ hoa chữ thường và hỗ trợ các tên thuộc tính chứa dấu phẩy. Nếu một thuộc tính được chỉ định trong danh sách không được tìm thấy, nó sẽ được xuất ra CSV kết quả dưới dạng chuỗi rỗng hoặc null, tùy thuộc vào thuộc tính 'Null Value'. Nếu một thuộc tính cốt lõi được chỉ định trong danh sách và thuộc tính 'Include Core Attributes' là false, thuộc tính cốt lõi đó vẫn sẽ được bao gồm. Danh sách thuộc tính LUÔN luôn chiến thắng.")
+
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_EL_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -97,10 +92,8 @@ public class AttributesToCSV extends AbstractProcessor {
 
     public static final PropertyDescriptor ATTRIBUTES_REGEX = new PropertyDescriptor.Builder()
             .name("attributes-regex")
-            .displayName("Attributes Regular Expression")
-            .description("Regular expression that will be evaluated against the flow file attributes to select "
-                    + "the matching attributes. This property can be used in combination with the attributes "
-                    + "list property.  The final output will contain a combination of matches found in the ATTRIBUTE_LIST and ATTRIBUTE_REGEX.")
+            .displayName("Thuộc tính biểu thức chính quy")
+            .description("Biểu thức chính quy sẽ được áp dụng lên các thuộc tính của flow file để chọn các thuộc tính khớp. Thuộc tính này có thể được sử dụng kết hợp với thuộc tính danh sách thuộc tính. Kết quả cuối cùng sẽ chứa sự kết hợp các kết quả tìm được từ ATTRIBUTE_LIST và ATTRIBUTE_REGEX.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.createRegexValidator(0, Integer.MAX_VALUE, true))
@@ -109,9 +102,10 @@ public class AttributesToCSV extends AbstractProcessor {
 
     public static final PropertyDescriptor DESTINATION = new PropertyDescriptor.Builder()
             .name("destination")
-            .displayName("Destination")
-            .description("Control if CSV value is written as a new flowfile attribute 'CSVData' " +
-                    "or written in the flowfile content.")
+          .displayName("Điểm đến")
+.description("Kiểm soát việc giá trị CSV sẽ được ghi dưới dạng thuộc tính flowfile mới 'CSVData' " +
+              "hay sẽ được ghi vào nội dung của flowfile.")
+
             .required(true)
             .allowableValues(OUTPUT_NEW_ATTRIBUTE, OUTPUT_OVERWRITE_CONTENT)
             .defaultValue(OUTPUT_NEW_ATTRIBUTE.getDisplayName())
@@ -119,11 +113,11 @@ public class AttributesToCSV extends AbstractProcessor {
 
     public static final PropertyDescriptor INCLUDE_CORE_ATTRIBUTES = new PropertyDescriptor.Builder()
             .name("include-core-attributes")
-            .displayName("Include Core Attributes")
-            .description("Determines if the FlowFile org.apache.nifi.flowfile.attributes.CoreAttributes, which are " +
-                    "contained in every FlowFile, should be included in the final CSV value generated.  Core attributes " +
-                    "will be added to the end of the CSVData and CSVSchema strings.  The Attribute List property " +
-                    "overrides this setting.")
+           .displayName("Bao gồm thuộc tính Core")
+.description("Xác định liệu các thuộc tính org.apache.nifi.flowfile.attributes.CoreAttributes, có mặt trong mọi FlowFile, " +
+              "có nên được bao gồm trong giá trị CSV cuối cùng được tạo ra hay không. Các thuộc tính Core sẽ " +
+              "được thêm vào cuối chuỗi CSVData và CSVSchema. Thuộc tính Danh sách Thuộc tính sẽ ghi đè cài đặt này.")
+
             .required(true)
             .allowableValues("true", "false")
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
@@ -132,9 +126,10 @@ public class AttributesToCSV extends AbstractProcessor {
 
     public static final PropertyDescriptor NULL_VALUE_FOR_EMPTY_STRING = new PropertyDescriptor.Builder()
             .name("null-value")
-            .displayName("Null Value")
-            .description("If true a non existing or empty attribute will be 'null' in the resulting CSV. If false an empty " +
-                    "string will be placed in the CSV")
+           .displayName("Giá trị Null")
+.description("Nếu đúng, một thuộc tính không tồn tại hoặc rỗng sẽ được gán là 'null' trong CSV kết quả. Nếu sai, một chuỗi rỗng " +
+              "sẽ được đưa vào trong CSV.")
+
             .required(true)
             .allowableValues("true", "false")
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
@@ -142,10 +137,9 @@ public class AttributesToCSV extends AbstractProcessor {
             .build();
     public static final PropertyDescriptor INCLUDE_SCHEMA = new PropertyDescriptor.Builder()
             .name("include-schema")
-            .displayName("Include Schema")
-            .description("If true the schema (attribute names) will also be converted to a CSV string which will either be " +
-                    "applied to a new attribute named 'CSVSchema' or applied at the first row in the " +
-                    "content depending on the DESTINATION property setting.")
+            .displayName("Bao gồm các lược đồ")
+          .description("Nếu được bật, sơ đồ (tên các thuộc tính) cũng sẽ được chuyển đổi thành một chuỗi CSV. Chuỗi này sẽ được áp dụng " +
+              "vào một thuộc tính mới mang tên 'CSVSchema', hoặc sẽ được thêm vào dòng đầu tiên trong nội dung, tùy thuộc vào cài đặt của thuộc tính DESTINATION.")
             .required(true)
             .allowableValues("true", "false")
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
@@ -153,9 +147,9 @@ public class AttributesToCSV extends AbstractProcessor {
             .build();
 
     public static final Relationship REL_SUCCESS = new Relationship.Builder().name("success")
-            .description("Successfully converted attributes to CSV").build();
+            .description("Đã chuyển đổi thành công các thuộc tính sang CSV").build();
     public static final Relationship REL_FAILURE = new Relationship.Builder().name("failure")
-            .description("Failed to convert attributes to CSV").build();
+            .description("Không thể chuyển đổi thuộc tính sang CSV").build();
 
     private List<PropertyDescriptor> properties;
     private Set<Relationship> relationships;

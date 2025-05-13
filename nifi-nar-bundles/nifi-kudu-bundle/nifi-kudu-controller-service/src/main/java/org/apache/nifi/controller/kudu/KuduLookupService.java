@@ -88,7 +88,7 @@ public class KuduLookupService extends AbstractControllerService implements Reco
 
     public static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("kudu-lu-kerberos-credentials-service")
-            .displayName("Kerberos Credentials Service")
+            .displayName("Dịch vụ chứng thực Kerberos")
             .description("Specifies the Kerberos Credentials to use for authentication")
             .required(false)
             .identifiesControllerService(KerberosCredentialsService.class)
@@ -190,7 +190,7 @@ public class KuduLookupService extends AbstractControllerService implements Reco
             results.add(new ValidationResult.Builder()
                     .valid(false)
                     .subject("Kerberos configuration")
-                    .explanation("Kerberos User Service and Kerberos Credentials Service cannot be configured at the same time")
+                    .explanation("Kerberos User Service and Dịch vụ chứng thực Kerberos cannot be configured at the same time")
                     .build());
         }
         return results;
