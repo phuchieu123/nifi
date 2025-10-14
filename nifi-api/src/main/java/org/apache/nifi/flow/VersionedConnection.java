@@ -1,18 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Được cấp phép cho Apache Software Foundation (ASF) theo một hoặc nhiều
+ * thỏa thuận cấp phép của người đóng góp. Xem tệp NOTICE đi kèm với
+ * công trình này để biết thêm thông tin về quyền sở hữu bản quyền.
+ * ASF cấp phép cho bạn sử dụng tệp này theo Giấy phép Apache, Phiên bản 2.0
+ * (the "License"); bạn không được sử dụng tệp này trừ khi tuân thủ Giấy phép.
+ * Bạn có thể lấy một bản sao của Giấy phép tại:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Trừ khi được yêu cầu bởi luật pháp hiện hành hoặc có thỏa thuận bằng văn bản,
+ * phần mềm được phân phối theo Giấy phép này được cung cấp "NGUYÊN TRẠNG",
+ * KHÔNG CÓ BẤT KỲ BẢO HÀNH NÀO, dù rõ ràng hay ngụ ý.
+ * Xem Giấy phép để biết thêm chi tiết về quyền và giới hạn của bạn.
  */
 
 package org.apache.nifi.flow;
@@ -40,7 +39,7 @@ public class VersionedConnection extends VersionedComponent {
     private String loadBalanceCompression;
 
 
-    @ApiModelProperty("The source of the connection.")
+    @ApiModelProperty("Nguồn (source) của kết nối.")
     public ConnectableComponent getSource() {
         return source;
     }
@@ -49,7 +48,7 @@ public class VersionedConnection extends VersionedComponent {
         this.source = source;
     }
 
-    @ApiModelProperty("The destination of the connection.")
+    @ApiModelProperty("Đích đến (destination) của kết nối.")
     public ConnectableComponent getDestination() {
         return destination;
     }
@@ -58,7 +57,7 @@ public class VersionedConnection extends VersionedComponent {
         this.destination = destination;
     }
 
-    @ApiModelProperty("The bend points on the connection.")
+    @ApiModelProperty("Các điểm uốn (bend points) trên đường kết nối.")
     public List<Position> getBends() {
         return bends;
     }
@@ -67,7 +66,7 @@ public class VersionedConnection extends VersionedComponent {
         this.bends = bends;
     }
 
-    @ApiModelProperty("The index of the bend point where to place the connection label.")
+    @ApiModelProperty("Chỉ số của điểm uốn nơi nhãn (label) của kết nối được đặt.")
     public Integer getLabelIndex() {
         return labelIndex;
     }
@@ -77,8 +76,8 @@ public class VersionedConnection extends VersionedComponent {
     }
 
     @ApiModelProperty(
-            value = "The z index of the connection.",
-            name = "zIndex")  // Jackson maps this method name to JSON key "zIndex", but Swagger does not by default
+            value = "Chỉ số z (z-index) của kết nối.",
+            name = "zIndex")  // Jackson ánh xạ tên phương thức này thành khóa JSON "zIndex", nhưng Swagger thì không mặc định làm vậy
     public Long getzIndex() {
         return zIndex;
     }
@@ -87,7 +86,7 @@ public class VersionedConnection extends VersionedComponent {
         this.zIndex = zIndex;
     }
 
-    @ApiModelProperty("The selected relationship that comprise the connection.")
+    @ApiModelProperty("Danh sách các quan hệ (relationship) được chọn tạo thành kết nối này.")
     public Set<String> getSelectedRelationships() {
         return selectedRelationships;
     }
@@ -96,9 +95,8 @@ public class VersionedConnection extends VersionedComponent {
         this.selectedRelationships = relationships;
     }
 
-
-    @ApiModelProperty("The object count threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing files "
-        + "over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.")
+    @ApiModelProperty("Ngưỡng số lượng đối tượng (object count) dùng để xác định khi nào áp dụng cơ chế chặn luồng (back pressure). Việc cập nhật giá trị này là thay đổi thụ động, nghĩa là nó "
+        + "không ảnh hưởng đến các tệp đã vượt ngưỡng, nhưng giúp các bộ xử lý đầu vào (feeder processors) dừng việc đẩy thêm dữ liệu vào hàng đợi công việc.")
     public Long getBackPressureObjectThreshold() {
         return backPressureObjectThreshold;
     }
@@ -107,9 +105,8 @@ public class VersionedConnection extends VersionedComponent {
         this.backPressureObjectThreshold = backPressureObjectThreshold;
     }
 
-
-    @ApiModelProperty("The object data size threshold for determining when back pressure is applied. Updating this value is a passive change in the sense that it won't impact whether existing "
-        + "files over the limit are affected but it does help feeder processors to stop pushing too much into this work queue.")
+    @ApiModelProperty("Ngưỡng kích thước dữ liệu (data size) dùng để xác định khi nào áp dụng cơ chế chặn luồng (back pressure). Việc cập nhật giá trị này là thay đổi thụ động, "
+        + "không ảnh hưởng đến các tệp đã vượt ngưỡng, nhưng giúp các bộ xử lý đầu vào dừng việc gửi quá nhiều dữ liệu vào hàng đợi.")
     public String getBackPressureDataSizeThreshold() {
         return backPressureDataSizeThreshold;
     }
@@ -118,9 +115,8 @@ public class VersionedConnection extends VersionedComponent {
         this.backPressureDataSizeThreshold = backPressureDataSizeThreshold;
     }
 
-
-    @ApiModelProperty("The amount of time a flow file may be in the flow before it will be automatically aged out of the flow. Once a flow file reaches this age it will be terminated from "
-        + "the flow the next time a processor attempts to start work on it.")
+    @ApiModelProperty("Thời gian tối đa mà một FlowFile có thể tồn tại trong luồng trước khi bị loại bỏ tự động. "
+        + "Khi một FlowFile đạt đến giới hạn thời gian này, nó sẽ bị chấm dứt (terminated) khi bộ xử lý tiếp theo cố gắng xử lý nó.")
     public String getFlowFileExpiration() {
         return flowFileExpiration;
     }
@@ -129,8 +125,7 @@ public class VersionedConnection extends VersionedComponent {
         this.flowFileExpiration = flowFileExpiration;
     }
 
-
-    @ApiModelProperty("The comparators used to prioritize the queue.")
+    @ApiModelProperty("Các bộ so sánh (comparator) được sử dụng để sắp xếp ưu tiên trong hàng đợi.")
     public List<String> getPrioritizers() {
         return prioritizers;
     }
@@ -139,7 +134,7 @@ public class VersionedConnection extends VersionedComponent {
         this.prioritizers = prioritizers;
     }
 
-    @ApiModelProperty(value = "The Strategy to use for load balancing data across the cluster, or null, if no Load Balance Strategy has been specified.",
+    @ApiModelProperty(value = "Chiến lược (Strategy) được sử dụng để cân bằng tải dữ liệu giữa các nút trong cụm, hoặc null nếu chưa được chỉ định.",
             allowableValues = "DO_NOT_LOAD_BALANCE, PARTITION_BY_ATTRIBUTE, ROUND_ROBIN, SINGLE_NODE")
     public String getLoadBalanceStrategy() {
         return loadBalanceStrategy;
@@ -149,9 +144,10 @@ public class VersionedConnection extends VersionedComponent {
         this.loadBalanceStrategy = loadBalanceStrategy;
     }
 
-    @ApiModelProperty("The attribute to use for partitioning data as it is load balanced across the cluster. If the Load Balance Strategy is configured to use PARTITION_BY_ATTRIBUTE, the value " +
-            "returned by this method is the name of the FlowFile Attribute that will be used to determine which node in the cluster should receive a given FlowFile. If the Load Balance Strategy is " +
-            "unset or is set to any other value, the Partitioning Attribute has no effect.")
+    @ApiModelProperty("Thuộc tính được sử dụng để phân vùng dữ liệu khi cân bằng tải trên cụm. "
+            + "Nếu Load Balance Strategy được cấu hình là PARTITION_BY_ATTRIBUTE, giá trị trả về của phương thức này "
+            + "là tên của thuộc tính FlowFile được dùng để xác định nút nào trong cụm sẽ nhận FlowFile đó. "
+            + "Nếu chiến lược cân bằng tải không được đặt hoặc được đặt khác, thuộc tính này sẽ không có tác dụng.")
     public String getPartitioningAttribute() {
         return partitioningAttribute;
     }
@@ -160,7 +156,7 @@ public class VersionedConnection extends VersionedComponent {
         this.partitioningAttribute = partitioningAttribute;
     }
 
-    @ApiModelProperty(value = "Whether or not compression should be used when transferring FlowFiles between nodes",
+    @ApiModelProperty(value = "Xác định có nên nén dữ liệu hay không khi truyền FlowFile giữa các nút trong cụm.",
             allowableValues = "DO_NOT_COMPRESS, COMPRESS_ATTRIBUTES_ONLY, COMPRESS_ATTRIBUTES_AND_CONTENT")
     public String getLoadBalanceCompression() {
         return loadBalanceCompression;

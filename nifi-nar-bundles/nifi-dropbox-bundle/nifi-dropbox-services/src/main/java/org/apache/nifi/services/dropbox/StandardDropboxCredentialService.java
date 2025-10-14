@@ -30,15 +30,15 @@ import org.apache.nifi.dropbox.credentials.service.DropboxCredentialService;
 import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.processor.util.StandardValidators;
 
-@CapabilityDescription("Defines credentials for Dropbox processors.")
+@CapabilityDescription("Xác định thông tin xác thực cho các bộ xử lý Dropbox.")
 @Tags({"dropbox", "credentials", "provider"})
 public class StandardDropboxCredentialService extends AbstractControllerService implements DropboxCredentialService {
 
     public static final PropertyDescriptor APP_KEY = new PropertyDescriptor.Builder()
             .name("app-key")
-            .displayName("App Key")
-            .description("App Key of the user's Dropbox app." +
-                    " See Additional Details for more information.")
+            .displayName("Khóa Ứng dụng")
+            .description("Khóa Ứng dụng của ứng dụng Dropbox của người dùng." +
+                    " Xem Thông tin Bổ sung để biết thêm chi tiết.")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
@@ -46,9 +46,9 @@ public class StandardDropboxCredentialService extends AbstractControllerService 
 
     public static final PropertyDescriptor APP_SECRET = new PropertyDescriptor.Builder()
             .name("app-secret")
-            .displayName("App Secret")
-            .description("App Secret of the user's Dropbox app." +
-                    " See Additional Details for more information.")
+            .displayName("Bí mật Ứng dụng")
+            .description("Bí mật Ứng dụng của ứng dụng Dropbox của người dùng." +
+                    " Xem Thông tin Bổ sung để biết thêm chi tiết.")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -57,9 +57,9 @@ public class StandardDropboxCredentialService extends AbstractControllerService 
 
     public static final PropertyDescriptor ACCESS_TOKEN = new PropertyDescriptor.Builder()
             .name("access-token")
-            .displayName("Access Token")
-            .description("Access Token of the user's Dropbox app." +
-                    " See Additional Details for more information about Access Token generation.")
+            .displayName("Mã thông báo Truy cập")
+            .description("Mã thông báo Truy cập của ứng dụng Dropbox của người dùng." +
+                    " Xem Thông tin Bổ sung để biết thêm chi tiết về việc tạo Mã thông báo Truy cập.")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -68,9 +68,9 @@ public class StandardDropboxCredentialService extends AbstractControllerService 
 
     public static final PropertyDescriptor REFRESH_TOKEN = new PropertyDescriptor.Builder()
             .name("refresh-token")
-            .displayName("Refresh Token")
-            .description("Refresh Token of the user's Dropbox app." +
-                    " See Additional Details for more information about Refresh Token generation.")
+            .displayName("Mã thông báo Làm mới")
+            .description("Mã thông báo Làm mới của ứng dụng Dropbox của người dùng." +
+                    " Xem Thông tin Bổ sung để biết thêm chi tiết về việc tạo Mã thông báo Làm mới.")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)

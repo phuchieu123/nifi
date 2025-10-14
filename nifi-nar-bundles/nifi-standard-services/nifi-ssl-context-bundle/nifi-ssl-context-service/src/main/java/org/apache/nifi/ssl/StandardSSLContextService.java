@@ -58,78 +58,77 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"ssl", "secure", "certificate", "keystore", "truststore", "jks", "p12", "pkcs12", "pkcs", "tls"})
-@CapabilityDescription("Standard implementation of the SSLContextService. Provides the ability to configure "
-        + "keystore and/or truststore properties once and reuse that configuration throughout the application. "
-        + "This service can be used to communicate with both legacy and modern systems. If you only need to "
-        + "communicate with non-legacy systems, then the StandardRestrictedSSLContextService is recommended as it only "
-        + "allows a specific set of SSL protocols to be chosen.")
+@CapabilityDescription("Triển khai Tiêu chuẩn của SSLContextService. Cung cấp khả năng cấu hình "
+        + "các thuộc tính keystore và/hoặc truststore một lần và tái sử dụng cấu hình đó trong suốt ứng dụng. "
+        + "Dịch vụ này có thể được sử dụng để giao tiếp với cả các hệ thống cũ và hiện đại. Nếu bạn chỉ cần "
+        + "giao tiếp với các hệ thống không cũ, thì StandardRestrictedSSLContextService được khuyến nghị vì nó chỉ "
+        + "cho phép chọn một bộ giao thức SSL cụ thể.")
 public class StandardSSLContextService extends AbstractControllerService implements SSLContextService {
 
     public static final PropertyDescriptor TRUSTSTORE = new PropertyDescriptor.Builder()
-            .name("Truststore Filename")
-            .description("The fully-qualified filename of the Truststore")
+            .name("Tên Tệp Truststore")
+            .description("Tên tệp đủ điều kiện của Truststore")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue(null)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .sensitive(false)
             .build();
     public static final PropertyDescriptor TRUSTSTORE_TYPE = new PropertyDescriptor.Builder()
-            .name("Truststore Type")
-            .description("The Type of the Truststore")
+            .name("Loại Truststore")
+            .description("Loại của Truststore")
             .allowableValues(KeystoreType.values())
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(false)
             .build();
     public static final PropertyDescriptor TRUSTSTORE_PASSWORD = new PropertyDescriptor.Builder()
-            .name("Truststore Password")
-            .description("The password for the Truststore")
+            .name("Mật khẩu Truststore")
+            .description("Mật khẩu cho Truststore")
             .defaultValue(null)
             .addValidator(Validator.VALID)
             .required(false)
             .sensitive(true)
             .build();
     public static final PropertyDescriptor KEYSTORE = new PropertyDescriptor.Builder()
-            .name("Keystore Filename")
-            .description("The fully-qualified filename of the Keystore")
+            .name("Tên Tệp Keystore")
+            .description("Tên tệp đủ điều kiện của Keystore")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue(null)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .sensitive(false)
             .build();
     public static final PropertyDescriptor KEYSTORE_TYPE = new PropertyDescriptor.Builder()
-            .name("Keystore Type")
-            .description("The Type of the Keystore")
+            .name("Loại Keystore")
+            .description("Loại của Keystore")
             .allowableValues(KeystoreType.values())
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(false)
             .build();
     public static final PropertyDescriptor KEYSTORE_PASSWORD = new PropertyDescriptor.Builder()
-            .name("Keystore Password")
+            .name("Mật khẩu Keystore")
             .defaultValue(null)
-            .description("The password for the Keystore")
+            .description("Mật khẩu cho Keystore")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(true)
             .build();
     static final PropertyDescriptor KEY_PASSWORD = new PropertyDescriptor.Builder()
             .name("key-password")
-            .displayName("Key Password")
-            .description("The password for the key. If this is not specified, but the Keystore Filename, Password, and Type are specified, "
-                    + "then the Keystore Password will be assumed to be the same as the Key Password.")
+            .displayName("Mật khẩu Khóa")
+            .description("Mật khẩu cho khóa. Nếu điều này không được chỉ định, nhưng Tên Tệp Keystore, Mật khẩu và Loại được chỉ định, "
+                    + "thì Mật khẩu Keystore sẽ được coi là giống với Mật khẩu Khóa.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(true)
             .required(false)
             .build();
     public static final PropertyDescriptor SSL_ALGORITHM = new PropertyDescriptor.Builder()
-            .name("SSL Protocol")
-            .displayName("TLS Protocol")
+            .name("Giao thức SSL")
+            .displayName("Giao thức TLS")
             .defaultValue(TlsConfiguration.TLS_PROTOCOL)
             .required(false)
             .allowableValues(getProtocolAllowableValues())
-            .description("SSL or TLS Protocol Version for encrypted connections. Supported versions include insecure legacy options and depend on the specific version of Java used.")
+            .description("Phiên bản Giao thức SSL hoặc TLS cho các kết nối được mã hóa. Các phiên bản được hỗ trợ bao gồm các tùy chọn cũ không an toàn và phụ thuộc vào phiên bản Java cụ thể được sử dụng.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(false)
             .build();
-
     private static final DeprecationLogger deprecationLogger = DeprecationLoggerFactory.getLogger(StandardSSLContextService.class);
 
     private static final List<PropertyDescriptor> properties;

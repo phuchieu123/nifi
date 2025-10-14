@@ -59,11 +59,11 @@ import static org.apache.nifi.schema.access.SchemaAccessUtils.SCHEMA_VERSION;
 
 @Tags({"mongo", "mongodb", "lookup", "record"})
 @CapabilityDescription(
-    "Provides a lookup service based around MongoDB. Each key that is specified \n" +
-    "will be added to a query as-is. For example, if you specify the two keys, \n" +
-    "user and email, the resulting query will be { \"user\": \"tester\", \"email\": \"tester@test.com\" }.\n" +
-    "The query is limited to the first result (findOne in the Mongo documentation). If no \"Lookup Value Field\" is specified " +
-    "then the entire MongoDB result document minus the _id field will be returned as a record."
+    "Cung cấp dịch vụ tra cứu dựa trên MongoDB. Mỗi khóa được chỉ định \n" +
+    "sẽ được thêm vào truy vấn nguyên trạng. Ví dụ, nếu bạn chỉ định hai khóa \n" +
+    "user và email, truy vấn kết quả sẽ là { \"user\": \"tester\", \"email\": \"tester@test.com\" }.\n" +
+    "Truy vấn sẽ giới hạn kết quả đầu tiên (findOne theo tài liệu Mongo). Nếu không chỉ định \"Lookup Value Field\" " +
+    "thì toàn bộ tài liệu MongoDB trừ trường _id sẽ được trả về dưới dạng bản ghi."
 )
 public class MongoDBLookupService extends JsonInferenceSchemaRegistryService implements LookupService<Object> {
     public static final PropertyDescriptor LOCAL_SCHEMA_NAME = new PropertyDescriptor.Builder()
@@ -73,39 +73,43 @@ public class MongoDBLookupService extends JsonInferenceSchemaRegistryService imp
 
     public static final PropertyDescriptor CONTROLLER_SERVICE = new PropertyDescriptor.Builder()
         .name("mongo-lookup-client-service")
-        .displayName("Client Service")
-        .description("A MongoDB controller service to use with this lookup service.")
+        .displayName("Dịch vụ Client")
+        .description("Dịch vụ điều khiển MongoDB được sử dụng với dịch vụ tra cứu này.")
         .required(true)
         .identifiesControllerService(MongoDBClientService.class)
         .build();
+
     public static final PropertyDescriptor DATABASE_NAME = new PropertyDescriptor.Builder()
         .name("mongo-db-name")
-        .displayName("Mongo Database Name")
-        .description("The name of the database to use")
+        .displayName("Tên Mongo Database")
+        .description("Tên cơ sở dữ liệu sẽ sử dụng")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
+
     public static final PropertyDescriptor COLLECTION_NAME = new PropertyDescriptor.Builder()
         .name("mongo-collection-name")
-        .displayName("Mongo Collection Name")
-        .description("The name of the collection to use")
+        .displayName("Tên Mongo Collection")
+        .description("Tên collection sẽ sử dụng")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
+
     public static final PropertyDescriptor LOOKUP_VALUE_FIELD = new PropertyDescriptor.Builder()
         .name("mongo-lookup-value-field")
-        .displayName("Lookup Value Field")
-        .description("The field whose value will be returned when the lookup key(s) match a record. If not specified then the entire " +
-                "MongoDB result document minus the _id field will be returned as a record.")
+        .displayName("Trường Tra Cứu Giá Trị")
+        .description("Trường nào sẽ trả về giá trị khi các khóa tra cứu khớp với bản ghi. Nếu không chỉ định, toàn bộ " +
+                "tài liệu MongoDB trừ trường _id sẽ được trả về dưới dạng bản ghi.")
         .addValidator(Validator.VALID)
         .required(false)
         .build();
+
     public static final PropertyDescriptor PROJECTION = new PropertyDescriptor.Builder()
         .name("mongo-lookup-projection")
         .displayName("Projection")
-        .description("Specifies a projection for limiting which fields will be returned.")
+        .description("Chỉ định projection để giới hạn các trường sẽ được trả về.")
         .required(false)
         .addValidator(JsonValidator.INSTANCE)
         .build();

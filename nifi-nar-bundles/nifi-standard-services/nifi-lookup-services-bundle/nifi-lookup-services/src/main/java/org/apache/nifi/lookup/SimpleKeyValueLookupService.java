@@ -35,11 +35,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Tags({"lookup", "enrich", "key", "value"})
-@CapabilityDescription("Allows users to add key/value pairs as User-defined Properties. Each property that is added can be looked up by Property Name. "
-    + "The coordinates that are passed to the lookup must contain the key 'key'.")
-@DynamicProperty(name = "A key that can be looked up", value = "The value for the key", expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Allows users to add key/value pairs as User-defined Properties. Each property that is added can be looked up by Property Name. "
-                + "The coordinates that are passed to the lookup must contain the key 'key'.")
+@CapabilityDescription("Cho phép người dùng thêm các cặp khóa/giá trị dưới dạng Thuộc tính do Người dùng Xác định. Mỗi thuộc tính được thêm vào có thể được tìm kiếm bằng Tên Thuộc tính. "
+    + "Các tọa độ được truyền đến tìm kiếm phải chứa khóa 'key'.")
+@DynamicProperty(name = "Một khóa có thể được tìm kiếm", value = "Giá trị của khóa", expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
+        description = "Cho phép người dùng thêm các cặp khóa/giá trị dưới dạng Thuộc tính do Người dùng Xác định. Mỗi thuộc tính được thêm vào có thể được tìm kiếm bằng Tên Thuộc tính. "
+                + "Các tọa độ được truyền đến tìm kiếm phải chứa khóa 'key'.")
 public class SimpleKeyValueLookupService extends AbstractControllerService implements StringLookupService {
     private static final String KEY = "key";
     private static final Set<String> REQUIRED_KEYS = Stream.of(KEY).collect(Collectors.toSet());

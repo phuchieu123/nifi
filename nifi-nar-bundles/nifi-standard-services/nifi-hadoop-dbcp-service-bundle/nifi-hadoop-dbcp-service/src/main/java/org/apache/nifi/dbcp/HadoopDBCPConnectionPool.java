@@ -89,16 +89,16 @@ import static org.apache.nifi.dbcp.utils.DBCPProperties.extractMillisWithInfinit
  */
 @RequiresInstanceClassLoading
 @Tags({"dbcp", "jdbc", "database", "connection", "pooling", "store", "hadoop"})
-@CapabilityDescription("Provides a Database Connection Pooling Service for Hadoop related JDBC services. This service requires that " +
-        "the Database Driver Location(s) contains some version of a hadoop-common JAR, or a shaded JAR that shades hadoop-common.")
-@DynamicProperty(name = "The name of a Hadoop configuration property.", value = "The value of the given Hadoop configuration property.",
-        description = "These properties will be set on the Hadoop configuration after loading any provided configuration files.",
+@CapabilityDescription("Cung cấp Dịch vụ Pooling Kết nối Cơ sở dữ liệu cho các dịch vụ JDBC liên quan đến Hadoop. Dịch vụ này yêu cầu " +
+        "Database Driver Location chứa một phiên bản JAR hadoop-common nào đó, hoặc một JAR shaded bao gồm hadoop-common.")
+@DynamicProperty(name = "Tên của một thuộc tính cấu hình Hadoop.", value = "Giá trị của thuộc tính cấu hình Hadoop được chỉ định.",
+        description = "Các thuộc tính này sẽ được thiết lập trên cấu hình Hadoop sau khi tải bất kỳ file cấu hình nào được cung cấp.",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY)
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.REFERENCE_REMOTE_RESOURCES,
-                        explanation = "Database Driver Location can reference resources over HTTP"
+                        explanation = "Database Driver Location có thể tham chiếu đến các tài nguyên qua HTTP"
                 )
         }
 )
@@ -110,18 +110,18 @@ public class HadoopDBCPConnectionPool extends AbstractDBCPConnectionPool {
 
     public static final PropertyDescriptor DB_DRIVER_LOCATION = new PropertyDescriptor.Builder()
             .fromPropertyDescriptor(DBCPProperties.DB_DRIVER_LOCATION)
-            .description("Comma-separated list of files/folders and/or URLs containing the driver JAR and its dependencies. " +
-                    "For example '/var/tmp/phoenix-client.jar'. NOTE: It is required that the resources specified by this property provide " +
-                    "the classes from hadoop-common, such as Configuration and UserGroupInformation.")
+            .description("Danh sách các file/folder và/hoặc URL chứa driver JAR và các phụ thuộc của nó, cách nhau bằng dấu phẩy. " +
+                    "Ví dụ: '/var/tmp/phoenix-client.jar'. LƯU Ý: Các tài nguyên được chỉ định bởi thuộc tính này phải cung cấp " +
+                    "các lớp từ hadoop-common, như Configuration và UserGroupInformation.")
             .required(true)
             .build();
 
     public static final PropertyDescriptor HADOOP_CONFIGURATION_RESOURCES = new PropertyDescriptor.Builder()
             .name("hadoop-config-resources")
-            .displayName("Hadoop Configuration Resources")
-            .description("A file, or comma separated list of files, which contain the Hadoop configuration (core-site.xml, etc.). Without this, Hadoop "
-                    + "will search the classpath, or will revert to a default configuration. Note that to enable authentication with Kerberos, "
-                    + "the appropriate properties must be set in the configuration files.")
+            .displayName("Tài nguyên Cấu hình Hadoop")
+            .description("Một file hoặc danh sách các file, chứa cấu hình Hadoop (core-site.xml, v.v.). Nếu không có, Hadoop "
+                    + "sẽ tìm trên classpath hoặc sử dụng cấu hình mặc định. Lưu ý rằng để bật xác thực với Kerberos, "
+                    + "các thuộc tính thích hợp phải được thiết lập trong các file cấu hình.")
             .required(false)
             .identifiesExternalResource(ResourceCardinality.MULTIPLE, ResourceType.FILE)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -131,7 +131,7 @@ public class HadoopDBCPConnectionPool extends AbstractDBCPConnectionPool {
     public static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("kerberos-credentials-service")
             .displayName("Dịch vụ chứng thực Kerberos")
-            .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
+            .description("Xác định Kerberos Credentials Controller Service sẽ được sử dụng để xác thực với Kerberos")
             .identifiesControllerService(KerberosCredentialsService.class)
             .required(false)
             .build();

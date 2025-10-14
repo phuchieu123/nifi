@@ -3,7 +3,7 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License") you may not use this file except in compliance with
+ * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -127,28 +127,41 @@ public abstract class AbstractJsonQueryElasticsearchTest<P extends AbstractJsonQ
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::run);
         String expected;
         if (runner.getProcessor() instanceof ConsumeElasticsearch) {
-            expected = "Processor has 7 validation failures:\n";
+            expected = String.format("Processor has 7 validation failures:\n" +
+                            "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n" +
+                            "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n" +
+                            "'%s' được xác thực với 'not-a-service' không hợp lệ vì Thuộc tính tham chiếu đến một Dịch vụ Điều khiển (Controller Service) không tồn tại\n" +
+                            "'%s' được xác thực với 'not-enum2' không hợp lệ vì Giá trị được cung cấp không nằm trong tập giá trị cho phép '%s'\n" +
+                            "'%s' được xác thực với 'not-enum' không hợp lệ vì Giá trị được cung cấp không nằm trong tập giá trị cho phép '%s'\n" +
+                            "'%s' được xác thực với 'not-boolean' không hợp lệ vì Giá trị được cung cấp không nằm trong tập giá trị cho phép 'true, false'\n" +
+                            "'%s' được xác thực với 'not-a-service' không hợp lệ vì Dịch vụ Điều khiển không hợp lệ: not-a-service không phải là mã định danh Dịch vụ Điều khiển hợp lệ\n",
+                    ElasticsearchRestProcessor.INDEX.getName(), ElasticsearchRestProcessor.INDEX.getName(),
+                    ElasticsearchRestProcessor.TYPE.getName(), ElasticsearchRestProcessor.TYPE.getName(),
+                    ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName(),
+                    AbstractJsonQueryElasticsearch.SEARCH_RESULTS_SPLIT.getName(), expectedAllowedSplitHits,
+                    AbstractJsonQueryElasticsearch.AGGREGATION_RESULTS_SPLIT.getName(), nonPaginatedResultOutputStrategies,
+                    AbstractJsonQueryElasticsearch.OUTPUT_NO_HITS.getName(),
+                    ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName());
         } else {
-            expected = String.format("Processor has 8 validation failures:\n" +
-                    "'%s' validated against 'not-valid' is invalid because Given value not found in allowed set '%s'\n",
+            expected = String.format("Bộ xử lý có 8 lỗi xác thực:\n" +
+                            "'%s' được xác thực với 'not-valid' không hợp lệ vì Giá trị được cung cấp không nằm trong tập giá trị cho phép '%s'\n" +
+                            "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n" +
+                            "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n" +
+                            "'%s' được xác thực với 'not-a-service' không hợp lệ vì Thuộc tính tham chiếu đến một Dịch vụ Điều khiển (Controller Service) không tồn tại\n" +
+                            "'%s' được xác thực với 'not-enum2' không hợp lệ vì Giá trị được cung cấp không nằm trong tập giá trị cho phép '%s'\n" +
+                            "'%s' được xác thực với 'not-enum' không hợp lệ vì Giá trị được cung cấp không nằm trong tập giá trị cho phép '%s'\n" +
+                            "'%s' được xác thực với 'not-boolean' không hợp lệ vì Giá trị được cung cấp không nằm trong tập giá trị cho phép 'true, false'\n" +
+                            "'%s' được xác thực với 'not-a-service' không hợp lệ vì Dịch vụ Điều khiển không hợp lệ: not-a-service không phải là mã định danh Dịch vụ Điều khiển hợp lệ\n",
                     ElasticsearchRestProcessor.QUERY_DEFINITION_STYLE.getName(),
-                    Arrays.stream(QueryDefinitionType.values()).map(QueryDefinitionType::getValue).collect(Collectors.joining(", ")));
+                    Arrays.stream(QueryDefinitionType.values()).map(QueryDefinitionType::getValue).collect(Collectors.joining(", ")),
+                    ElasticsearchRestProcessor.INDEX.getName(), ElasticsearchRestProcessor.INDEX.getName(),
+                    ElasticsearchRestProcessor.TYPE.getName(), ElasticsearchRestProcessor.TYPE.getName(),
+                    ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName(),
+                    AbstractJsonQueryElasticsearch.SEARCH_RESULTS_SPLIT.getName(), expectedAllowedSplitHits,
+                    AbstractJsonQueryElasticsearch.AGGREGATION_RESULTS_SPLIT.getName(), nonPaginatedResultOutputStrategies,
+                    AbstractJsonQueryElasticsearch.OUTPUT_NO_HITS.getName(),
+                    ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName());
         }
-        expected += String.format(
-                        "'%s' validated against '' is invalid because %s cannot be empty\n" +
-                        "'%s' validated against '' is invalid because %s cannot be empty\n" +
-                        "'%s' validated against 'not-a-service' is invalid because" +
-                        " Property references a Controller Service that does not exist\n" +
-                        "'%s' validated against 'not-enum2' is invalid because Given value not found in allowed set '%s'\n" +
-                        "'%s' validated against 'not-enum' is invalid because Given value not found in allowed set '%s'\n" +
-                        "'%s' validated against 'not-boolean' is invalid because Given value not found in allowed set 'true, false'\n" +
-                        "'%s' validated against 'not-a-service' is invalid because Invalid Controller Service: not-a-service is not a valid Controller Service Identifier\n",
-                ElasticsearchRestProcessor.INDEX.getName(), ElasticsearchRestProcessor.INDEX.getName(),
-                ElasticsearchRestProcessor.TYPE.getName(), ElasticsearchRestProcessor.TYPE.getName(),
-                ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName(),
-                AbstractJsonQueryElasticsearch.SEARCH_RESULTS_SPLIT.getName(), expectedAllowedSplitHits,
-                AbstractJsonQueryElasticsearch.AGGREGATION_RESULTS_SPLIT.getName(), nonPaginatedResultOutputStrategies,
-                AbstractJsonQueryElasticsearch.OUTPUT_NO_HITS.getName(), ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName());
         assertEquals(expected, assertionError.getMessage());
     }
 

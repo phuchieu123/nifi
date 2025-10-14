@@ -68,19 +68,21 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 @Tags({"grok", "logs", "logfiles", "parse", "unstructured", "text", "record", "reader", "regex", "pattern", "logstash"})
-@CapabilityDescription("Provides a mechanism for reading unstructured text data, such as log files, and structuring the data "
-    + "so that it can be processed. The service is configured using Grok patterns. "
-    + "The service reads from a stream of data and splits each message that it finds into a separate Record, each containing the fields that are configured. "
-    + "If a line in the input does not match the expected message pattern, the line of text is either considered to be part of the previous "
-    + "message or is skipped, depending on the configuration, with the exception of stack traces. A stack trace that is found at the end of "
-    + "a log message is considered to be part of the previous message but is added to the 'stackTrace' field of the Record. If a record has "
-    + "no stack trace, it will have a NULL value for the stackTrace field (assuming that the schema does in fact include a stackTrace field of type String). "
-    + "Assuming that the schema includes a '_raw' field of type String, the raw message will be included in the Record.")
+@CapabilityDescription("Cung cấp cơ chế đọc dữ liệu văn bản không cấu trúc, chẳng hạn như các file log, "
+        + "và cấu trúc hóa dữ liệu để có thể xử lý. Dịch vụ được cấu hình sử dụng các mẫu Grok. "
+        + "Dịch vụ đọc từ luồng dữ liệu và tách mỗi thông điệp mà nó tìm thấy thành một Record riêng biệt, "
+        + "mỗi Record chứa các trường đã được cấu hình. "
+        + "Nếu một dòng trong đầu vào không khớp với mẫu thông điệp mong đợi, dòng văn bản đó sẽ được xem là "
+        + "một phần của thông điệp trước đó hoặc bị bỏ qua, tùy thuộc vào cấu hình, ngoại trừ các stack trace. "
+        + "Một stack trace được tìm thấy ở cuối một thông điệp log sẽ được xem là một phần của thông điệp trước đó "
+        + "nhưng được thêm vào trường 'stackTrace' của Record. Nếu Record không có stack trace, nó sẽ có giá trị NULL "
+        + "cho trường stackTrace (giả sử schema thực sự bao gồm trường stackTrace kiểu String). "
+        + "Giả sử schema bao gồm trường '_raw' kiểu String, thông điệp gốc sẽ được đưa vào Record.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.REFERENCE_REMOTE_RESOURCES,
-                        explanation = "Patterns and Expressions can reference resources over HTTP"
+                        explanation = "Các Patterns và Biểu thức có thể tham chiếu tài nguyên qua HTTP"
                 )
         }
 )
@@ -92,25 +94,35 @@ public class GrokReader extends SchemaRegistryService implements RecordReaderFac
 
     static final String DEFAULT_PATTERN_NAME = "/default-grok-patterns.txt";
 
-    static final AllowableValue APPEND_TO_PREVIOUS_MESSAGE = new AllowableValue("append-to-previous-message", "Append to Previous Message",
-        "The line of text that does not match the Grok Expression will be appended to the last field of the prior message.");
-    static final AllowableValue SKIP_LINE = new AllowableValue("skip-line", "Skip Line",
-        "The line of text that does not match the Grok Expression will be skipped.");
-    static final AllowableValue RAW_LINE = new AllowableValue("raw-line", "Raw Line",
-            "The line of text that does not match the Grok Expression will only be added to the _raw field.");
+    static final AllowableValue APPEND_TO_PREVIOUS_MESSAGE = new AllowableValue(
+        "append-to-previous-message", 
+        "Thêm vào Thông điệp Trước", 
+        "Dòng văn bản không khớp với Biểu thức Grok sẽ được thêm vào trường cuối cùng của thông điệp trước đó."
+    );
+    static final AllowableValue SKIP_LINE = new AllowableValue(
+        "skip-line", 
+        "Bỏ qua Dòng", 
+        "Dòng văn bản không khớp với Biểu thức Grok sẽ bị bỏ qua."
+    );
+    static final AllowableValue RAW_LINE = new AllowableValue(
+        "raw-line", 
+        "Dòng Gốc", 
+        "Dòng văn bản không khớp với Biểu thức Grok sẽ chỉ được thêm vào trường _raw."
+    );
 
-    static final AllowableValue STRING_FIELDS_FROM_GROK_EXPRESSION = new AllowableValue("string-fields-from-grok-expression", "Use String Fields From Grok Expression",
-            "The schema will be derived using the field names present in all configured Grok Expressions. "
-            + "All schema fields will have a String type and will be marked as nullable. "
-            + "The schema will also include a `stackTrace` field, and a `_raw` field containing the input line string."
+    static final AllowableValue STRING_FIELDS_FROM_GROK_EXPRESSION = new AllowableValue(
+        "string-fields-from-grok-expression", 
+        "Sử dụng Trường String từ Biểu thức Grok", 
+        "Schema sẽ được suy ra dựa trên tên các trường có trong tất cả các Biểu thức Grok được cấu hình. "
+        + "Tất cả các trường trong schema sẽ có kiểu String và được đánh dấu là nullable. "
+        + "Schema cũng sẽ bao gồm trường `stackTrace` và trường `_raw` chứa chuỗi dòng đầu vào."
     );
 
     static final PropertyDescriptor GROK_PATTERNS = new PropertyDescriptor.Builder()
         .name("Grok Pattern File")
-        .displayName("Grok Patterns")
-        .description("Grok Patterns to use for parsing logs. If not specified, a built-in default Pattern file "
-            + "will be used. If specified, all patterns specified will override the default patterns. See the Controller Service's "
-            + "Additional Details for a list of pre-defined patterns.")
+        .displayName("Các Mẫu Grok")
+        .description("Các mẫu Grok để sử dụng phân tích log. Nếu không chỉ định, một file Pattern mặc định sẽ được sử dụng. "
+            + "Nếu chỉ định, tất cả các pattern được cung cấp sẽ ghi đè pattern mặc định. Xem chi tiết bổ sung của Controller Service để biết danh sách các pattern định nghĩa sẵn.")
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE, ResourceType.URL, ResourceType.TEXT)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .required(false)
@@ -118,12 +130,11 @@ public class GrokReader extends SchemaRegistryService implements RecordReaderFac
 
     static final PropertyDescriptor GROK_EXPRESSION = new PropertyDescriptor.Builder()
         .name("Grok Expression")
-        .displayName("Grok Expressions")
-        .description("Specifies the format of a log line in Grok format. This allows the Record Reader to understand how to parse each log line. "
-            + "The property supports one or more Grok expressions. The Reader attempts to parse input lines according to the configured order of the expressions."
-            + "If a line in the log file does not match any expressions, the line will be assumed to belong to the previous log message."
-            + "If other Grok patterns are referenced by this expression, they need to be supplied in the Grok Pattern File property."
-        )
+        .displayName("Biểu thức Grok")
+        .description("Xác định định dạng của một dòng log theo định dạng Grok. Điều này cho phép Record Reader hiểu cách phân tích từng dòng log. "
+            + "Thuộc tính hỗ trợ một hoặc nhiều biểu thức Grok. Reader sẽ cố gắng phân tích các dòng đầu vào theo thứ tự biểu thức được cấu hình. "
+            + "Nếu một dòng trong file log không khớp với bất kỳ biểu thức nào, dòng đó sẽ được coi là thuộc về thông điệp log trước đó. "
+            + "Nếu các Grok pattern khác được tham chiếu bởi biểu thức này, chúng cần được cung cấp trong thuộc tính Grok Pattern File.")
         .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.TEXT, ResourceType.URL, ResourceType.FILE)
         .required(true)
@@ -131,13 +142,14 @@ public class GrokReader extends SchemaRegistryService implements RecordReaderFac
 
     static final PropertyDescriptor NO_MATCH_BEHAVIOR = new PropertyDescriptor.Builder()
         .name("no-match-behavior")
-        .displayName("No Match Behavior")
-        .description("If a line of text is encountered and it does not match the given Grok Expression, and it is not part of a stack trace, "
-            + "this property specifies how the text should be processed.")
+        .displayName("Hành vi khi Không khớp")
+        .description("Nếu một dòng văn bản được gặp mà không khớp với Biểu thức Grok đã cho, và không phải là một stack trace, "
+            + "thuộc tính này xác định cách xử lý dòng văn bản đó.")
         .allowableValues(APPEND_TO_PREVIOUS_MESSAGE, SKIP_LINE, RAW_LINE)
         .defaultValue(APPEND_TO_PREVIOUS_MESSAGE.getValue())
         .required(true)
         .build();
+
 
     @Override
     protected List<PropertyDescriptor> getSupportedPropertyDescriptors() {

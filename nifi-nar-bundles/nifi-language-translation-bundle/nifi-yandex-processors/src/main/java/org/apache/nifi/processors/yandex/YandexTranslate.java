@@ -120,15 +120,15 @@ public class YandexTranslate extends AbstractProcessor {
 
     public static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("This relationship is used when the translation is successful")
+            .description("Mối quan hệ này được sử dụng khi việc dịch thành công.")
             .build();
     public static final Relationship REL_COMMS_FAILURE = new Relationship.Builder()
             .name("comms.failure")
-            .description("This relationship is used when the translation fails due to a problem such as a network failure, and for which the translation should be attempted again")
+            .description("Mối quan hệ này được sử dụng khi việc dịch thất bại do sự cố như lỗi mạng và cần được thử lại.")
             .build();
     public static final Relationship REL_TRANSLATION_FAILED = new Relationship.Builder()
             .name("translation.failure")
-            .description("This relationship is used if the translation cannot be performed for some reason other than communications failure")
+            .description("Mối quan hệ này được sử dụng nếu việc dịch không thể thực hiện vì lý do khác ngoài lỗi kết nối.")
             .build();
 
     private List<PropertyDescriptor> descriptors;

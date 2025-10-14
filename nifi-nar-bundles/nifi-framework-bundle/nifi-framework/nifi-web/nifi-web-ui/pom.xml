@@ -466,12 +466,14 @@
                         <executions>
                             <execution>
                                 <id>minify</id>
+                                 
                                 <goals>
                                     <goal>compress</goal>
                                 </goals>
                                 <configuration>
-                                    <sourceDirectory>src/main/webapp</sourceDirectory>
+                                     <sourceDirectory>src/main/webapp</sourceDirectory>
                                     <outputDirectory>${staging.dir}</outputDirectory>
+                                     <skip>${yuicompressor.skip}</skip>
                                     <nomunge>false</nomunge>
                                     <jswarn>false</jswarn>
                                     <nosuffix>true</nosuffix>

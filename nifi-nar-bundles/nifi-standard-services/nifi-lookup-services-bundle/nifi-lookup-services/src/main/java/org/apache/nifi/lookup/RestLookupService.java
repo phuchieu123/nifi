@@ -80,18 +80,18 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 
 @Tags({ "rest", "lookup", "json", "xml", "http" })
-@CapabilityDescription("Use a REST service to look up values.")
+@CapabilityDescription("Sử dụng một dịch vụ REST để tra cứu giá trị.")
 @SupportsSensitiveDynamicProperties
 @DynamicProperties({
-    @DynamicProperty(name = "*", value = "*", description = "All dynamic properties are added as HTTP headers with the name " +
-            "as the header name and the value as the header value.", expressionLanguageScope = ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+    @DynamicProperty(name = "*", value = "*", description = "Tất cả các thuộc tính động sẽ được thêm dưới dạng header HTTP với tên là tên header và giá trị là giá trị header.", 
+            expressionLanguageScope = ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
 })
 public class RestLookupService extends AbstractControllerService implements RecordLookupService {
+    
     static final PropertyDescriptor URL = new PropertyDescriptor.Builder()
         .name("rest-lookup-url")
         .displayName("URL")
-        .description("The URL for the REST endpoint. Expression language is evaluated against the lookup key/value pairs, " +
-                "not flowfile attributes.")
+        .description("URL của endpoint REST. Biểu thức sẽ được đánh giá dựa trên cặp key/value để tra cứu, không dựa trên thuộc tính flowfile.")
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .required(true)
         .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -100,7 +100,7 @@ public class RestLookupService extends AbstractControllerService implements Reco
     static final PropertyDescriptor RECORD_READER = new PropertyDescriptor.Builder()
         .name("rest-lookup-record-reader")
         .displayName("Record Reader")
-        .description("The record reader to use for loading the payload and handling it as a record set.")
+        .description("Record reader được sử dụng để tải payload và xử lý nó như một tập hợp record.")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .identifiesControllerService(RecordReaderFactory.class)
         .required(true)
@@ -109,8 +109,7 @@ public class RestLookupService extends AbstractControllerService implements Reco
     static final PropertyDescriptor RECORD_PATH = new PropertyDescriptor.Builder()
         .name("rest-lookup-record-path")
         .displayName("Record Path")
-        .description("An optional record path that can be used to define where in a record to get the real data to merge " +
-                "into the record set to be enriched. See documentation for examples of when this might be useful.")
+        .description("Một record path tùy chọn có thể được sử dụng để xác định vị trí trong record lấy dữ liệu thực để hợp nhất vào tập hợp record cần enrich. Xem tài liệu để biết ví dụ sử dụng.")
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .addValidator(new RecordPathValidator())
         .required(false)
@@ -119,16 +118,15 @@ public class RestLookupService extends AbstractControllerService implements Reco
     static final PropertyDescriptor SSL_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
         .name("rest-lookup-ssl-context-service")
         .displayName("SSL Context Service")
-        .description("The SSL Context Service used to provide client certificate information for TLS/SSL "
-                + "connections.")
+        .description("Dịch vụ SSL Context dùng để cung cấp thông tin chứng thực client cho kết nối TLS/SSL.")
         .required(false)
         .identifiesControllerService(SSLContextService.class)
         .build();
 
     public static final PropertyDescriptor PROP_BASIC_AUTH_USERNAME = new PropertyDescriptor.Builder()
         .name("rest-lookup-basic-auth-username")
-        .displayName("Basic Authentication Username")
-        .description("The username to be used by the client to authenticate against the Remote URL.  Cannot include control characters (0-31), ':', or DEL (127).")
+        .displayName("Tên đăng nhập Basic Authentication")
+        .description("Tên người dùng dùng để xác thực với URL từ xa. Không được chứa ký tự điều khiển (0-31), ':', hoặc DEL (127).")
         .required(false)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .addValidator(StandardValidators.createRegexMatchingValidator(Pattern.compile("^[\\x20-\\x39\\x3b-\\x7e\\x80-\\xff]+$")))
@@ -136,8 +134,8 @@ public class RestLookupService extends AbstractControllerService implements Reco
 
     public static final PropertyDescriptor PROP_BASIC_AUTH_PASSWORD = new PropertyDescriptor.Builder()
         .name("rest-lookup-basic-auth-password")
-        .displayName("Basic Authentication Password")
-        .description("The password to be used by the client to authenticate against the Remote URL.")
+        .displayName("Mật khẩu Basic Authentication")
+        .description("Mật khẩu dùng để xác thực với URL từ xa.")
         .required(false)
         .sensitive(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -146,9 +144,8 @@ public class RestLookupService extends AbstractControllerService implements Reco
 
     public static final PropertyDescriptor PROP_DIGEST_AUTH = new PropertyDescriptor.Builder()
         .name("rest-lookup-digest-auth")
-        .displayName("Use Digest Authentication")
-        .description("Whether to communicate with the website using Digest Authentication. 'Basic Authentication Username' and 'Basic Authentication Password' are used "
-                + "for authentication.")
+        .displayName("Sử dụng Digest Authentication")
+        .description("Có dùng Digest Authentication khi giao tiếp với website hay không. 'Tên đăng nhập Basic Authentication' và 'Mật khẩu Basic Authentication' được sử dụng cho xác thực.")
         .required(false)
         .defaultValue("false")
         .allowableValues("true", "false")
@@ -156,8 +153,8 @@ public class RestLookupService extends AbstractControllerService implements Reco
 
     public static final PropertyDescriptor PROP_CONNECT_TIMEOUT = new PropertyDescriptor.Builder()
         .name("rest-lookup-connection-timeout")
-        .displayName("Connection Timeout")
-        .description("Max wait time for connection to remote service.")
+        .displayName("Thời gian chờ kết nối")
+        .description("Thời gian tối đa chờ kết nối tới dịch vụ từ xa.")
         .required(true)
         .defaultValue("5 secs")
         .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -165,8 +162,8 @@ public class RestLookupService extends AbstractControllerService implements Reco
 
     public static final PropertyDescriptor PROP_READ_TIMEOUT = new PropertyDescriptor.Builder()
         .name("rest-lookup-read-timeout")
-        .displayName("Read Timeout")
-        .description("Max wait time for response from remote service.")
+        .displayName("Thời gian chờ đọc")
+        .description("Thời gian tối đa chờ phản hồi từ dịch vụ từ xa.")
         .required(true)
         .defaultValue("15 secs")
         .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)

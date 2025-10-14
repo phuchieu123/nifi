@@ -54,9 +54,10 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Tags({"record", "send", "write", "prometheus"})
-@CapabilityDescription("Specifies a Record Sink Service that exposes data points to a Prometheus scraping service. Numeric fields are exposed as Gauges, String fields are the "
-        + "label values for the gauges, and all other fields are ignored.")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Xác định một Record Sink Service để xuất các điểm dữ liệu cho dịch vụ Prometheus. " +
+        "Các trường số được xuất dưới dạng Gauges, các trường chuỗi là giá trị label cho gauges, " +
+        "và các trường khác sẽ bị bỏ qua.")
+@DeprecationNotice(reason = "Component này đã lỗi thời và sẽ bị loại bỏ trong NiFi 2.x.")
 public class PrometheusRecordSink extends AbstractControllerService implements RecordSinkService {
 
     private volatile PrometheusServer prometheusServer;
@@ -67,9 +68,9 @@ public class PrometheusRecordSink extends AbstractControllerService implements R
 
     public static final PropertyDescriptor SSL_CONTEXT = new PropertyDescriptor.Builder()
             .name("prometheus-reporting-task-ssl-context")
-            .displayName("SSL Context Service")
-            .description("The SSL Context Service to use in order to secure the server. If specified, the server will"
-                    + "accept only HTTPS requests; otherwise, the server will accept only HTTP requests")
+            .displayName("Dịch vụ SSL Context")
+            .description("Dịch vụ SSL Context được sử dụng để bảo mật server. Nếu được chỉ định, server sẽ " +
+                         "chỉ chấp nhận các yêu cầu HTTPS; nếu không, server sẽ chỉ chấp nhận các yêu cầu HTTP.")
             .required(false)
             .identifiesControllerService(RestrictedSSLContextService.class)
             .build();

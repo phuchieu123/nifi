@@ -50,21 +50,22 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"json", "resultset", "writer", "serialize", "record", "recordset", "row"})
-@CapabilityDescription("Writes the results of a RecordSet as either a JSON Array or one JSON object per line. If using Array output, then even if the RecordSet "
-        + "consists of a single row, it will be written as an array with a single element. If using One Line Per Object output, the JSON objects cannot be pretty-printed.")
+@CapabilityDescription("Ghi kết quả của một RecordSet dưới dạng JSON Array hoặc một đối tượng JSON trên mỗi dòng. "
+        + "Nếu sử dụng đầu ra Array, ngay cả khi RecordSet chỉ gồm một dòng, nó vẫn sẽ được ghi dưới dạng mảng với một phần tử. "
+        + "Nếu sử dụng đầu ra One Line Per Object, các đối tượng JSON sẽ không thể được pretty-printed.")
 public class JsonRecordSetWriter extends DateTimeTextRecordSetWriter implements RecordSetWriterFactory {
 
-    public static final AllowableValue ALWAYS_SUPPRESS = new AllowableValue("always-suppress", "Always Suppress",
-            "Fields that are missing (present in the schema but not in the record), or that have a value of null, will not be written out");
-    public static final AllowableValue NEVER_SUPPRESS = new AllowableValue("never-suppress", "Never Suppress",
-            "Fields that are missing (present in the schema but not in the record), or that have a value of null, will be written out as a null value");
-    public static final AllowableValue SUPPRESS_MISSING = new AllowableValue("suppress-missing", "Suppress Missing Values",
-            "When a field has a value of null, it will be written out. However, if a field is defined in the schema and not present in the record, the field will not be written out.");
+    public static final AllowableValue ALWAYS_SUPPRESS = new AllowableValue("always-suppress", "Luôn bỏ qua",
+            "Các trường bị thiếu (có trong schema nhưng không có trong record), hoặc có giá trị null, sẽ không được ghi ra");
+    public static final AllowableValue NEVER_SUPPRESS = new AllowableValue("never-suppress", "Không bao giờ bỏ qua",
+            "Các trường bị thiếu (có trong schema nhưng không có trong record), hoặc có giá trị null, sẽ được ghi ra dưới dạng giá trị null");
+    public static final AllowableValue SUPPRESS_MISSING = new AllowableValue("suppress-missing", "Bỏ qua giá trị thiếu",
+            "Khi một trường có giá trị null, nó sẽ được ghi ra. Tuy nhiên, nếu trường được định nghĩa trong schema nhưng không có trong record, trường đó sẽ không được ghi ra.");
 
-    public static final AllowableValue OUTPUT_ARRAY = new AllowableValue("output-array", "Array",
-            "Output records as a JSON array");
-    public static final AllowableValue OUTPUT_ONELINE = new AllowableValue("output-oneline", "One Line Per Object",
-            "Output records with one JSON object per line, delimited by a newline character");
+    public static final AllowableValue OUTPUT_ARRAY = new AllowableValue("output-array", "Mảng",
+            "Xuất các record dưới dạng một mảng JSON");
+    public static final AllowableValue OUTPUT_ONELINE = new AllowableValue("output-oneline", "Một dòng mỗi đối tượng",
+            "Xuất các record với một đối tượng JSON trên mỗi dòng, ngăn cách bởi ký tự xuống dòng");
 
     public static final String COMPRESSION_FORMAT_GZIP = "gzip";
     public static final String COMPRESSION_FORMAT_BZIP2 = "bzip2";
@@ -76,56 +77,61 @@ public class JsonRecordSetWriter extends DateTimeTextRecordSetWriter implements 
 
     public static final PropertyDescriptor SUPPRESS_NULLS = new PropertyDescriptor.Builder()
             .name("suppress-nulls")
-            .displayName("Suppress Null Values")
-            .description("Specifies how the writer should handle a null field")
+            .displayName("Bỏ qua giá trị null")
+            .description("Xác định cách writer xử lý các trường null")
             .allowableValues(NEVER_SUPPRESS, ALWAYS_SUPPRESS, SUPPRESS_MISSING)
             .defaultValue(NEVER_SUPPRESS.getValue())
             .required(true)
             .build();
+
     public static final PropertyDescriptor PRETTY_PRINT_JSON = new PropertyDescriptor.Builder()
             .name("Pretty Print JSON")
-            .description("Specifies whether or not the JSON should be pretty printed")
+            .description("Xác định JSON có được pretty-printed hay không")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
             .defaultValue("false")
             .required(true)
             .build();
+
     public static final PropertyDescriptor ALLOW_SCIENTIFIC_NOTATION = new PropertyDescriptor.Builder()
             .name("Allow Scientific Notation")
-            .description("Specifies whether or not scientific notation should be used when writing numbers")
+            .description("Xác định có sử dụng ký hiệu khoa học khi ghi số hay không")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
             .defaultValue("true")
             .required(true)
             .build();
+
     public static final PropertyDescriptor OUTPUT_GROUPING = new PropertyDescriptor.Builder()
             .name("output-grouping")
-            .displayName("Output Grouping")
-            .description("Specifies how the writer should output the JSON records (as an array or one object per line, e.g.) Note that if 'One Line Per Object' is "
-                    + "selected, then Pretty Print JSON must be false.")
+            .displayName("Nhóm đầu ra")
+            .description("Xác định cách writer xuất các record JSON (dạng mảng hoặc một đối tượng mỗi dòng). "
+                    + "Nếu chọn 'One Line Per Object', Pretty Print JSON phải là false.")
             .allowableValues(OUTPUT_ARRAY, OUTPUT_ONELINE)
             .defaultValue(OUTPUT_ARRAY.getValue())
             .required(true)
             .build();
+
     public static final PropertyDescriptor COMPRESSION_FORMAT = new PropertyDescriptor.Builder()
             .name("compression-format")
-            .displayName("Compression Format")
-            .description("The compression format to use. Valid values are: GZIP, BZIP2, ZSTD, XZ-LZMA2, LZMA, Snappy, and Snappy Framed")
+            .displayName("Định dạng nén")
+            .description("Định dạng nén sử dụng. Các giá trị hợp lệ: GZIP, BZIP2, ZSTD, XZ-LZMA2, LZMA, Snappy, Snappy Framed")
             .allowableValues(COMPRESSION_FORMAT_NONE, COMPRESSION_FORMAT_GZIP, COMPRESSION_FORMAT_BZIP2, COMPRESSION_FORMAT_XZ_LZMA2,
                     COMPRESSION_FORMAT_SNAPPY, COMPRESSION_FORMAT_SNAPPY_FRAMED, COMPRESSION_FORMAT_ZSTD)
             .defaultValue(COMPRESSION_FORMAT_NONE)
             .required(true)
             .build();
+
     public static final PropertyDescriptor COMPRESSION_LEVEL = new PropertyDescriptor.Builder()
             .name("compression-level")
-            .displayName("Compression Level")
-            .description("The compression level to use; this is valid only when using GZIP compression. A lower value results in faster processing "
-                    + "but less compression; a value of 0 indicates no compression but simply archiving")
+            .displayName("Mức độ nén")
+            .description("Mức độ nén sử dụng; chỉ hợp lệ khi dùng GZIP. Giá trị thấp hơn sẽ xử lý nhanh hơn nhưng nén kém hơn; giá trị 0 không nén, chỉ lưu trữ.")
             .defaultValue("1")
             .required(true)
             .allowableValues("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
             .dependsOn(COMPRESSION_FORMAT, COMPRESSION_FORMAT_GZIP)
             .build();
+
 
     private volatile boolean prettyPrint;
     private volatile boolean allowScientificNotation;

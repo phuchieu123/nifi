@@ -73,7 +73,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @DeprecationNotice(reason = "Support for Apache Hive 3 is deprecated for removal in Apache NiFi 2.0")
 @RequiresInstanceClassLoading
 @Tags({"hive", "dbcp", "jdbc", "database", "connection", "pooling", "store"})
-@CapabilityDescription("Provides Database Connection Pooling Service for Apache Hive 3.x. Connections can be asked from pool and returned after usage.")
+@CapabilityDescription("Cung cấp Dịch vụ Pooling Kết nối Cơ sở dữ liệu cho Apache Hive 3.x. Các kết nối có thể được lấy từ pool và trả về sau khi sử dụng.")
 public class Hive3ConnectionPool extends AbstractControllerService implements Hive3DBCPService {
     private static final String ALLOW_EXPLICIT_KEYTAB = "NIFI_ALLOW_EXPLICIT_KEYTAB";
     /**
@@ -101,161 +101,152 @@ public class Hive3ConnectionPool extends AbstractControllerService implements Hi
      * Copied from {@link GenericObjectPoolConfig.DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME_MILLIS} in Commons-DBCP 2.6.0
      */
     private static final String DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME = String.valueOf(-1L);
+static final PropertyDescriptor DATABASE_URL = new PropertyDescriptor.Builder()
+        .name("hive-db-connect-url")
+        .displayName("URL Kết nối Cơ sở dữ liệu")
+        .description("URL kết nối cơ sở dữ liệu được sử dụng để kết nối đến cơ sở dữ liệu. Có thể chứa tên hệ quản trị cơ sở dữ liệu, host, port, tên cơ sở dữ liệu và một số tham số. "
+                + "Cú pháp chính xác của URL kết nối được quy định bởi tài liệu Hive. Ví dụ, server principal thường được đưa vào "
+                + "như một tham số kết nối khi kết nối đến Hive server bảo mật.")
+        .defaultValue(null)
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .required(true)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    static final PropertyDescriptor DATABASE_URL = new PropertyDescriptor.Builder()
-            .name("hive-db-connect-url")
-            .displayName("Database Connection URL")
-            .description("A database connection URL used to connect to a database. May contain database system name, host, port, database name and some parameters."
-                    + " The exact syntax of a database connection URL is specified by the Hive documentation. For example, the server principal is often included "
-                    + "as a connection parameter when connecting to a secure Hive server.")
-            .defaultValue(null)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .required(true)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+static final PropertyDescriptor HIVE_CONFIGURATION_RESOURCES = new PropertyDescriptor.Builder()
+        .name("hive-config-resources")
+        .displayName("Tài nguyên Cấu hình Hive")
+        .description("Một file hoặc danh sách các file chứa cấu hình Hive (ví dụ hive-site.xml). Nếu không có, Hadoop "
+                + "sẽ tìm trên classpath file 'hive-site.xml' hoặc sử dụng cấu hình mặc định. Lưu ý rằng để bật xác thực "
+                + "với Kerberos, các thuộc tính thích hợp phải được thiết lập trong các file cấu hình. Xem tài liệu Hive để biết chi tiết.")
+        .required(false)
+        .identifiesExternalResource(ResourceCardinality.MULTIPLE, ResourceType.FILE)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    static final PropertyDescriptor HIVE_CONFIGURATION_RESOURCES = new PropertyDescriptor.Builder()
-            .name("hive-config-resources")
-            .displayName("Hive Configuration Resources")
-            .description("A file or comma separated list of files which contains the Hive configuration (hive-site.xml, e.g.). Without this, Hadoop "
-                    + "will search the classpath for a 'hive-site.xml' file or will revert to a default configuration. Note that to enable authentication "
-                    + "with Kerberos e.g., the appropriate properties must be set in the configuration files. Please see the Hive documentation for more details.")
-            .required(false)
-            .identifiesExternalResource(ResourceCardinality.MULTIPLE, ResourceType.FILE)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+static final PropertyDescriptor DB_USER = new PropertyDescriptor.Builder()
+        .name("hive-db-user")
+        .displayName("Người dùng cơ sở dữ liệu")
+        .description("Tên người dùng cơ sở dữ liệu")
+        .defaultValue(null)
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    static final PropertyDescriptor DB_USER = new PropertyDescriptor.Builder()
-            .name("hive-db-user")
-            .displayName("Database User")
-            .description("Database user name")
-            .defaultValue(null)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+static final PropertyDescriptor DB_PASSWORD = new PropertyDescriptor.Builder()
+        .name("hive-db-password")
+        .displayName("Mật khẩu")
+        .description("Mật khẩu của người dùng cơ sở dữ liệu")
+        .defaultValue(null)
+        .required(false)
+        .sensitive(true)
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    static final PropertyDescriptor DB_PASSWORD = new PropertyDescriptor.Builder()
-            .name("hive-db-password")
-            .displayName("Password")
-            .description("The password for the database user")
-            .defaultValue(null)
-            .required(false)
-            .sensitive(true)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+static final PropertyDescriptor MAX_WAIT_TIME = new PropertyDescriptor.Builder()
+        .name("hive-max-wait-time")
+        .displayName("Thời gian chờ tối đa")
+        .description("Thời gian tối đa mà pool sẽ chờ (khi không có kết nối sẵn có) "
+                + "cho đến khi một kết nối được trả về trước khi thất bại, hoặc -1 để chờ vô thời hạn.")
+        .defaultValue("500 millis")
+        .required(true)
+        .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    static final PropertyDescriptor MAX_WAIT_TIME = new PropertyDescriptor.Builder()
-            .name("hive-max-wait-time")
-            .displayName("Max Wait Time")
-            .description("The maximum amount of time that the pool will wait (when there are no available connections) "
-                    + " for a connection to be returned before failing, or -1 to wait indefinitely. ")
-            .defaultValue("500 millis")
-            .required(true)
-            .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+static final PropertyDescriptor MAX_TOTAL_CONNECTIONS = new PropertyDescriptor.Builder()
+        .name("hive-max-total-connections")
+        .displayName("Số kết nối tối đa")
+        .description("Số lượng kết nối đang hoạt động tối đa có thể được cấp từ pool cùng lúc, "
+                + "hoặc giá trị âm nếu không giới hạn.")
+        .defaultValue("8")
+        .required(true)
+        .addValidator(StandardValidators.INTEGER_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    static final PropertyDescriptor MAX_TOTAL_CONNECTIONS = new PropertyDescriptor.Builder()
-            .name("hive-max-total-connections")
-            .displayName("Max Total Connections")
-            .description("The maximum number of active connections that can be allocated from this pool at the same time, "
-                    + "or negative for no limit.")
-            .defaultValue("8")
-            .required(true)
-            .addValidator(StandardValidators.INTEGER_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+static final PropertyDescriptor VALIDATION_QUERY = new PropertyDescriptor.Builder()
+        .name("Validation-query")
+        .displayName("Câu truy vấn kiểm tra")
+        .description("Câu truy vấn được sử dụng để kiểm tra kết nối trước khi trả về. "
+                + "Khi một kết nối mượn được không hợp lệ, nó sẽ bị loại và một kết nối hợp lệ mới sẽ được trả về. "
+                + "LƯU Ý: Việc kiểm tra có thể ảnh hưởng đến hiệu suất.")
+        .required(false)
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    static final PropertyDescriptor VALIDATION_QUERY = new PropertyDescriptor.Builder()
-            .name("Validation-query")
-            .displayName("Validation query")
-            .description("Validation query used to validate connections before returning them. "
-                    + "When a borrowed connection is invalid, it gets dropped and a new valid connection will be returned. "
-                    + "NOTE: Using validation may have a performance penalty.")
-            .required(false)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+public static final PropertyDescriptor MIN_IDLE = new PropertyDescriptor.Builder()
+        .displayName("Số kết nối nhàn rỗi tối thiểu")
+        .name("dbcp-min-idle-conns")
+        .description("Số kết nối nhàn rỗi tối thiểu trong pool mà không tạo thêm kết nối mới, hoặc zero nếu không tạo.")
+        .defaultValue(DEFAULT_MIN_IDLE)
+        .required(false)
+        .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    public static final PropertyDescriptor MIN_IDLE = new PropertyDescriptor.Builder()
-            .displayName("Minimum Idle Connections")
-            .name("dbcp-min-idle-conns")
-            .description("The minimum number of connections that can remain idle in the pool, without extra ones being " +
-                    "created, or zero to create none.")
-            .defaultValue(DEFAULT_MIN_IDLE)
-            .required(false)
-            .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+public static final PropertyDescriptor MAX_IDLE = new PropertyDescriptor.Builder()
+        .displayName("Số kết nối nhàn rỗi tối đa")
+        .name("dbcp-max-idle-conns")
+        .description("Số kết nối nhàn rỗi tối đa trong pool mà không giải phóng, hoặc giá trị âm nếu không giới hạn.")
+        .defaultValue(DEFAULT_MAX_IDLE)
+        .required(false)
+        .addValidator(StandardValidators.INTEGER_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    public static final PropertyDescriptor MAX_IDLE = new PropertyDescriptor.Builder()
-            .displayName("Max Idle Connections")
-            .name("dbcp-max-idle-conns")
-            .description("The maximum number of connections that can remain idle in the pool, without extra ones being " +
-                    "released, or negative for no limit.")
-            .defaultValue(DEFAULT_MAX_IDLE)
-            .required(false)
-            .addValidator(StandardValidators.INTEGER_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+public static final PropertyDescriptor MAX_CONN_LIFETIME = new PropertyDescriptor.Builder()
+        .displayName("Thời gian sống tối đa của kết nối")
+        .name("dbcp-max-conn-lifetime")
+        .description("Thời gian sống tối đa của một kết nối. Khi vượt quá thời gian này, kết nối sẽ thất bại trong các kiểm tra activation, passivation hoặc validation. "
+                + "Giá trị zero hoặc âm nghĩa là kết nối có thời gian sống vô hạn.")
+        .defaultValue(DEFAULT_MAX_CONN_LIFETIME)
+        .required(false)
+        .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    public static final PropertyDescriptor MAX_CONN_LIFETIME = new PropertyDescriptor.Builder()
-            .displayName("Max Connection Lifetime")
-            .name("dbcp-max-conn-lifetime")
-            .description("The maximum lifetime of a connection. After this time is exceeded the " +
-                    "connection will fail the next activation, passivation or validation test. A value of zero or less " +
-                    "means the connection has an infinite lifetime.")
-            .defaultValue(DEFAULT_MAX_CONN_LIFETIME)
-            .required(false)
-            .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+public static final PropertyDescriptor EVICTION_RUN_PERIOD = new PropertyDescriptor.Builder()
+        .displayName("Thời gian giữa các lần chạy Eviction")
+        .name("dbcp-time-between-eviction-runs")
+        .description("Khoảng thời gian giữa các lần chạy của thread loại bỏ kết nối nhàn rỗi. Nếu giá trị không dương, thread loại bỏ kết nối nhàn rỗi sẽ không chạy.")
+        .defaultValue(DEFAULT_EVICTION_RUN_PERIOD)
+        .required(false)
+        .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    public static final PropertyDescriptor EVICTION_RUN_PERIOD = new PropertyDescriptor.Builder()
-            .displayName("Time Between Eviction Runs")
-            .name("dbcp-time-between-eviction-runs")
-            .description("The time period to sleep between runs of the idle connection evictor thread. When " +
-                    "non-positive, no idle connection evictor thread will be run.")
-            .defaultValue(DEFAULT_EVICTION_RUN_PERIOD)
-            .required(false)
-            .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+public static final PropertyDescriptor MIN_EVICTABLE_IDLE_TIME = new PropertyDescriptor.Builder()
+        .displayName("Thời gian nhàn rỗi tối thiểu trước khi bị loại bỏ")
+        .name("dbcp-min-evictable-idle-time")
+        .description("Thời gian tối thiểu một kết nối nhàn rỗi trong pool trước khi đủ điều kiện bị loại bỏ.")
+        .defaultValue(DEFAULT_MIN_EVICTABLE_IDLE_TIME)
+        .required(false)
+        .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    public static final PropertyDescriptor MIN_EVICTABLE_IDLE_TIME = new PropertyDescriptor.Builder()
-            .displayName("Minimum Evictable Idle Time")
-            .name("dbcp-min-evictable-idle-time")
-            .description("The minimum amount of time a connection may sit idle in the pool before it is eligible for eviction.")
-            .defaultValue(DEFAULT_MIN_EVICTABLE_IDLE_TIME)
-            .required(false)
-            .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+public static final PropertyDescriptor SOFT_MIN_EVICTABLE_IDLE_TIME = new PropertyDescriptor.Builder()
+        .displayName("Thời gian nhàn rỗi tối thiểu mềm")
+        .name("dbcp-soft-min-evictable-idle-time")
+        .description("Thời gian tối thiểu một kết nối nhàn rỗi trước khi đủ điều kiện bị loại bỏ bởi thread loại bỏ, với điều kiện ít nhất một số lượng kết nối nhàn rỗi tối thiểu vẫn còn trong pool. "
+                + "Khi tùy chọn không mềm được đặt giá trị dương, nó được xét trước: khi các kết nối nhàn rỗi được kiểm tra, thời gian nhàn rỗi được so sánh với giá trị này trước, "
+                + "sau đó so sánh với tùy chọn mềm bao gồm ràng buộc số lượng kết nối nhàn rỗi tối thiểu.")
+        .defaultValue(DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME)
+        .required(false)
+        .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    public static final PropertyDescriptor SOFT_MIN_EVICTABLE_IDLE_TIME = new PropertyDescriptor.Builder()
-            .displayName("Soft Minimum Evictable Idle Time")
-            .name("dbcp-soft-min-evictable-idle-time")
-            .description("The minimum amount of time a connection may sit idle in the pool before it is eligible for " +
-                    "eviction by the idle connection evictor, with the extra condition that at least a minimum number of" +
-                    " idle connections remain in the pool. When the not-soft version of this option is set to a positive" +
-                    " value, it is examined first by the idle connection evictor: when idle connections are visited by " +
-                    "the evictor, idle time is first compared against it (without considering the number of idle " +
-                    "connections in the pool) and then against this soft option, including the minimum idle connections " +
-                    "constraint.")
-            .defaultValue(DEFAULT_SOFT_MIN_EVICTABLE_IDLE_TIME)
-            .required(false)
-            .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
-
-    private static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
-            .name("kerberos-credentials-service")
-            .displayName("Dịch vụ chứng thực Kerberos")
-            .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
-            .identifiesControllerService(KerberosCredentialsService.class)
-            .required(false)
-            .build();
+private static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
+        .name("kerberos-credentials-service")
+        .displayName("Dịch vụ chứng thực Kerberos")
+        .description("Xác định Kerberos Credentials Controller Service sẽ được sử dụng để xác thực với Kerberos")
+        .identifiesControllerService(KerberosCredentialsService.class)
+        .required(false)
+        .build();
 
 
     private List<PropertyDescriptor> properties;

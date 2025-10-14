@@ -35,7 +35,8 @@ import static org.apache.nifi.processor.FlowFileFilter.FlowFileFilterResult.REJE
  *
  */
 @Tags({"dbcp", "jdbc", "database", "connection", "pooling", "store"})
-@CapabilityDescription("Provides Database Connection Pooling Service. Connections can be asked from pool and returned after usage.")
+@CapabilityDescription("Cung cấp dịch vụ quản lý kết nối cơ sở dữ liệu (Database Connection Pooling Service). " +
+        "Các kết nối có thể được lấy từ pool và trả lại sau khi sử dụng.")
 public interface DBCPService extends ControllerService {
     Connection getConnection() throws ProcessException;
 

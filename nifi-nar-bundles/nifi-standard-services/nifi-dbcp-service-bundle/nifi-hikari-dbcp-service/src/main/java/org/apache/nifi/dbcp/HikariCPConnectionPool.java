@@ -57,23 +57,23 @@ import java.util.stream.Collectors;
  */
 @RequiresInstanceClassLoading
 @Tags({"dbcp", "hikari", "jdbc", "database", "connection", "pooling", "store"})
-@CapabilityDescription("Provides Database Connection Pooling Service based on HikariCP. Connections can be asked from pool and returned after usage.")
+@CapabilityDescription("Cung cấp dịch vụ quản lý kết nối cơ sở dữ liệu dựa trên HikariCP. Kết nối có thể được mượn từ pool và trả lại sau khi sử dụng.")
 @SupportsSensitiveDynamicProperties
-@DynamicProperty(name = "JDBC property name", value = "JDBC property value", expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Specifies a property name and value to be set on the JDBC connection(s). "
-                + "If Expression Language is used, evaluation will be performed upon the controller service being enabled. "
-                + "Note that no flow file input (attributes, e.g.) is available for use in Expression Language constructs for these properties.")
+@DynamicProperty(name = "Tên thuộc tính JDBC", value = "Giá trị thuộc tính JDBC", expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
+        description = "Chỉ định tên thuộc tính và giá trị được thiết lập trên kết nối JDBC. "
+                + "Nếu sử dụng Expression Language, việc đánh giá sẽ thực hiện khi controller service được kích hoạt. "
+                + "Lưu ý rằng không có dữ liệu flow file (attributes, v.v.) được sử dụng trong các biểu thức này.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.REFERENCE_REMOTE_RESOURCES,
-                        explanation = "Database Driver Location can reference resources over HTTP"
+                        explanation = "Vị trí Driver cơ sở dữ liệu có thể tham chiếu tài nguyên qua HTTP"
                 )
         }
 )
 public class HikariCPConnectionPool extends AbstractControllerService implements DBCPService {
     /**
-     * Property Name Prefix for Sensitive Dynamic Properties
+     * Prefix cho các thuộc tính động nhạy cảm
      */
     protected static final String SENSITIVE_PROPERTY_PREFIX = "SENSITIVE.";
     protected static final long INFINITE_MILLISECONDS = -1L;
@@ -83,9 +83,9 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DATABASE_URL = new PropertyDescriptor.Builder()
             .name("hikaricp-connection-url")
-            .displayName("Database Connection URL")
-            .description("A database connection URL used to connect to a database. May contain database system name, host, port, database name and some parameters."
-                    + " The exact syntax of a database connection URL is specified by your DBMS.")
+            .displayName("URL Kết nối Cơ sở dữ liệu")
+            .description("URL kết nối cơ sở dữ liệu được sử dụng để kết nối đến cơ sở dữ liệu. Có thể bao gồm tên hệ thống cơ sở dữ liệu, host, port, tên cơ sở dữ liệu và một số tham số. "
+                    + "Cú pháp chính xác được xác định bởi hệ quản trị cơ sở dữ liệu của bạn.")
             .defaultValue(null)
             .addValidator(new ConnectionUrlValidator())
             .required(true)
@@ -94,8 +94,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DB_DRIVERNAME = new PropertyDescriptor.Builder()
             .name("hikaricp-driver-classname")
-            .displayName("Database Driver Class Name")
-            .description("The fully-qualified class name of the JDBC driver. Example: com.mysql.jdbc.Driver")
+            .displayName("Tên lớp Driver Cơ sở dữ liệu")
+            .description("Tên lớp đầy đủ của driver JDBC. Ví dụ: com.mysql.jdbc.Driver")
             .defaultValue(null)
             .required(true)
             .addValidator(new DriverClassValidator())
@@ -104,8 +104,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DB_DRIVER_LOCATION = new PropertyDescriptor.Builder()
             .name("hikaricp-driver-locations")
-            .displayName("Database Driver Location(s)")
-            .description("Comma-separated list of files/folders and/or URLs containing the driver JAR and its dependencies (if any). For example '/var/tmp/mariadb-java-client-1.1.7.jar'")
+            .displayName("Vị trí Driver Cơ sở dữ liệu")
+            .description("Danh sách các file/thư mục và/hoặc URL, cách nhau bằng dấu phẩy, chứa file JAR của driver và các thư viện phụ thuộc (nếu có). Ví dụ: '/var/tmp/mariadb-java-client-1.1.7.jar'")
             .defaultValue(null)
             .required(false)
             .identifiesExternalResource(ResourceCardinality.MULTIPLE, ResourceType.FILE, ResourceType.DIRECTORY, ResourceType.URL)
@@ -115,8 +115,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DB_USER = new PropertyDescriptor.Builder()
             .name("hikaricp-username")
-            .displayName("Database User")
-            .description("Database user name")
+            .displayName("Người dùng cơ sở dữ liệu")
+            .description("Tên người dùng cơ sở dữ liệu")
             .defaultValue(null)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -124,8 +124,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DB_PASSWORD = new PropertyDescriptor.Builder()
             .name("hikaricp-password")
-            .displayName("Password")
-            .description("The password for the database user")
+            .displayName("Mật khẩu")
+            .description("Mật khẩu cho người dùng cơ sở dữ liệu")
             .defaultValue(null)
             .required(false)
             .sensitive(true)
@@ -135,9 +135,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor MAX_WAIT_TIME = new PropertyDescriptor.Builder()
             .name("hikaricp-max-wait-time")
-            .displayName("Max Wait Time")
-            .description("The maximum amount of time that the pool will wait (when there are no available connections) "
-                    + " for a connection to be returned before failing, or 0 <time units> to wait indefinitely. ")
+            .displayName("Thời gian chờ tối đa")
+            .description("Thời gian tối đa mà pool sẽ chờ (khi không có kết nối sẵn có) để một kết nối được trả lại trước khi thất bại, hoặc 0 <đơn vị thời gian> để chờ vô thời hạn.")
             .defaultValue("500 millis")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -147,10 +146,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor MAX_TOTAL_CONNECTIONS = new PropertyDescriptor.Builder()
             .name("hikaricp-max-total-conns")
-            .displayName("Max Total Connections")
-            .description("This property controls the maximum size that the pool is allowed to reach, including both idle and in-use connections. Basically this value will determine the "
-                    + "maximum number of actual connections to the database backend. A reasonable value for this is best determined by your execution environment. When the pool reaches "
-                    + "this size, and no idle connections are available, the service will block for up to connectionTimeout milliseconds before timing out.")
+            .displayName("Số kết nối tối đa")
+            .description("Thuộc tính này kiểm soát kích thước tối đa mà pool được phép đạt tới, bao gồm cả kết nối rảnh và đang sử dụng. Khi pool đạt tới kích thước này và không có kết nối rảnh, dịch vụ sẽ chặn tối đa connectionTimeout milliseconds trước khi timeout.")
             .defaultValue(DEFAULT_TOTAL_CONNECTIONS)
             .required(true)
             .addValidator(StandardValidators.INTEGER_VALIDATOR)
@@ -160,10 +157,9 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor VALIDATION_QUERY = new PropertyDescriptor.Builder()
             .name("hikaricp-validation-query")
-            .displayName("Validation Query")
-            .description("Validation Query used to validate connections before returning them. "
-                    + "When connection is invalid, it gets dropped and new valid connection will be returned. "
-                    + "NOTE: Using validation might have some performance penalty.")
+            .displayName("Câu truy vấn kiểm tra kết nối")
+            .description("Câu truy vấn dùng để kiểm tra kết nối trước khi trả lại chúng. Khi kết nối không hợp lệ, nó sẽ bị hủy và kết nối hợp lệ mới sẽ được trả lại. "
+                    + "LƯU Ý: Sử dụng kiểm tra kết nối có thể gây ảnh hưởng hiệu năng.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -171,10 +167,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor MIN_IDLE = new PropertyDescriptor.Builder()
             .name("hikaricp-min-idle-conns")
-            .displayName("Minimum Idle Connections")
-            .description("This property controls the minimum number of idle connections that HikariCP tries to maintain in the pool. If the idle connections dip below this value and total "
-                    + "connections in the pool are less than 'Max Total Connections', HikariCP will make a best effort to add additional connections quickly and efficiently. It is recommended "
-                    + "that this property to be set equal to 'Max Total Connections'.")
+            .displayName("Số kết nối rảnh tối thiểu")
+            .description("Thuộc tính này kiểm soát số kết nối rảnh tối thiểu mà HikariCP cố gắng duy trì trong pool. Nếu số kết nối rảnh giảm xuống dưới giá trị này và tổng số kết nối trong pool nhỏ hơn 'Số kết nối tối đa', HikariCP sẽ cố gắng thêm kết nối nhanh và hiệu quả. Nên thiết lập bằng 'Số kết nối tối đa'.")
             .defaultValue(DEFAULT_TOTAL_CONNECTIONS)
             .required(true)
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
@@ -183,10 +177,8 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor MAX_CONN_LIFETIME = new PropertyDescriptor.Builder()
             .name("hikaricp-max-conn-lifetime")
-            .displayName("Max Connection Lifetime")
-            .description("The maximum lifetime of a connection. After this time is exceeded the " +
-                    "connection will fail the next activation, passivation or validation test. A value of zero or less " +
-                    "means the connection has an infinite lifetime.")
+            .displayName("Tuổi thọ kết nối tối đa")
+            .description("Tuổi thọ tối đa của một kết nối. Sau thời gian này, kết nối sẽ thất bại khi kích hoạt, đưa vào pool hoặc kiểm tra. Giá trị bằng 0 hoặc nhỏ hơn có nghĩa là kết nối có tuổi thọ vô hạn.")
             .defaultValue(DEFAULT_MAX_CONN_LIFETIME)
             .required(false)
             .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
@@ -195,11 +187,12 @@ public class HikariCPConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor KERBEROS_USER_SERVICE = new PropertyDescriptor.Builder()
             .name("hikaricp-kerberos-user-service")
-            .displayName("Kerberos User Service")
-            .description("Specifies the Kerberos User Controller Service that should be used for authenticating with Kerberos")
+            .displayName("Dịch vụ Người dùng Kerberos")
+            .description("Chỉ định Dịch vụ Controller Người dùng Kerberos sẽ được sử dụng để xác thực với Kerberos")
             .identifiesControllerService(KerberosUserService.class)
             .required(false)
             .build();
+
 
     private static final List<PropertyDescriptor> properties;
 

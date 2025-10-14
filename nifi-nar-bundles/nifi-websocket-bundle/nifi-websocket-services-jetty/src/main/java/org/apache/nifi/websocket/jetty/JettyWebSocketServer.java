@@ -69,34 +69,32 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Tags({"WebSocket", "Jetty", "server"})
-@CapabilityDescription("Implementation of WebSocketServerService." +
-        " This service uses Jetty WebSocket server module to provide" +
-        " WebSocket session management throughout the application.")
+@CapabilityDescription("Triển khai WebSocketServerService." +
+        " Dịch vụ này sử dụng module Jetty WebSocket server để cung cấp" +
+        " quản lý phiên WebSocket trong toàn ứng dụng.")
 public class JettyWebSocketServer extends AbstractJettyWebSocketService implements WebSocketServerService {
 
     /**
-     * A global map to refer a controller service instance by requested port number.
+     * Bản đồ toàn cục để tham chiếu một instance controller service theo số cổng yêu cầu.
      */
     private static final Map<Integer, JettyWebSocketServer> portToControllerService = new ConcurrentHashMap<>();
 
-    // Allowable values for client auth
-    public static final AllowableValue CLIENT_NONE = new AllowableValue("no", "No Authentication",
-            "Processor will not authenticate clients. Anyone can communicate with this Processor anonymously");
-    public static final AllowableValue CLIENT_WANT = new AllowableValue("want", "Want Authentication",
-            "Processor will try to verify the client but if unable to verify will allow the client to communicate anonymously");
-    public static final AllowableValue CLIENT_NEED = new AllowableValue("need", "Need Authentication",
-            "Processor will reject communications from any client unless the client provides a certificate that is trusted by the TrustStore "
-                    + "specified in the SSL Context Service");
+    // Các giá trị cho xác thực client
+    public static final AllowableValue CLIENT_NONE = new AllowableValue("no", "Không xác thực",
+            "Processor sẽ không xác thực client. Bất kỳ ai cũng có thể giao tiếp với Processor một cách ẩn danh");
+    public static final AllowableValue CLIENT_WANT = new AllowableValue("want", "Muốn xác thực",
+            "Processor sẽ cố gắng xác thực client nhưng nếu không xác thực được sẽ cho phép client giao tiếp ẩn danh");
+    public static final AllowableValue CLIENT_NEED = new AllowableValue("need", "Cần xác thực",
+            "Processor sẽ từ chối giao tiếp từ bất kỳ client nào trừ khi client cung cấp chứng chỉ được TrustStore trong SSL Context Service chấp nhận");
 
     public static final AllowableValue LOGIN_SERVICE_HASH = new AllowableValue("hash", "HashLoginService",
-            "See http://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/security/HashLoginService.html for detail.");
+            "Chi tiết xem tại http://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/security/HashLoginService.html");
 
     public static final PropertyDescriptor CLIENT_AUTH = new PropertyDescriptor.Builder()
             .name("client-authentication")
-            .displayName("SSL Client Authentication")
-            .description("Specifies whether or not the Processor should authenticate client by its certificate. "
-                    + "This value is ignored if the <SSL Context Service> "
-                    + "Property is not specified or the SSL Context provided uses only a KeyStore and not a TrustStore.")
+            .displayName("Xác thực SSL Client")
+            .description("Chỉ định Processor có xác thực client bằng chứng chỉ hay không. "
+                    + "Giá trị này bị bỏ qua nếu <SSL Context Service> không được cấu hình hoặc SSL Context chỉ dùng KeyStore mà không có TrustStore.")
             .required(true)
             .allowableValues(CLIENT_NONE, CLIENT_WANT, CLIENT_NEED)
             .defaultValue(CLIENT_NONE.getValue())
@@ -104,8 +102,8 @@ public class JettyWebSocketServer extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor LISTEN_PORT = new PropertyDescriptor.Builder()
             .name("listen-port")
-            .displayName("Listen Port")
-            .description("The port number on which this WebSocketServer listens to.")
+            .displayName("Cổng lắng nghe")
+            .description("Số cổng mà WebSocketServer sẽ lắng nghe.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.PORT_VALIDATOR)
@@ -113,9 +111,8 @@ public class JettyWebSocketServer extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor BASIC_AUTH = new PropertyDescriptor.Builder()
             .name("basic-auth")
-            .displayName("Enable Basic Authentication")
-            .description("If enabled, client connection requests are authenticated with "
-                    + "Basic authentication using the specified Login Provider.")
+            .displayName("Bật Basic Authentication")
+            .description("Nếu bật, các yêu cầu kết nối từ client sẽ được xác thực bằng Basic Authentication với Login Provider chỉ định.")
             .required(true)
             .allowableValues("true", "false")
             .defaultValue("false")
@@ -123,8 +120,8 @@ public class JettyWebSocketServer extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor AUTH_PATH_SPEC = new PropertyDescriptor.Builder()
             .name("auth-path-spec")
-            .displayName("Basic Authentication Path Spec")
-            .description("Specify a Path Spec to apply Basic Authentication.")
+            .displayName("Path Spec cho Basic Authentication")
+            .description("Chỉ định Path Spec để áp dụng Basic Authentication.")
             .required(false)
             .defaultValue("/*")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -133,10 +130,10 @@ public class JettyWebSocketServer extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor AUTH_ROLES = new PropertyDescriptor.Builder()
             .name("auth-roles")
-            .displayName("Basic Authentication Roles")
-            .description("The authenticated user must have one of specified role. "
-                    + "Multiple roles can be set as comma separated string. "
-                    + "'*' represents any role and so does '**' any role including no role.")
+            .displayName("Roles cho Basic Authentication")
+            .description("Người dùng xác thực phải có ít nhất một trong các role chỉ định. "
+                    + "Nhiều role có thể được đặt bằng chuỗi phân tách bằng dấu phẩy. "
+                    + "'*' hoặc '**' đại diện cho bất kỳ role nào kể cả không có role.")
             .required(false)
             .defaultValue("**")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -146,22 +143,22 @@ public class JettyWebSocketServer extends AbstractJettyWebSocketService implemen
     public static final PropertyDescriptor LOGIN_SERVICE = new PropertyDescriptor.Builder()
             .name("login-service")
             .displayName("Login Service")
-            .description("Specify which Login Service to use for Basic Authentication.")
+            .description("Chỉ định Login Service nào được sử dụng cho Basic Authentication.")
             .required(false)
             .allowableValues(LOGIN_SERVICE_HASH)
             .defaultValue(LOGIN_SERVICE_HASH.getValue())
             .build();
 
-
     public static final PropertyDescriptor USERS_PROPERTIES_FILE = new PropertyDescriptor.Builder()
             .name("users-properties-file")
-            .displayName("Users Properties File")
-            .description("Specify a property file containing users for Basic Authentication using HashLoginService. "
-                    + "See http://www.eclipse.org/jetty/documentation/current/configuring-security.html for detail.")
+            .displayName("File Properties của Users")
+            .description("Chỉ định file properties chứa thông tin người dùng cho Basic Authentication với HashLoginService. "
+                    + "Chi tiết xem tại http://www.eclipse.org/jetty/documentation/current/configuring-security.html")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .build();
+
 
     private static final List<PropertyDescriptor> properties;
 

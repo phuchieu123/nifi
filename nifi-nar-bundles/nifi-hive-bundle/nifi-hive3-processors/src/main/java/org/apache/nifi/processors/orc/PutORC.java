@@ -52,27 +52,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-@DeprecationNotice(reason = "Support for Apache Hive 3 is deprecated for removal in Apache NiFi 2.0")
+@DeprecationNotice(reason = "Hỗ trợ Apache Hive 3 đã bị đánh dấu ngừng sử dụng và sẽ bị loại bỏ trong Apache NiFi 2.0")
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"put", "ORC", "hadoop", "HDFS", "filesystem", "restricted", "record"})
-@CapabilityDescription("Reads records from an incoming FlowFile using the provided Record Reader, and writes those records " +
-        "to a ORC file in the location/filesystem specified in the configuration.")
-@ReadsAttribute(attribute = "filename", description = "The name of the file to write comes from the value of this attribute.")
+@CapabilityDescription("Đọc các bản ghi từ FlowFile đến sử dụng Record Reader được cung cấp, và ghi các bản ghi đó "
+        + "vào một tệp ORC tại vị trí/filesystem được chỉ định trong cấu hình.")
+@ReadsAttribute(attribute = "filename", description = "Tên tệp để ghi lấy từ giá trị của thuộc tính này.")
 @WritesAttributes({
-        @WritesAttribute(attribute = "filename", description = "The name of the file is stored in this attribute."),
-        @WritesAttribute(attribute = "absolute.hdfs.path", description = "The absolute path to the file is stored in this attribute."),
-        @WritesAttribute(attribute = "hadoop.file.url", description = "The hadoop url for the file is stored in this attribute."),
-        @WritesAttribute(attribute = "record.count", description = "The number of records written to the ORC file"),
-        @WritesAttribute(attribute = "hive.ddl", description = "Creates a partial Hive DDL statement for creating an external table in Hive from the destination folder. "
-                + "This can be used in ReplaceText for setting the content to the DDL. To make it valid DDL, add \"LOCATION '<path_to_orc_file_in_hdfs>'\", where "
-                + "the path is the directory that contains this ORC file on HDFS. For example, this processor can send flow files downstream to ReplaceText to set the content "
-                + "to this DDL (plus the LOCATION clause as described), then to PutHiveQL processor to create the table if it doesn't exist.")
+        @WritesAttribute(attribute = "filename", description = "Tên tệp được lưu trong thuộc tính này."),
+        @WritesAttribute(attribute = "absolute.hdfs.path", description = "Đường dẫn tuyệt đối tới tệp được lưu trong thuộc tính này."),
+        @WritesAttribute(attribute = "hadoop.file.url", description = "URL Hadoop của tệp được lưu trong thuộc tính này."),
+        @WritesAttribute(attribute = "record.count", description = "Số lượng bản ghi đã ghi vào tệp ORC"),
+        @WritesAttribute(attribute = "hive.ddl", description = "Tạo một phần khai báo Hive DDL để tạo bảng ngoài trong Hive từ thư mục đích. "
+                + "Có thể sử dụng trong ReplaceText để thiết lập nội dung thành DDL này. Để hợp lệ, thêm \"LOCATION '<path_to_orc_file_in_hdfs>'\", "
+                + "với đường dẫn là thư mục chứa tệp ORC này trên HDFS. Ví dụ, processor này có thể gửi flow files xuống ReplaceText để thiết lập nội dung "
+                + "thành DDL này (cộng với mệnh đề LOCATION như mô tả), sau đó tới PutHiveQL để tạo bảng nếu nó chưa tồn tại.")
 })
 @Restricted(restrictions = {
         @Restriction(
                 requiredPermission = RequiredPermission.WRITE_DISTRIBUTED_FILESYSTEM,
-                explanation = "Provides operator the ability to write to any file that NiFi has access to in HDFS or the local filesystem.")
+                explanation = "Cho phép người vận hành ghi vào bất kỳ tệp nào mà NiFi có quyền truy cập trên HDFS hoặc filesystem cục bộ.")
 })
 public class PutORC extends AbstractPutHDFSRecord {
 
@@ -80,17 +79,18 @@ public class PutORC extends AbstractPutHDFSRecord {
 
     public static final PropertyDescriptor ORC_CONFIGURATION_RESOURCES = new PropertyDescriptor.Builder()
             .name("putorc-config-resources")
-            .displayName("ORC Configuration Resources")
-            .description("A file or comma separated list of files which contains the ORC configuration (hive-site.xml, e.g.). Without this, Hadoop "
-                    + "will search the classpath for a 'hive-site.xml' file or will revert to a default configuration. Please see the ORC documentation for more details.")
+            .displayName("Tệp cấu hình ORC")
+            .description("Một tệp hoặc danh sách các tệp (ngăn cách bằng dấu phẩy) chứa cấu hình ORC (ví dụ: hive-site.xml). "
+                    + "Nếu không có, Hadoop sẽ tìm kiếm trong classpath tệp 'hive-site.xml' hoặc dùng cấu hình mặc định. "
+                    + "Vui lòng xem tài liệu ORC để biết thêm chi tiết.")
             .required(false)
             .identifiesExternalResource(ResourceCardinality.MULTIPLE, ResourceType.FILE)
             .build();
 
     public static final PropertyDescriptor STRIPE_SIZE = new PropertyDescriptor.Builder()
             .name("putorc-stripe-size")
-            .displayName("Stripe Size")
-            .description("The size of the memory buffer (in bytes) for writing stripes to an ORC file")
+            .displayName("Kích thước Stripe")
+            .description("Kích thước bộ đệm trong bộ nhớ (tính bằng byte) để ghi các stripe vào tệp ORC")
             .required(true)
             .addValidator(StandardValidators.DATA_SIZE_VALIDATOR)
             .defaultValue("64 MB")
@@ -98,9 +98,9 @@ public class PutORC extends AbstractPutHDFSRecord {
 
     public static final PropertyDescriptor BUFFER_SIZE = new PropertyDescriptor.Builder()
             .name("putorc-buffer-size")
-            .displayName("Buffer Size")
-            .description("The maximum size of the memory buffers (in bytes) used for compressing and storing a stripe in memory. This is a hint to the ORC writer, "
-                    + "which may choose to use a smaller buffer size based on stripe size and number of columns for efficient stripe writing and memory utilization.")
+            .displayName("Kích thước Bộ đệm")
+            .description("Kích thước tối đa của bộ đệm trong bộ nhớ (tính bằng byte) được sử dụng để nén và lưu một stripe. "
+                    + "Đây là gợi ý cho ORC writer, có thể chọn kích thước nhỏ hơn dựa trên stripe và số cột để tối ưu ghi stripe và sử dụng bộ nhớ.")
             .required(true)
             .addValidator(StandardValidators.DATA_SIZE_VALIDATOR)
             .defaultValue("10 KB")
@@ -108,11 +108,10 @@ public class PutORC extends AbstractPutHDFSRecord {
 
     static final PropertyDescriptor HIVE_TABLE_NAME = new PropertyDescriptor.Builder()
             .name("putorc-hive-table-name")
-            .displayName("Hive Table Name")
-            .description("An optional table name to insert into the hive.ddl attribute. The generated DDL can be used by "
-                    + "a PutHive3QL processor (presumably after a PutHDFS processor) to create a table backed by the converted ORC file. "
-                    + "If this property is not provided, the full name (including namespace) of the incoming Avro record will be normalized "
-                    + "and used as the table name.")
+            .displayName("Tên bảng Hive")
+            .description("Tên bảng tùy chọn để đưa vào thuộc tính hive.ddl. DDL tạo ra có thể được sử dụng bởi "
+                    + "PutHive3QL processor (sau PutHDFS) để tạo bảng dựa trên tệp ORC đã chuyển đổi. "
+                    + "Nếu không cung cấp thuộc tính này, tên đầy đủ (bao gồm namespace) của bản ghi Avro đến sẽ được chuẩn hóa và sử dụng làm tên bảng.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -120,10 +119,9 @@ public class PutORC extends AbstractPutHDFSRecord {
 
     static final PropertyDescriptor HIVE_FIELD_NAMES = new PropertyDescriptor.Builder()
             .name("putorc-hive-field-names")
-            .displayName("Normalize Field Names for Hive")
-            .description("Whether to normalize field names for Hive (force lowercase, e.g.). If the ORC file is going to "
-                    + "be part of a Hive table, this property should be set to true. To preserve the original field names from the "
-                    + "schema, this property should be set to false.")
+            .displayName("Chuẩn hóa Tên cột cho Hive")
+            .description("Có chuẩn hóa tên cột cho Hive hay không (ví dụ: chuyển thành chữ thường). Nếu tệp ORC sẽ "
+                    + "là một phần của bảng Hive, nên đặt thành true. Để giữ nguyên tên cột gốc, đặt thành false.")
             .required(true)
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
             .allowableValues("true", "false")

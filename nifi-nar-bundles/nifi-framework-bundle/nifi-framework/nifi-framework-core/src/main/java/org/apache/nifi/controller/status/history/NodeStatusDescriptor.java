@@ -24,20 +24,20 @@ import java.util.Objects;
 public enum NodeStatusDescriptor {
     FREE_HEAP(
             "freeHeap",
-            "Free Heap",
-            "The amount of free memory in the heap that can be used by the Java virtual machine.",
+            "Bộ nhớ Heap trống",
+            "Lượng bộ nhớ trống trong heap mà máy ảo Java có thể sử dụng.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getFreeHeap()),
     USED_HEAP(
             "usedHeap",
-            "Used Heap",
-            "The amount of used memory in the heap that is used by the Java virtual machine.",
+            "Bộ nhớ Heap đã dùng",
+            "Lượng bộ nhớ được sử dụng trong heap được máy ảo Java sử dụng.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getUsedHeap()),
     HEAP_UTILIZATION(
             "heapUtilization",
-            "Heap Utilization",
-            "The percentage of available heap currently used by the Java virtual machine.",
+            "Mức sử dụng Heap",
+            "Tỷ lệ phần trăm heap khả dụng hiện đang được máy ảo Java sử dụng.",
             MetricDescriptor.Formatter.COUNT,
             s -> s.getHeapUtilization(),
             new ValueReducer<StatusSnapshot, Long>() {
@@ -53,26 +53,26 @@ public enum NodeStatusDescriptor {
             }),
     FREE_NON_HEAP(
             "freeNonHeap",
-            "Free Non Heap",
-            "The currently available non-heap memory that can be used by the Java virtual machine.",
+            "Bộ nhớ Non-Heap trống",
+            "Bộ nhớ không phải heap hiện có sẵn có thể được máy ảo Java sử dụng.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getFreeNonHeap()),
     USED_NON_HEAP(
             "usedNonHeap",
-            "Used Non Heap",
-            "The current usage of non-heap memory that is used by the Java virtual machine.",
+            "Bộ nhớ Non-Heap đã dùng",
+            "Mức sử dụng bộ nhớ không phải heap hiện tại được máy ảo Java sử dụng.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getUsedNonHeap()),
     OPEN_FILE_HANDLES(
             "openFileHandles",
-            "Open File Handles",
-            "The current number of open file handles used by the Java virtual machine.",
+            "Số lượng File Handle mở",
+            "Số lượng hiện tại của các xử lý tệp mở được sử dụng bởi máy ảo Java.",
             MetricDescriptor.Formatter.COUNT,
             s -> s.getOpenFileHandlers()),
     PROCESSOR_LOAD_AVERAGE(
             "processorLoadAverage",
-            "Processor Load Average",
-            "The processor load. Every measurement point represents the system load average for the last minute.",
+            "Tải trung bình của bộ xử lý",
+            "Tải bộ xử lý. Mỗi điểm đo thể hiện mức tải trung bình của hệ thống trong phút cuối cùng.",
             MetricDescriptor.Formatter.FRACTION,
             s -> Double.valueOf(s.getProcessorLoadAverage() * MetricDescriptor.FRACTION_MULTIPLIER).longValue(),
             new ValueReducer<StatusSnapshot, Long>() {
@@ -88,56 +88,56 @@ public enum NodeStatusDescriptor {
             }),
     TOTAL_THREADS(
             "totalThreads",
-            "Number of total threads",
-            "The current number of live threads in the Java virtual machine (both daemon and non-daemon threads).",
+            "Tổng số luồng",
+            "Số lượng luồng trực tiếp hiện tại trong máy ảo Java (cả luồng daemon và luồng không phải daemon).",
             MetricDescriptor.Formatter.COUNT,
             s -> s.getTotalThreads()),
     EVENT_DRIVEN_THREADS(
             "eventDrivenThreads",
-            "Number of event driven threads",
-            "The current number of active threads in the event driven thread pool.",
+            "Số luồng điều khiển sự kiện",
+            "Số lượng luồng đang hoạt động hiện tại trong nhóm luồng điều khiển sự kiện.",
             MetricDescriptor.Formatter.COUNT,
             s -> s.getEventDrivenThreads()),
     TIME_DRIVEN_THREADS(
             "timeDrivenThreads",
-            "Number of time driven threads",
-            "The current number of active threads in the time driven thread pool.",
+            "Số luồng điều khiển theo thời gian",
+            "Số lượng luồng đang hoạt động hiện tại trong nhóm luồng theo thời gian.",
             MetricDescriptor.Formatter.COUNT,
             s -> s.getTimerDrivenThreads()),
     FLOW_FILE_REPOSITORY_FREE_SPACE(
             "flowFileRepositoryFreeSpace",
-            "Flow File Repository Free Space",
-            "The usable space available for file repositories on the underlying storage mechanism",
+            "Dung lượng trống kho FlowFile",
+            "Không gian có thể sử dụng cho kho lưu trữ tệp trên cơ chế lưu trữ cơ bản",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getFlowFileRepositoryFreeSpace()),
     FLOW_FILE_REPOSITORY_USED_SPACE(
             "flowFileRepositoryUsedSpace",
-            "Flow File Repository Used Space",
-            "The space in use on the underlying storage mechanism.",
+            "Dung lượng đã dùng kho FlowFile",
+            "Không gian được sử dụng trên cơ chế lưu trữ cơ bản.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getFlowFileRepositoryUsedSpace()),
     CONTENT_REPOSITORY_FREE_SPACE(
             "contentRepositoryFreeSpace",
-            "Sum content Repository Free Space",
-            "The usable space available for content repositories on the underlying storage mechanisms.",
+            "Tổng dung lượng trống kho Nội dung",
+            "Không gian có thể sử dụng cho kho lưu trữ nội dung trên cơ chế lưu trữ cơ bản.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getContentRepositories().stream().mapToLong(r -> r.getFreeSpace()).sum()),
     CONTENT_REPOSITORY_USED_SPACE(
             "contentRepositoryUsedSpace",
-            "Sum content Repository Used Space",
-            "The space in use on the underlying storage mechanisms.",
+            "Tổng dung lượng đã dùng kho Nội dung",
+            "Không gian được sử dụng trên các cơ chế lưu trữ cơ bản.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getContentRepositories().stream().mapToLong(r -> r.getUsedSpace()).sum()),
     PROVENANCE_REPOSITORY_FREE_SPACE(
             "provenanceRepositoryFreeSpace",
-            "Sum provenance Repository Free Space",
-            "The usable space available for use by the underlying storage mechanisms.",
+            "Tổng dung lượng trống kho Provenance",
+            "Không gian có thể sử dụng cho kho lưu trữ Provenance trên cơ chế lưu trữ cơ bản.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getProvenanceRepositories().stream().mapToLong(r -> r.getFreeSpace()).sum()),
     PROVENANCE_REPOSITORY_USED_SPACE(
             "provenanceRepositoryUsedSpace",
-            "Sum provenance Repository Used Space",
-            "The space in use on the underlying storage mechanisms.",
+            "Tổng dung lượng đã dùng kho Provenance",
+            "Không gian được sử dụng trên các cơ chế lưu trữ cơ bản.",
             MetricDescriptor.Formatter.DATA_SIZE,
             s -> s.getProvenanceRepositories().stream().mapToLong(r -> r.getUsedSpace()).sum());
 
@@ -161,7 +161,6 @@ public enum NodeStatusDescriptor {
             final ValueReducer<StatusSnapshot, Long> reducer) {
         this.descriptor = new StandardMetricDescriptor<>(this::ordinal, field, label, description, formatter, valueFunction, reducer);
     }
-
 
     public String getField() {
         return descriptor.getField();

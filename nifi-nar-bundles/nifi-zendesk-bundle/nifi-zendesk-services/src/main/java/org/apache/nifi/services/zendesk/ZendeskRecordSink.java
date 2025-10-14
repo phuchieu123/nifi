@@ -71,8 +71,8 @@ import static org.apache.nifi.common.zendesk.util.ZendeskUtils.getDynamicPropert
 import static org.apache.nifi.common.zendesk.util.ZendeskUtils.getResponseBody;
 
 @Tags({"zendesk", "record", "sink"})
-@CapabilityDescription("Create Zendesk tickets using the Zendesk API." +
-        "The service requires a Zendesk account with configured access.")
+@CapabilityDescription("Tạo các ticket Zendesk bằng Zendesk API." +
+        "Dịch vụ yêu cầu một tài khoản Zendesk đã được cấu hình quyền truy cập.")
 public class ZendeskRecordSink extends AbstractControllerService implements RecordSinkService {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -87,8 +87,8 @@ public class ZendeskRecordSink extends AbstractControllerService implements Reco
 
     static final PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()
             .name("cache-size")
-            .displayName("Cache Size")
-            .description("Specifies how many Zendesk ticket should be cached.")
+            .displayName("Kích thước bộ đệm")
+            .description("Chỉ định số lượng ticket Zendesk nên được lưu vào bộ đệm.")
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
             .defaultValue("1000")
             .required(true)
@@ -96,8 +96,8 @@ public class ZendeskRecordSink extends AbstractControllerService implements Reco
 
     static final PropertyDescriptor CACHE_EXPIRATION = new PropertyDescriptor.Builder()
             .name("cache-expiration")
-            .displayName("Cache Expiration")
-            .description("Specifies how long a Zendesk ticket that is cached should remain in the cache.")
+            .displayName("Thời gian hết hạn của bộ đệm")
+            .description("Chỉ định thời gian một ticket Zendesk được lưu trong bộ đệm nên tồn tại trong bộ đệm.")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
             .defaultValue("1 hour")
             .required(true)

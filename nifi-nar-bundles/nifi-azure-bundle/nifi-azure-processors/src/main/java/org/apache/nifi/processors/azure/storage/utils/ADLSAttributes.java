@@ -19,33 +19,33 @@ package org.apache.nifi.processors.azure.storage.utils;
 public final class ADLSAttributes {
 
     public static final String ATTR_NAME_FILESYSTEM = "azure.filesystem";
-    public static final String ATTR_DESCRIPTION_FILESYSTEM = "The name of the Azure File System";
+    public static final String ATTR_DESCRIPTION_FILESYSTEM = "Tên của Hệ thống tệp Azure (Azure File System)";
 
     public static final String ATTR_NAME_DIRECTORY = "azure.directory";
-    public static final String ATTR_DESCRIPTION_DIRECTORY = "The name of the Azure Directory";
+    public static final String ATTR_DESCRIPTION_DIRECTORY = "Tên của Thư mục Azure";
 
     public static final String ATTR_NAME_FILENAME = "azure.filename";
-    public static final String ATTR_DESCRIPTION_FILENAME = "The name of the Azure File";
+    public static final String ATTR_DESCRIPTION_FILENAME = "Tên của Tệp Azure";
 
     public static final String ATTR_NAME_LENGTH = "azure.length";
-    public static final String ATTR_DESCRIPTION_LENGTH = "The length of the Azure File";
+    public static final String ATTR_DESCRIPTION_LENGTH = "Kích thước (độ dài) của Tệp Azure";
 
     public static final String ATTR_NAME_LAST_MODIFIED = "azure.lastModified";
-    public static final String ATTR_DESCRIPTION_LAST_MODIFIED = "The last modification time of the Azure File";
+    public static final String ATTR_DESCRIPTION_LAST_MODIFIED = "Thời gian chỉnh sửa gần nhất của Tệp Azure";
 
     public static final String ATTR_NAME_ETAG = "azure.etag";
-    public static final String ATTR_DESCRIPTION_ETAG = "The ETag of the Azure File";
+    public static final String ATTR_DESCRIPTION_ETAG = "Thẻ ETag của Tệp Azure";
 
     public static final String ATTR_NAME_FILE_PATH = "azure.filePath";
-    public static final String ATTR_DESCRIPTION_FILE_PATH = "The full path of the Azure File";
+    public static final String ATTR_DESCRIPTION_FILE_PATH = "Đường dẫn đầy đủ của Tệp Azure";
 
     public static final String ATTR_NAME_PRIMARY_URI = "azure.primaryUri";
-    public static final String ATTR_DESCRIPTION_PRIMARY_URI = "Primary location for file content";
+    public static final String ATTR_DESCRIPTION_PRIMARY_URI = "Đường dẫn chính (Primary URI) tới nội dung tệp";
 
     public static final String ATTR_NAME_SOURCE_FILESYSTEM = "azure.source.filesystem";
-    public static final String ATTR_DESCRIPTION_SOURCE_FILESYSTEM = "The name of the source Azure File System";
+    public static final String ATTR_DESCRIPTION_SOURCE_FILESYSTEM = "Tên của Hệ thống tệp nguồn trong Azure";
 
     public static final String ATTR_NAME_SOURCE_DIRECTORY = "azure.source.directory";
-    public static final String ATTR_DESCRIPTION_SOURCE_DIRECTORY = "The name of the source Azure Directory";
+    public static final String ATTR_DESCRIPTION_SOURCE_DIRECTORY = "Tên của Thư mục nguồn trong Azure";
 
 }

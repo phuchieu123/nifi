@@ -31,13 +31,14 @@ import javax.jms.ConnectionFactory;
 import java.util.List;
 
 @Tags({"jms", "jndi", "messaging", "integration", "queue", "topic", "publish", "subscribe"})
-@CapabilityDescription("Provides a service to lookup an existing JMS ConnectionFactory using the Java Naming and Directory Interface (JNDI).")
+@CapabilityDescription("Cung cấp dịch vụ để tra cứu một JMS ConnectionFactory hiện có sử dụng Java Naming and Directory Interface (JNDI).")
 @DynamicProperty(
-    description = "In order to perform a JNDI Lookup, an Initial Context must be established. When this is done, an Environment can be established for the context. Any dynamic/user-defined property" +
-        " that is added to this Controller Service will be added as an Environment configuration/variable to this Context.",
-    name = "The name of a JNDI Initial Context environment variable.",
-    value = "The value of the JNDI Initial Context environment variable.",
+    description = "Để thực hiện JNDI Lookup, một Initial Context phải được thiết lập. Khi đó, một Environment có thể được cấu hình cho context này. "
+        + "Bất kỳ thuộc tính động/người dùng nào được thêm vào Controller Service này sẽ được thêm vào như một biến cấu hình Environment cho Context.",
+    name = "Tên biến môi trường của JNDI Initial Context.",
+    value = "Giá trị của biến môi trường JNDI Initial Context.",
     expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY)
+
 @SeeAlso(classNames = {"org.apache.nifi.jms.processors.ConsumeJMS", "org.apache.nifi.jms.processors.PublishJMS", "org.apache.nifi.jms.cf.JMSConnectionFactoryProvider"})
 public class JndiJmsConnectionFactoryProvider extends AbstractControllerService implements JMSConnectionFactoryProviderDefinition {
 

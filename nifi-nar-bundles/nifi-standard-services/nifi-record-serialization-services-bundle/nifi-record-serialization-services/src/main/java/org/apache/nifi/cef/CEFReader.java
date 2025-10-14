@@ -55,24 +55,24 @@ import static org.apache.nifi.schema.access.SchemaAccessUtils.SCHEMA_ACCESS_STRA
 import static org.apache.nifi.schema.inference.SchemaInferenceUtil.SCHEMA_CACHE;
 
 @Tags({"cef", "record", "reader", "parser"})
-@CapabilityDescription("Parses CEF (Common Event Format) events, returning each row as a record. "
-    + "This reader allows for inferring a schema based on the first event in the FlowFile or providing an explicit schema for interpreting the values.")
+@CapabilityDescription("Phân tích các sự kiện CEF (Common Event Format), trả về mỗi dòng dưới dạng một bản ghi. "
+    + "Reader này cho phép suy luận schema dựa trên sự kiện đầu tiên trong FlowFile hoặc cung cấp một schema rõ ràng để diễn giải các giá trị.")
 public final class CEFReader extends SchemaRegistryService implements RecordReaderFactory {
 
-    static final AllowableValue HEADERS_ONLY = new AllowableValue("headers-only", "Headers only", "Includes only CEF header fields into the inferred schema.");
-    static final AllowableValue HEADERS_AND_EXTENSIONS = new AllowableValue("headers-and-extensions", "Headers and extensions",
-            "Includes the CEF header and extension fields to the schema, but not the custom extensions.");
-    static final AllowableValue CUSTOM_EXTENSIONS_AS_STRINGS = new AllowableValue("custom-extensions-as-string", "With custom extensions as strings",
-            "Includes all fields into the inferred schema, involving custom extension fields as string values.");
-    static final AllowableValue CUSTOM_EXTENSIONS_INFERRED = new AllowableValue("custom-extensions-inferred", "With custom extensions inferred",
-            "Includes all fields into the inferred schema, involving custom extension fields with inferred data types. " +
-            "The inference works based on the values in the FlowFile. In some scenarios this might result unsatisfiable behaviour. " +
-            "In these cases it is suggested to use \"" + CUSTOM_EXTENSIONS_AS_STRINGS.getDisplayName() + "\" Inference Strategy or predefined schema.");
+    static final AllowableValue HEADERS_ONLY = new AllowableValue("headers-only", "Chỉ Header", "Chỉ bao gồm các trường header CEF vào schema được suy luận.");
+    static final AllowableValue HEADERS_AND_EXTENSIONS = new AllowableValue("headers-and-extensions", "Header và Extensions",
+            "Bao gồm các trường header và extension của CEF vào schema, nhưng không bao gồm các extension tùy chỉnh.");
+    static final AllowableValue CUSTOM_EXTENSIONS_AS_STRINGS = new AllowableValue("custom-extensions-as-string", "Với các extension tùy chỉnh dưới dạng chuỗi",
+            "Bao gồm tất cả các trường vào schema được suy luận, bao gồm các trường extension tùy chỉnh dưới dạng giá trị chuỗi.");
+    static final AllowableValue CUSTOM_EXTENSIONS_INFERRED = new AllowableValue("custom-extensions-inferred", "Với các extension tùy chỉnh được suy luận",
+            "Bao gồm tất cả các trường vào schema được suy luận, bao gồm các trường extension tùy chỉnh với kiểu dữ liệu suy luận. " +
+            "Việc suy luận dựa trên giá trị trong FlowFile. Trong một số trường hợp, điều này có thể dẫn đến hành vi không thỏa đáng. " +
+            "Trong những trường hợp này, nên sử dụng chiến lược suy luận \"" + CUSTOM_EXTENSIONS_AS_STRINGS.getDisplayName() + "\" hoặc schema định sẵn.");
 
     static final PropertyDescriptor INFERENCE_STRATEGY = new PropertyDescriptor.Builder()
             .name("inference-strategy")
-            .displayName("Inference Strategy")
-            .description("Defines the set of fields should be included in the schema and the way the fields are being interpreted.")
+            .displayName("Chiến lược Suy luận")
+            .description("Xác định các trường nên được bao gồm trong schema và cách các trường được diễn giải.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .allowableValues(HEADERS_ONLY, HEADERS_AND_EXTENSIONS, CUSTOM_EXTENSIONS_AS_STRINGS, CUSTOM_EXTENSIONS_INFERRED)
@@ -82,8 +82,8 @@ public final class CEFReader extends SchemaRegistryService implements RecordRead
 
     static final PropertyDescriptor RAW_FIELD = new PropertyDescriptor.Builder()
             .name("raw-message-field")
-            .displayName("Raw Message Field")
-            .description("If set the raw message will be added to the record using the property value as field name. This is not the same as the \"rawEvent\" extension field!")
+            .displayName("Trường Thông điệp Thô")
+            .description("Nếu được đặt, thông điệp thô sẽ được thêm vào bản ghi sử dụng giá trị thuộc tính làm tên trường. Điều này không giống với trường extension \"rawEvent\"!")
             .addValidator(new ValidateRawField())
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -91,10 +91,10 @@ public final class CEFReader extends SchemaRegistryService implements RecordRead
 
     static final PropertyDescriptor INVALID_FIELD = new PropertyDescriptor.Builder()
             .name("invalid-message-field")
-            .displayName("Invalid Field")
-            .description("Used when a line in the FlowFile cannot be parsed by the CEF parser. " +
-                    "If set, instead of failing to process the FlowFile, a record is being added with one field. " +
-                    "This record contains one field with the name specified by the property and the raw message as value.")
+            .displayName("Trường Không hợp lệ")
+            .description("Sử dụng khi một dòng trong FlowFile không thể được phân tích bởi trình phân tích CEF. " +
+                    "Nếu được đặt, thay vì thất bại khi xử lý FlowFile, một bản ghi sẽ được thêm với một trường. " +
+                    "Bản ghi này chứa một trường với tên được chỉ định bởi thuộc tính và thông điệp thô làm giá trị.")
             .addValidator(new ValidateRawField())
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -102,10 +102,8 @@ public final class CEFReader extends SchemaRegistryService implements RecordRead
 
     static final PropertyDescriptor DATETIME_REPRESENTATION = new PropertyDescriptor.Builder()
             .name("datetime-representation")
-            .displayName("DateTime Locale")
-            .description("The IETF BCP 47 representation of the Locale to be used when parsing date " +
-                    "fields with long or short month names (e.g. may <en-US> vs. mai. <fr-FR>. The default" +
-                    "value is generally safe. Only change if having issues parsing CEF messages")
+            .displayName("Định dạng Ngày-Giờ")
+            .description("Đại diện Locale theo IETF BCP 47 được sử dụng khi phân tích các trường ngày tháng với tên tháng dài hoặc ngắn (ví dụ: may <en-US> so với mai <fr-FR>). Giá trị mặc định thường an toàn. Chỉ thay đổi nếu gặp vấn đề khi phân tích các thông điệp CEF.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(new ValidateLocale())
@@ -114,8 +112,8 @@ public final class CEFReader extends SchemaRegistryService implements RecordRead
 
     static final PropertyDescriptor ACCEPT_EMPTY_EXTENSIONS = new PropertyDescriptor.Builder()
             .name("accept-empty-extensions")
-            .displayName("Accept empty extensions")
-            .description("If set to true, empty extensions will be accepted and will be associated to a null value.")
+            .displayName("Chấp nhận extensions rỗng")
+            .description("Nếu được đặt thành true, các extensions rỗng sẽ được chấp nhận và sẽ được liên kết với giá trị null.")
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
             .required(true)
             .defaultValue("false")

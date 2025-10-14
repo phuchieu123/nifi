@@ -50,32 +50,34 @@ import java.util.Set;
 
 @Tags({"lookup", "result", "set", "writer", "serializer", "record", "recordset", "row"})
 @SeeAlso({ReaderLookup.class})
-@CapabilityDescription("Provides a RecordSetWriterFactory that can be used to dynamically select another RecordSetWriterFactory. " +
-    "This will allow multiple RecordSetWriterFactory's to be defined and registered, and then selected " +
-    "dynamically at runtime by tagging FlowFiles with the attributes and referencing those attributes in the Service to Use property.")
-@DynamicProperty(name = "Name of the RecordSetWriter", value = "A RecordSetWriterFactory controller service", expressionLanguageScope = ExpressionLanguageScope.NONE,
-        description = "")
+@CapabilityDescription("Cung cấp một RecordSetWriterFactory có thể được sử dụng để chọn động một RecordSetWriterFactory khác. " +
+        "Điều này cho phép nhiều RecordSetWriterFactory được định nghĩa và đăng ký, sau đó được chọn động tại thời điểm chạy bằng cách gán thuộc tính cho FlowFiles và tham chiếu các thuộc tính đó trong trường 'Service to Use'.")
+@DynamicProperty(
+        name = "Tên của RecordSetWriter",
+        value = "Một controller service RecordSetWriterFactory",
+        expressionLanguageScope = ExpressionLanguageScope.NONE,
+        description = ""
+)
 public class RecordSetWriterLookup extends AbstractControllerService implements RecordSetWriterFactory {
 
     static final PropertyDescriptor SERVICE_TO_USE = new PropertyDescriptor.Builder()
         .name("Service to Use")
         .displayName("Service to Use")
-        .description("Specifies the name of the user-defined property whose associated Controller Service should be used.")
+        .description("Chỉ định tên của thuộc tính do người dùng định nghĩa mà dịch vụ Controller liên kết sẽ được sử dụng.")
         .required(true)
         .defaultValue("${recordsetwriter.name}")
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
 
-
-    private volatile Map<String,RecordSetWriterFactory> recordSetWriterFactoryMap;
+    private volatile Map<String, RecordSetWriterFactory> recordSetWriterFactoryMap;
     private volatile PropertyValue serviceToUseValue;
 
     @Override
     protected PropertyDescriptor getSupportedDynamicPropertyDescriptor(final String propertyDescriptorName) {
         return new PropertyDescriptor.Builder()
                 .name(propertyDescriptorName)
-                .description("The RecordSetWriterFactory  to return when '" + propertyDescriptorName + "' is the chosen Record Reader")
+                .description("RecordSetWriterFactory sẽ được trả về khi '" + propertyDescriptorName + "' là RecordSetWriter được chọn")
                 .identifiesControllerService(RecordSetWriterFactory.class)
                 .build();
     }
@@ -99,7 +101,7 @@ public class RecordSetWriterLookup extends AbstractControllerService implements 
             if (this.getIdentifier().equals(referencedId)) {
                 results.add(new ValidationResult.Builder()
                     .subject(descriptor.getDisplayName())
-                    .explanation("The current service cannot be registered as a RecordSetWriter to lookup")
+                    .explanation("Dịch vụ hiện tại không thể được đăng ký làm RecordSetWriter để lookup")
                     .valid(false)
                     .build());
             }
@@ -108,7 +110,7 @@ public class RecordSetWriterLookup extends AbstractControllerService implements 
         if (serviceNames.isEmpty()) {
             results.add(new ValidationResult.Builder()
                 .subject(this.getClass().getSimpleName())
-                .explanation("At least one RecordSetWriter must be defined via dynamic properties")
+                .explanation("Ít nhất một RecordSetWriter phải được định nghĩa thông qua các dynamic property")
                 .valid(false)
                 .build());
         }
@@ -119,7 +121,7 @@ public class RecordSetWriterLookup extends AbstractControllerService implements 
             if (!serviceNames.contains(selectedValue)) {
                 results.add(new ValidationResult.Builder()
                     .subject(SERVICE_TO_USE.getDisplayName())
-                    .explanation("No service is defined with the name <" + selectedValue + ">")
+                    .explanation("Không có dịch vụ nào được định nghĩa với tên <" + selectedValue + ">")
                     .valid(false)
                     .build());
             }

@@ -46,9 +46,10 @@ import java.util.List;
  * @author Omer Hadari
  */
 @Tags({"metrics", "reporting", "graphite"})
-@CapabilityDescription("A controller service that provides metric reporters for graphite. " +
-        "Used by MetricsReportingTask.")
-@DeprecationNotice(reason = "Unmaintained and planned for removal in version 2.0")
+@CapabilityDescription("Một dịch vụ điều khiển cung cấp các bộ báo cáo số liệu cho Graphite. "
+        + "Được sử dụng bởi MetricsReportingTask.")
+@DeprecationNotice(reason = "Không được duy trì và dự kiến sẽ bị loại bỏ trong phiên bản 2.0")
+
 public class GraphiteMetricReporterService extends AbstractControllerService implements MetricReporterService {
 
     /**

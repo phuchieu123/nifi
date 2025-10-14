@@ -64,28 +64,27 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Tags({"WebSocket", "Jetty", "client"})
-@CapabilityDescription("Implementation of WebSocketClientService." +
-        " This service uses Jetty WebSocket client module to provide" +
-        " WebSocket session management throughout the application.")
+@CapabilityDescription("Triển khai WebSocketClientService." +
+        " Dịch vụ này sử dụng module Jetty WebSocket client để cung cấp" +
+        " quản lý phiên WebSocket trong toàn ứng dụng.")
 public class JettyWebSocketClient extends AbstractJettyWebSocketService implements WebSocketClientService {
 
     public static final PropertyDescriptor WS_URI = new PropertyDescriptor.Builder()
             .name("websocket-uri")
             .displayName("WebSocket URI")
-            .description("The WebSocket URI this client connects to.")
+            .description("URI WebSocket mà client sẽ kết nối.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.URI_VALIDATOR)
             .addValidator((subject, input, context) -> {
                 final ValidationResult.Builder result = new ValidationResult.Builder()
-                        .valid(input.startsWith("/"))
                         .subject(subject);
 
                 if (context.isExpressionLanguageSupported(subject) && context.isExpressionLanguagePresent(input)) {
                     result.explanation("Expression Language Present").valid(true);
                 } else {
-                    result.explanation("Protocol should be either 'ws' or 'wss'.")
-                            .valid(input.startsWith("ws://") || input.startsWith("wss://"));
+                    result.explanation("Giao thức phải là 'ws' hoặc 'wss'.")
+                          .valid(input.startsWith("ws://") || input.startsWith("wss://"));
                 }
 
                 return result.build();
@@ -94,8 +93,8 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor CONNECTION_TIMEOUT = new PropertyDescriptor.Builder()
             .name("connection-timeout")
-            .displayName("Connection Timeout")
-            .description("The timeout to connect the WebSocket URI.")
+            .displayName("Thời gian chờ kết nối")
+            .description("Thời gian chờ để kết nối đến URI WebSocket.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -104,8 +103,8 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor CONNECTION_ATTEMPT_COUNT = new PropertyDescriptor.Builder()
             .name("connection-attempt-timeout")
-            .displayName("Connection Attempt Count")
-            .description("The number of times to try and establish a connection.")
+            .displayName("Số lần thử kết nối")
+            .description("Số lần thử để thiết lập kết nối WebSocket.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
@@ -114,13 +113,13 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor SESSION_MAINTENANCE_INTERVAL = new PropertyDescriptor.Builder()
             .name("session-maintenance-interval")
-            .displayName("Session Maintenance Interval")
-            .description("The interval between session maintenance activities." +
-                    " A WebSocket session established with a WebSocket server can be terminated due to different reasons" +
-                    " including restarting the WebSocket server or timing out inactive sessions." +
-                    " This session maintenance activity is periodically executed in order to reconnect those lost sessions," +
-                    " so that a WebSocket client can reuse the same session id transparently after it reconnects successfully. " +
-                    " The maintenance activity is executed until corresponding processors or this controller service is stopped.")
+            .displayName("Khoảng thời gian duy trì phiên")
+            .description("Khoảng thời gian giữa các hoạt động bảo trì phiên. "
+                    + "Một phiên WebSocket thiết lập với server có thể bị kết thúc do nhiều lý do, "
+                    + "bao gồm việc khởi động lại server hoặc timeout do không hoạt động. "
+                    + "Hoạt động bảo trì phiên được thực hiện định kỳ để kết nối lại các phiên mất, "
+                    + "giúp client có thể sử dụng lại cùng session id một cách minh bạch sau khi kết nối lại thành công. "
+                    + "Hoạt động này tiếp tục cho đến khi các processor hoặc controller service này bị dừng.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -129,8 +128,8 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor USER_NAME = new PropertyDescriptor.Builder()
             .name("user-name")
-            .displayName("User Name")
-            .description("The user name for Basic Authentication.")
+            .displayName("Tên người dùng")
+            .description("Tên người dùng cho xác thực Basic Authentication.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_EL_VALIDATOR)
@@ -138,8 +137,8 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor USER_PASSWORD = new PropertyDescriptor.Builder()
             .name("user-password")
-            .displayName("User Password")
-            .description("The user password for Basic Authentication.")
+            .displayName("Mật khẩu người dùng")
+            .description("Mật khẩu người dùng cho xác thực Basic Authentication.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_EL_VALIDATOR)
@@ -148,8 +147,8 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor AUTH_CHARSET = new PropertyDescriptor.Builder()
             .name("authentication-charset")
-            .displayName("Authentication Header Charset")
-            .description("The charset for Basic Authentication header base64 string.")
+            .displayName("Charset cho xác thực")
+            .description("Charset dùng cho chuỗi base64 trong header Basic Authentication.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_EL_VALIDATOR)
@@ -158,21 +157,19 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor CUSTOM_AUTH = new PropertyDescriptor.Builder()
             .name("custom-authorization")
-            .displayName("Custom Authorization")
-            .description(
-                    "Configures a custom HTTP Authorization Header as described in RFC 7235 Section 4.2." +
-                    " Setting a custom Authorization Header excludes configuring the User Name and User Password properties for Basic Authentication.")
+            .displayName("Authorization tùy chỉnh")
+            .description("Cấu hình một HTTP Authorization Header tùy chỉnh theo RFC 7235 Section 4.2. "
+                    + "Việc thiết lập Authorization Header tùy chỉnh sẽ loại bỏ việc cấu hình User Name và User Password cho Basic Authentication.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(true)
             .build();
 
-
     public static final PropertyDescriptor PROXY_HOST = new PropertyDescriptor.Builder()
             .name("proxy-host")
-            .displayName("HTTP Proxy Host")
-            .description("The host name of the HTTP Proxy.")
+            .displayName("Host HTTP Proxy")
+            .description("Tên host của HTTP Proxy.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_EL_VALIDATOR)
@@ -180,8 +177,8 @@ public class JettyWebSocketClient extends AbstractJettyWebSocketService implemen
 
     public static final PropertyDescriptor PROXY_PORT = new PropertyDescriptor.Builder()
             .name("proxy-port")
-            .displayName("HTTP Proxy Port")
-            .description("The port number of the HTTP Proxy.")
+            .displayName("Cổng HTTP Proxy")
+            .description("Số cổng của HTTP Proxy.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.PORT_VALIDATOR)

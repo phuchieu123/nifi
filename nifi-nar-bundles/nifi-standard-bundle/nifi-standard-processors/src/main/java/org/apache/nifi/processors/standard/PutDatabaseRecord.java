@@ -99,18 +99,18 @@ import static org.apache.nifi.expression.ExpressionLanguageScope.VARIABLE_REGIST
 @EventDriven
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @Tags({"sql", "record", "jdbc", "put", "database", "update", "insert", "delete"})
-@CapabilityDescription("The PutDatabaseRecord processor uses a specified RecordReader to input (possibly multiple) records from an incoming flow file. These records are translated to SQL "
-        + "statements and executed as a single transaction. If any errors occur, the flow file is routed to failure or retry, and if the records are transmitted successfully, "
-        + "the incoming flow file is "
-        + "routed to success.  The type of statement executed by the processor is specified via the Statement Type property, which accepts some hard-coded values such as INSERT, UPDATE, and DELETE, "
-        + "as well as 'Use statement.type Attribute', which causes the processor to get the statement type from a flow file attribute.  IMPORTANT: If the Statement Type is UPDATE, then the incoming "
-        + "records must not alter the value(s) of the primary keys (or user-specified Update Keys). If such records are encountered, the UPDATE statement issued to the database may do nothing "
-        + "(if no existing records with the new primary key values are found), or could inadvertently corrupt the existing data (by changing records for which the new values of the primary keys "
-        + "exist).")
-@ReadsAttribute(attribute = PutDatabaseRecord.STATEMENT_TYPE_ATTRIBUTE, description = "If 'Use statement.type Attribute' is selected for the Statement Type property, the value of this attribute "
-        + "will be used to determine the type of statement (INSERT, UPDATE, DELETE, SQL, etc.) to generate and execute.")
-@WritesAttribute(attribute = PutDatabaseRecord.PUT_DATABASE_RECORD_ERROR, description = "If an error occurs during processing, the flow file will be routed to failure or retry, and this attribute "
-        + "will be populated with the cause of the error.")
+@CapabilityDescription("Bộ xử lý PutDatabaseRecord sử dụng một RecordReader được chỉ định để đầu vào (có thể là nhiều) bản ghi từ một tệp luồng đến. Các bản ghi này được dịch sang các câu lệnh SQL "
+        + "và được thực thi như một giao dịch duy nhất. Nếu có lỗi xảy ra, tệp luồng sẽ được định tuyến đến thất bại hoặc thử lại, và nếu các bản ghi được truyền thành công, "
+        + "tệp luồng đến sẽ "
+        + "được định tuyến đến thành công. Loại câu lệnh được thực thi bởi bộ xử lý được chỉ định thông qua thuộc tính Loại Câu lệnh, chấp nhận một số giá trị được mã hóa cứng như INSERT, UPDATE và DELETE, "
+        + "cũng như 'Sử dụng thuộc tính statement.type', điều này khiến bộ xử lý lấy loại câu lệnh từ một thuộc tính tệp luồng. QUAN TRỌNG: Nếu Loại Câu lệnh là UPDATE, thì các "
+        + "bản ghi đến không được thay đổi giá trị của các khóa chính (hoặc Khóa Cập nhật được chỉ định bởi người dùng). Nếu gặp các bản ghi như vậy, câu lệnh UPDATE được phát hành đến cơ sở dữ liệu có thể không làm gì "
+        + "(nếu không tìm thấy các bản ghi hiện có với các giá trị khóa chính mới), hoặc có thể vô tình làm hỏng dữ liệu hiện có (bằng cách thay đổi các bản ghi mà các giá trị khóa chính mới của chúng "
+        + "tồn tại).")
+@ReadsAttribute(attribute = PutDatabaseRecord.STATEMENT_TYPE_ATTRIBUTE, description = "Nếu 'Sử dụng thuộc tính statement.type' được chọn cho thuộc tính Loại Câu lệnh, giá trị của thuộc tính này "
+        + "sẽ được sử dụng để xác định loại câu lệnh (INSERT, UPDATE, DELETE, SQL, v.v.) để tạo và thực thi.")
+@WritesAttribute(attribute = PutDatabaseRecord.PUT_DATABASE_RECORD_ERROR, description = "Nếu có lỗi xảy ra trong quá trình xử lý, tệp luồng sẽ được định tuyến đến thất bại hoặc thử lại, và thuộc tính này "
+        + "sẽ được điền đầy đủ với nguyên nhân của lỗi.")
 public class PutDatabaseRecord extends AbstractProcessor {
 
     public static final String UPDATE_TYPE = "UPDATE";
@@ -118,7 +118,7 @@ public class PutDatabaseRecord extends AbstractProcessor {
     public static final String DELETE_TYPE = "DELETE";
     public static final String UPSERT_TYPE = "UPSERT";
     public static final String INSERT_IGNORE_TYPE = "INSERT_IGNORE";
-    public static final String SQL_TYPE = "SQL";   // Not an allowable value in the Statement Type property, must be set by attribute
+    public static final String SQL_TYPE = "SQL";   // Không phải là giá trị được phép trong thuộc tính Loại Câu lệnh, phải được đặt bởi thuộc tính
     public static final String USE_ATTR_TYPE = "Use statement.type Attribute";
     public static final String USE_RECORD_PATH = "Use Record Path";
 
@@ -127,63 +127,63 @@ public class PutDatabaseRecord extends AbstractProcessor {
     static final String PUT_DATABASE_RECORD_ERROR = "putdatabaserecord.error";
 
     static final AllowableValue IGNORE_UNMATCHED_FIELD = new AllowableValue("Ignore Unmatched Fields", "Ignore Unmatched Fields",
-            "Any field in the document that cannot be mapped to a column in the database is ignored");
+            "Bất kỳ trường nào trong tài liệu không thể được ánh xạ tới cột trong cơ sở dữ liệu đều bị bỏ qua");
     static final AllowableValue FAIL_UNMATCHED_FIELD = new AllowableValue("Fail on Unmatched Fields", "Fail on Unmatched Fields",
-            "If the document has any field that cannot be mapped to a column in the database, the FlowFile will be routed to the failure relationship");
+            "Nếu tài liệu có bất kỳ trường nào không thể được ánh xạ tới cột trong cơ sở dữ liệu, FlowFile sẽ được định tuyến đến mối quan hệ thất bại");
     static final AllowableValue IGNORE_UNMATCHED_COLUMN = new AllowableValue("Ignore Unmatched Columns",
             "Ignore Unmatched Columns",
-            "Any column in the database that does not have a field in the document will be assumed to not be required.  No notification will be logged");
+            "Bất kỳ cột nào trong cơ sở dữ liệu không có trường trong tài liệu sẽ được coi là không bắt buộc. Không có thông báo nào sẽ được ghi nhật ký");
     static final AllowableValue WARNING_UNMATCHED_COLUMN = new AllowableValue("Warn on Unmatched Columns",
             "Warn on Unmatched Columns",
-            "Any column in the database that does not have a field in the document will be assumed to not be required.  A warning will be logged");
+            "Bất kỳ cột nào trong cơ sở dữ liệu không có trường trong tài liệu sẽ được coi là không bắt buộc. Một cảnh báo sẽ được ghi nhật ký");
     static final AllowableValue FAIL_UNMATCHED_COLUMN = new AllowableValue("Fail on Unmatched Columns",
             "Fail on Unmatched Columns",
-            "A flow will fail if any column in the database that does not have a field in the document.  An error will be logged");
+            "Một luồng sẽ thất bại nếu có bất kỳ cột nào trong cơ sở dữ liệu không có trường trong tài liệu. Một lỗi sẽ được ghi nhật ký");
 
-    // Relationships
+    // Mối quan hệ
     public static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("Successfully created FlowFile from SQL query result set.")
+            .description("FlowFile được tạo thành công từ kết quả truy vấn SQL.")
             .build();
 
     static final Relationship REL_RETRY = new Relationship.Builder()
             .name("retry")
-            .description("A FlowFile is routed to this relationship if the database cannot be updated but attempting the operation again may succeed")
+            .description("Một FlowFile được định tuyến đến mối quan hệ này nếu cơ sở dữ liệu không thể được cập nhật nhưng thử lại hoạt động có thể thành công")
             .build();
     static final Relationship REL_FAILURE = new Relationship.Builder()
             .name("failure")
-            .description("A FlowFile is routed to this relationship if the database cannot be updated and retrying the operation will also fail, "
-                    + "such as an invalid query or an integrity constraint violation")
+            .description("Một FlowFile được định tuyến đến mối quan hệ này nếu cơ sở dữ liệu không thể được cập nhật và thử lại hoạt động cũng sẽ thất bại, "
+                    + "chẳng hạn như truy vấn không hợp lệ hoặc vi phạm ràng buộc tính toàn vẹn")
             .build();
 
     protected static Set<Relationship> relationships;
 
-    // Properties
+    // Thuộc tính
     static final PropertyDescriptor RECORD_READER_FACTORY = new Builder()
             .name("put-db-record-record-reader")
-            .displayName("Record Reader")
-            .description("Specifies the Controller Service to use for parsing incoming data and determining the data's schema.")
+            .displayName("Bộ đọc bản ghi")
+            .description("Chỉ định Dịch vụ Bộ điều khiển sẽ được sử dụng để phân tích dữ liệu đến và xác định lược đồ của dữ liệu.")
             .identifiesControllerService(RecordReaderFactory.class)
             .required(true)
             .build();
 
     static final PropertyDescriptor STATEMENT_TYPE = new Builder()
             .name("put-db-record-statement-type")
-            .displayName("Statement Type")
-            .description("Specifies the type of SQL Statement to generate. "
-                    + "Please refer to the database documentation for a description of the behavior of each operation. "
-                    + "Please note that some Database Types may not support certain Statement Types. "
-                    + "If 'Use statement.type Attribute' is chosen, then the value is taken from the statement.type attribute in the "
-                    + "FlowFile. The 'Use statement.type Attribute' option is the only one that allows the 'SQL' statement type. If 'SQL' is specified, the value of the field specified by the "
-                    + "'Field Containing SQL' property is expected to be a valid SQL statement on the target database, and will be executed as-is.")
+            .displayName("Loại câu lệnh")
+            .description("Chỉ định loại câu lệnh SQL để tạo. "
+                    + "Vui lòng tham khảo tài liệu cơ sở dữ liệu để tìm hiểu mô tả về hành vi của mỗi hoạt động. "
+                    + "Vui lòng lưu ý rằng một số Loại Cơ sở dữ liệu có thể không hỗ trợ một số Loại Câu lệnh. "
+                    + "Nếu 'Sử dụng thuộc tính statement.type' được chọn, thì giá trị được lấy từ thuộc tính statement.type trong "
+                    + "FlowFile. Tùy chọn 'Sử dụng thuộc tính statement.type' là tùy chọn duy nhất cho phép loại câu lệnh 'SQL'. Nếu 'SQL' được chỉ định, giá trị của trường được chỉ định bởi "
+                    + "thuộc tính 'Trường chứa SQL' dự kiến sẽ là một câu lệnh SQL hợp lệ trên cơ sở dữ liệu đích, và sẽ được thực thi nguyên trạng.")
             .required(true)
             .allowableValues(UPDATE_TYPE, INSERT_TYPE, UPSERT_TYPE, INSERT_IGNORE_TYPE, DELETE_TYPE, USE_ATTR_TYPE, USE_RECORD_PATH)
             .build();
 
     static final PropertyDescriptor STATEMENT_TYPE_RECORD_PATH = new Builder()
-        .name("Statement Type Record Path")
-        .displayName("Statement Type Record Path")
-        .description("Specifies a RecordPath to evaluate against each Record in order to determine the Statement Type. The RecordPath should equate to either INSERT, UPDATE, UPSERT, or DELETE.")
+        .name("Đường dẫn bản ghi loại câu lệnh")
+        .displayName("Đường dẫn bản ghi loại câu lệnh")
+        .description("Chỉ định một RecordPath để đánh giá so với mỗi Bản ghi để xác định Loại Câu lệnh. RecordPath phải bằng INSERT, UPDATE, UPSERT hoặc DELETE.")
         .required(true)
         .addValidator(new RecordPathValidator())
         .expressionLanguageSupported(NONE)
@@ -191,10 +191,10 @@ public class PutDatabaseRecord extends AbstractProcessor {
         .build();
 
     static final PropertyDescriptor DATA_RECORD_PATH = new Builder()
-        .name("Data Record Path")
-        .displayName("Data Record Path")
-        .description("If specified, this property denotes a RecordPath that will be evaluated against each incoming Record and the Record that results from evaluating the RecordPath will be sent to" +
-            " the database instead of sending the entire incoming Record. If not specified, the entire incoming Record will be published to the database.")
+        .name("Đường dẫn bản ghi dữ liệu")
+        .displayName("Đường dẫn bản ghi dữ liệu")
+        .description("Nếu được chỉ định, thuộc tính này biểu thị một RecordPath sẽ được đánh giá so với mỗi Bản ghi đến và Bản ghi kết quả từ việc đánh giá RecordPath sẽ được gửi đến"
+            + " cơ sở dữ liệu thay vì gửi toàn bộ Bản ghi đến. Nếu không được chỉ định, toàn bộ Bản ghi đến sẽ được xuất bản đến cơ sở dữ liệu.")
         .required(false)
         .addValidator(new RecordPathValidator())
         .expressionLanguageSupported(NONE)
@@ -202,17 +202,17 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor DBCP_SERVICE = new Builder()
             .name("put-db-record-dcbp-service")
-            .displayName("Database Connection Pooling Service")
-            .description("The Controller Service that is used to obtain a connection to the database for sending records.")
+            .displayName("Dịch vụ Hợp nhất Kết nối Cơ sở dữ liệu")
+            .description("Dịch vụ Bộ điều khiển được sử dụng để lấy kết nối đến cơ sở dữ liệu để gửi bản ghi.")
             .required(true)
             .identifiesControllerService(DBCPService.class)
             .build();
 
     static final PropertyDescriptor CATALOG_NAME = new Builder()
             .name("put-db-record-catalog-name")
-            .displayName("Catalog Name")
-            .description("The name of the catalog that the statement should update. This may not apply for the database that you are updating. In this case, leave the field empty. Note that if the "
-                    + "property is set and the database is case-sensitive, the catalog name must match the database's catalog name exactly.")
+            .displayName("Tên Danh mục")
+            .description("Tên danh mục mà câu lệnh phải cập nhật. Điều này có thể không áp dụng cho cơ sở dữ liệu mà bạn đang cập nhật. Trong trường hợp này, hãy để trường trống. Lưu ý rằng nếu "
+                    + "thuộc tính được đặt và cơ sở dữ liệu phân biệt chữ hoa chữ thường, tên danh mục phải khớp chính xác với tên danh mục của cơ sở dữ liệu.")
             .required(false)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -220,9 +220,9 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor SCHEMA_NAME = new Builder()
             .name("put-db-record-schema-name")
-            .displayName("Schema Name")
-            .description("The name of the schema that the table belongs to. This may not apply for the database that you are updating. In this case, leave the field empty. Note that if the "
-                    + "property is set and the database is case-sensitive, the schema name must match the database's schema name exactly.")
+            .displayName("Tên Lược đồ")
+            .description("Tên lược đồ mà bảng thuộc về. Điều này có thể không áp dụng cho cơ sở dữ liệu mà bạn đang cập nhật. Trong trường hợp này, hãy để trường trống. Lưu ý rằng nếu "
+                    + "thuộc tính được đặt và cơ sở dữ liệu phân biệt chữ hoa chữ thường, tên lược đồ phải khớp chính xác với tên lược đồ của cơ sở dữ liệu.")
             .required(false)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -230,8 +230,8 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor TABLE_NAME = new Builder()
             .name("put-db-record-table-name")
-            .displayName("Table Name")
-            .description("The name of the table that the statement should affect. Note that if the database is case-sensitive, the table name must match the database's table name exactly.")
+            .displayName("Tên Bảng")
+            .description("Tên của bảng mà câu lệnh phải ảnh hưởng. Lưu ý rằng nếu cơ sở dữ liệu phân biệt chữ hoa chữ thường, tên bảng phải khớp chính xác với tên bảng của cơ sở dữ liệu.")
             .required(true)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -240,25 +240,25 @@ public class PutDatabaseRecord extends AbstractProcessor {
     static final AllowableValue BINARY_STRING_FORMAT_UTF8 = new AllowableValue(
             "UTF-8",
             "UTF-8",
-            "String values for binary columns contain the original value as text via UTF-8 character encoding"
+            "Giá trị chuỗi cho các cột nhị phân chứa giá trị ban đầu dưới dạng văn bản thông qua mã hóa ký tự UTF-8"
     );
 
     static final AllowableValue BINARY_STRING_FORMAT_HEX_STRING = new AllowableValue(
             "Hexadecimal",
             "Hexadecimal",
-            "String values for binary columns contain the original value in hexadecimal format"
+            "Giá trị chuỗi cho các cột nhị phân chứa giá trị ban đầu ở định dạng thập lục phân"
     );
 
     static final AllowableValue BINARY_STRING_FORMAT_BASE64 = new AllowableValue(
             "Base64",
             "Base64",
-            "String values for binary columns contain the original value in Base64 encoded format"
+            "Giá trị chuỗi cho các cột nhị phân chứa giá trị ban đầu được mã hóa ở định dạng Base64"
     );
 
     static final PropertyDescriptor BINARY_STRING_FORMAT = new Builder()
             .name("put-db-record-binary-format")
-            .displayName("Binary String Format")
-            .description("The format to be applied when decoding string values to binary.")
+            .displayName("Định dạng Chuỗi Nhị phân")
+            .description("Định dạng sẽ được áp dụng khi giải mã các giá trị chuỗi thành nhị phân.")
             .required(false)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .allowableValues(BINARY_STRING_FORMAT_UTF8, BINARY_STRING_FORMAT_HEX_STRING, BINARY_STRING_FORMAT_BASE64)
@@ -267,36 +267,36 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor TRANSLATE_FIELD_NAMES = new Builder()
             .name("put-db-record-translate-field-names")
-            .displayName("Translate Field Names")
-            .description("If true, the Processor will attempt to translate field names into the appropriate column names for the table specified. "
-                    + "If false, the field names must match the column names exactly, or the column will not be updated")
+            .displayName("Dịch Tên Trường")
+            .description("Nếu đúng, Bộ xử lý sẽ cố gắng dịch tên trường thành tên cột thích hợp cho bảng được chỉ định. "
+                    + "Nếu sai, tên trường phải khớp chính xác với tên cột, hoặc cột sẽ không được cập nhật")
             .allowableValues("true", "false")
             .defaultValue("true")
             .build();
 
     static final PropertyDescriptor UNMATCHED_FIELD_BEHAVIOR = new Builder()
             .name("put-db-record-unmatched-field-behavior")
-            .displayName("Unmatched Field Behavior")
-            .description("If an incoming record has a field that does not map to any of the database table's columns, this property specifies how to handle the situation")
+            .displayName("Hành vi Trường Không khớp")
+            .description("Nếu bản ghi đến có trường không ánh xạ tới bất kỳ cột nào của bảng cơ sở dữ liệu, thuộc tính này chỉ định cách xử lý tình huống")
             .allowableValues(IGNORE_UNMATCHED_FIELD, FAIL_UNMATCHED_FIELD)
             .defaultValue(IGNORE_UNMATCHED_FIELD.getValue())
             .build();
 
     static final PropertyDescriptor UNMATCHED_COLUMN_BEHAVIOR = new Builder()
             .name("put-db-record-unmatched-column-behavior")
-            .displayName("Unmatched Column Behavior")
-            .description("If an incoming record does not have a field mapping for all of the database table's columns, this property specifies how to handle the situation")
+            .displayName("Hành vi Cột Không khớp")
+            .description("Nếu bản ghi đến không có ánh xạ trường cho tất cả các cột của bảng cơ sở dữ liệu, thuộc tính này chỉ định cách xử lý tình huống")
             .allowableValues(IGNORE_UNMATCHED_COLUMN, WARNING_UNMATCHED_COLUMN, FAIL_UNMATCHED_COLUMN)
             .defaultValue(FAIL_UNMATCHED_COLUMN.getValue())
             .build();
 
     static final PropertyDescriptor UPDATE_KEYS = new Builder()
             .name("put-db-record-update-keys")
-            .displayName("Update Keys")
-            .description("A comma-separated list of column names that uniquely identifies a row in the database for UPDATE statements. "
-                    + "If the Statement Type is UPDATE and this property is not set, the table's Primary Keys are used. "
-                    + "In this case, if no Primary Key exists, the conversion to SQL will fail if Unmatched Column Behaviour is set to FAIL. "
-                    + "This property is ignored if the Statement Type is INSERT")
+            .displayName("Khóa Cập nhật")
+            .description("Danh sách tên cột được phân tách bằng dấu phẩy mà một cách duy nhất xác định một hàng trong cơ sở dữ liệu cho các câu lệnh UPDATE. "
+                    + "Nếu Loại Câu lệnh là UPDATE và thuộc tính này không được đặt, các Khóa Chính của bảng sẽ được sử dụng. "
+                    + "Trong trường hợp này, nếu không có Khóa Chính nào tồn tại, việc chuyển đổi sang SQL sẽ thất bại nếu Hành vi Cột Không khớp được đặt thành FAIL. "
+                    + "Thuộc tính này bị bỏ qua nếu Loại Câu lệnh là INSERT")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(false)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
@@ -305,9 +305,9 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor FIELD_CONTAINING_SQL = new Builder()
             .name("put-db-record-field-containing-sql")
-            .displayName("Field Containing SQL")
-            .description("If the Statement Type is 'SQL' (as set in the statement.type attribute), this field indicates which field in the record(s) contains the SQL statement to execute. The value "
-                    + "of the field must be a single SQL statement. If the Statement Type is not 'SQL', this field is ignored.")
+            .displayName("Trường Chứa SQL")
+            .description("Nếu Loại Câu lệnh là 'SQL' (như được đặt trong thuộc tính statement.type), trường này cho biết trường nào trong bản ghi (các) chứa câu lệnh SQL sẽ được thực thi. Giá trị "
+                    + "của trường phải là một câu lệnh SQL duy nhất. Nếu Loại Câu lệnh không phải 'SQL', trường này sẽ bị bỏ qua.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(false)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
@@ -316,9 +316,9 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor ALLOW_MULTIPLE_STATEMENTS = new Builder()
             .name("put-db-record-allow-multiple-statements")
-            .displayName("Allow Multiple SQL Statements")
-            .description("If the Statement Type is 'SQL' (as set in the statement.type attribute), this field indicates whether to split the field value by a semicolon and execute each statement "
-                    + "separately. If any statement causes an error, the entire set of statements will be rolled back. If the Statement Type is not 'SQL', this field is ignored.")
+            .displayName("Cho phép Nhiều Câu lệnh SQL")
+            .description("Nếu Loại Câu lệnh là 'SQL' (như được đặt trong thuộc tính statement.type), trường này cho biết có phân tách giá trị trường theo dấu chấm phẩy và thực thi từng câu lệnh "
+                    + "riêng biệt hay không. Nếu bất kỳ câu lệnh nào gây ra lỗi, toàn bộ bộ câu lệnh sẽ được khôi phục lại. Nếu Loại Câu lệnh không phải 'SQL', trường này sẽ bị bỏ qua.")
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
             .required(true)
             .allowableValues("true", "false")
@@ -328,25 +328,25 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor QUOTE_IDENTIFIERS = new Builder()
             .name("put-db-record-quoted-identifiers")
-            .displayName("Quote Column Identifiers")
-            .description("Enabling this option will cause all column names to be quoted, allowing you to use reserved words as column names in your tables.")
+            .displayName("Đặt trong ngoặc Định danh Cột")
+            .description("Bật tùy chọn này sẽ khiến tất cả tên cột được đặt trong ngoặc, cho phép bạn sử dụng các từ dành riêng làm tên cột trong bảng của bạn.")
             .allowableValues("true", "false")
             .defaultValue("false")
             .build();
 
     static final PropertyDescriptor QUOTE_TABLE_IDENTIFIER = new Builder()
             .name("put-db-record-quoted-table-identifiers")
-            .displayName("Quote Table Identifiers")
-            .description("Enabling this option will cause the table name to be quoted to support the use of special characters in the table name.")
+            .displayName("Đặt trong ngoặc Định danh Bảng")
+            .description("Bật tùy chọn này sẽ khiến tên bảng được đặt trong ngoặc để hỗ trợ sử dụng các ký tự đặc biệt trong tên bảng.")
             .allowableValues("true", "false")
             .defaultValue("false")
             .build();
 
     static final PropertyDescriptor QUERY_TIMEOUT = new Builder()
             .name("put-db-record-query-timeout")
-            .displayName("Max Wait Time")
-            .description("The maximum amount of time allowed for a running SQL statement "
-                    + ", zero means there is no limit. Max time less than 1 second will be equal to zero.")
+            .displayName("Thời gian Chờ Tối đa")
+            .description("Khoảng thời gian tối đa được phép cho một câu lệnh SQL đang chạy "
+                    + ", không có giới hạn có nghĩa là không có giới hạn. Thời gian tối đa nhỏ hơn 1 giây sẽ bằng không.")
             .defaultValue("0 seconds")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -355,8 +355,8 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor TABLE_SCHEMA_CACHE_SIZE = new Builder()
             .name("table-schema-cache-size")
-            .displayName("Table Schema Cache Size")
-            .description("Specifies how many Table Schemas should be cached")
+            .displayName("Kích thước Bộ nhớ đệm Lược đồ Bảng")
+            .description("Chỉ định có bao nhiêu Lược đồ Bảng sẽ được lưu vào bộ nhớ đệm")
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
             .defaultValue("100")
             .required(true)
@@ -364,9 +364,9 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor MAX_BATCH_SIZE = new Builder()
             .name("put-db-record-max-batch-size")
-            .displayName("Maximum Batch Size")
-            .description("Specifies maximum number of sql statements to be included in each batch sent to the database. Zero means the batch size is not limited, "
-                    + "and all statements are put into a single batch which can cause high memory usage issues for a very large number of statements.")
+            .displayName("Kích thước Lô Tối đa")
+            .description("Chỉ định số lượng tối đa các câu lệnh sql sẽ được đưa vào mỗi lô được gửi đến cơ sở dữ liệu. Không có giới hạn có nghĩa là kích thước lô không bị giới hạn, "
+                    + "và tất cả các câu lệnh được đưa vào một lô duy nhất có thể gây ra vấn đề sử dụng bộ nhớ cao đối với một số lượng rất lớn các câu lệnh.")
             .defaultValue("1000")
             .required(false)
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
@@ -375,15 +375,14 @@ public class PutDatabaseRecord extends AbstractProcessor {
 
     static final PropertyDescriptor AUTO_COMMIT = new PropertyDescriptor.Builder()
             .name("database-session-autocommit")
-            .displayName("Database Session AutoCommit")
-            .description("The autocommit mode to set on the database connection being used. If set to false, the operation(s) will be explicitly committed or rolled back "
-                    + "(based on success or failure respectively). If set to true, the driver/database automatically handles the commit/rollback. "
-                    + "Setting this property to 'No value' will leave the database connection's autocommit mode unmodified.")
+            .displayName("Tự động Xác nhận Phiên Cơ sở dữ liệu")
+            .description("Chế độ tự động xác nhận sẽ được đặt trên kết nối cơ sở dữ liệu được sử dụng. Nếu được đặt thành sai, hoạt động (các) sẽ được xác nhận hoặc khôi phục rõ ràng "
+                    + "(dựa trên thành công hoặc thất bại tương ứng). Nếu được đặt thành đúng, trình điều khiển/cơ sở dữ liệu sẽ tự động xử lý việc xác nhận/khôi phục. "
+                    + "Đặt thuộc tính này thành 'Không có giá trị' sẽ để nguyên chế độ tự động xác nhận của kết nối cơ sở dữ liệu.")
             .allowableValues("true", "false")
             .defaultValue("false")
             .required(false)
             .build();
-
     static final PropertyDescriptor DB_TYPE;
 
     protected static final Map<String, DatabaseAdapter> dbAdapters;

@@ -61,14 +61,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"oauth2", "provider", "authorization", "access token", "http"})
-@CapabilityDescription("Provides OAuth 2.0 access tokens that can be used as Bearer authorization header in HTTP requests." +
-    " Can use either Resource Owner Password Credentials Grant or Client Credentials Grant." +
-    " Client authentication can be done with either HTTP Basic authentication or in the request body.")
+@CapabilityDescription("Cung cấp các mã thông báo truy cập OAuth 2.0 có thể được sử dụng làm tiêu đề ủy quyền Bearer trong các yêu cầu HTTP." +
+    " Có thể sử dụng Cấp Thông tin xác thực Chủ sở hữu Tài nguyên hoặc Cấp Thông tin xác thực Máy khách." +
+    " Xác thực máy khách có thể được thực hiện bằng xác thực HTTP Basic hoặc trong phần thân yêu cầu.")
 public class StandardOauth2AccessTokenProvider extends AbstractControllerService implements OAuth2AccessTokenProvider, VerifiableControllerService {
     public static final PropertyDescriptor AUTHORIZATION_SERVER_URL = new PropertyDescriptor.Builder()
         .name("authorization-server-url")
-        .displayName("Authorization Server URL")
-        .description("The URL of the authorization server that issues access tokens.")
+        .displayName("URL Máy chủ Ủy quyền")
+        .description("URL của máy chủ ủy quyền phát hành các mã thông báo truy cập.")
         .required(true)
         .addValidator(StandardValidators.URL_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -76,8 +76,8 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor CLIENT_AUTHENTICATION_STRATEGY = new PropertyDescriptor.Builder()
         .name("client-authentication-strategy")
-        .displayName("Client Authentication Strategy")
-        .description("Strategy for authenticating the client against the OAuth2 token provider service.")
+        .displayName("Chiến lược Xác thực Máy khách")
+        .description("Chiến lược xác thực máy khách dựa trên dịch vụ nhà cung cấp mã thông báo OAuth2.")
         .required(true)
         .allowableValues(ClientAuthenticationStrategy.class)
         .defaultValue(ClientAuthenticationStrategy.REQUEST_BODY.getValue())
@@ -85,26 +85,26 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static AllowableValue RESOURCE_OWNER_PASSWORD_CREDENTIALS_GRANT_TYPE = new AllowableValue(
         "password",
-        "User Password",
-        "Resource Owner Password Credentials Grant. Used to access resources available to users. Requires username and password and usually Client ID and Client Secret."
+        "Mật khẩu Người dùng",
+        "Cấp Thông tin xác thực Chủ sở hữu Tài nguyên. Được sử dụng để truy cập tài nguyên có sẵn cho người dùng. Yêu cầu tên người dùng, mật khẩu và thường là ID Máy khách và Bí mật Máy khách."
     );
 
     public static AllowableValue CLIENT_CREDENTIALS_GRANT_TYPE = new AllowableValue(
         "client_credentials",
-        "Client Credentials",
-        "Client Credentials Grant. Used to access resources available to clients. Requires Client ID and Client Secret."
+        "Thông tin xác thực Máy khách",
+        "Cấp Thông tin xác thực Máy khách. Được sử dụng để truy cập tài nguyên có sẵn cho máy khách. Yêu cầu ID Máy khách và Bí mật Máy khách."
     );
 
     public static AllowableValue REFRESH_TOKEN_GRANT_TYPE = new AllowableValue(
         "refresh_token",
-        "Refresh Token",
-        "Refresh Token Grant. Used to get fresh access tokens based on a previously acquired refresh token. Requires Client ID and Client Secret (apart from Refresh Token)."
+        "Mã thông báo Làm mới",
+        "Cấp Mã thông báo Làm mới. Được sử dụng để lấy các mã thông báo truy cập mới dựa trên mã thông báo làm mới đã có trước đó. Yêu cầu ID Máy khách và Bí mật Máy khách (ngoài Mã thông báo Làm mới)."
     );
 
     public static final PropertyDescriptor GRANT_TYPE = new PropertyDescriptor.Builder()
         .name("grant-type")
-        .displayName("Grant Type")
-        .description("The OAuth2 Grant Type to be used when acquiring an access token.")
+        .displayName("Loại Cấp")
+        .description("Loại Cấp OAuth2 sẽ được sử dụng khi lấy mã thông báo truy cập.")
         .required(true)
         .allowableValues(RESOURCE_OWNER_PASSWORD_CREDENTIALS_GRANT_TYPE, CLIENT_CREDENTIALS_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE)
         .defaultValue(RESOURCE_OWNER_PASSWORD_CREDENTIALS_GRANT_TYPE.getValue())
@@ -112,8 +112,8 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor USERNAME = new PropertyDescriptor.Builder()
         .name("service-user-name")
-        .displayName("Username")
-        .description("Username on the service that is being accessed.")
+        .displayName("Tên Người dùng")
+        .description("Tên người dùng trên dịch vụ đang được truy cập.")
         .dependsOn(GRANT_TYPE, RESOURCE_OWNER_PASSWORD_CREDENTIALS_GRANT_TYPE)
         .required(true)
         .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -122,8 +122,8 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor PASSWORD = new PropertyDescriptor.Builder()
         .name("service-password")
-        .displayName("Password")
-        .description("Password for the username on the service that is being accessed.")
+        .displayName("Mật khẩu")
+        .description("Mật khẩu cho tên người dùng trên dịch vụ đang được truy cập.")
         .dependsOn(GRANT_TYPE, RESOURCE_OWNER_PASSWORD_CREDENTIALS_GRANT_TYPE)
         .required(true)
         .sensitive(true)
@@ -132,8 +132,8 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor REFRESH_TOKEN = new PropertyDescriptor.Builder()
         .name("refresh-token")
-        .displayName("Refresh Token")
-        .description("Refresh Token.")
+        .displayName("Mã thông báo Làm mới")
+        .description("Mã thông báo Làm mới.")
         .dependsOn(GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE)
         .required(true)
         .sensitive(true)
@@ -143,7 +143,7 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor CLIENT_ID = new PropertyDescriptor.Builder()
         .name("client-id")
-        .displayName("Client ID")
+        .displayName("ID Máy khách")
         .required(false)
         .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -151,7 +151,7 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor CLIENT_SECRET = new PropertyDescriptor.Builder()
         .name("client-secret")
-        .displayName("Client secret")
+        .displayName("Bí mật Máy khách")
         .dependsOn(CLIENT_ID)
         .required(true)
         .sensitive(true)
@@ -160,32 +160,32 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor SCOPE = new PropertyDescriptor.Builder()
         .name("scope")
-        .displayName("Scope")
-        .description("Space-delimited, case-sensitive list of scopes of the access request (as per the OAuth 2.0 specification)")
+        .displayName("Phạm vi")
+        .description("Danh sách các phạm vi được phân tách bằng khoảng trắng, phân biệt chữ hoa chữ thường của yêu cầu truy cập (theo đặc tả OAuth 2.0)")
         .required(false)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
 
     public static final PropertyDescriptor RESOURCE = new PropertyDescriptor.Builder()
         .name("resource")
-        .displayName("Resource")
-        .description("Resource URI for the access token request defined in RFC 8707 Section 2")
+        .displayName("Tài nguyên")
+        .description("URI Tài nguyên cho yêu cầu mã thông báo truy cập được xác định trong RFC 8707 Phần 2")
         .required(false)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
 
     public static final PropertyDescriptor AUDIENCE = new PropertyDescriptor.Builder()
         .name("audience")
-        .displayName("Audience")
-        .description("Audience for the access token request defined in RFC 8693 Section 2.1")
+        .displayName("Đối tượng")
+        .description("Đối tượng cho yêu cầu mã thông báo truy cập được xác định trong RFC 8693 Phần 2.1")
         .required(false)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
 
     public static final PropertyDescriptor REFRESH_WINDOW = new PropertyDescriptor.Builder()
         .name("refresh-window")
-        .displayName("Refresh Window")
-        .description("The service will attempt to refresh tokens expiring within the refresh window, subtracting the configured duration from the token expiration.")
+        .displayName("Cửa sổ Làm mới")
+        .description("Dịch vụ sẽ cố gắng làm mới các mã thông báo hết hạn trong cửa sổ làm mới, trừ đi thời lượng được cấu hình từ hết hạn mã thông báo.")
         .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
         .defaultValue("0 s")
         .required(true)
@@ -193,7 +193,7 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor SSL_CONTEXT = new PropertyDescriptor.Builder()
         .name("ssl-context-service")
-        .displayName("SSL Context Service")
+        .displayName("Dịch vụ Bối cảnh SSL")
         .addValidator(Validator.VALID)
         .identifiesControllerService(SSLContextService.class)
         .required(false)
@@ -201,13 +201,12 @@ public class StandardOauth2AccessTokenProvider extends AbstractControllerService
 
     public static final PropertyDescriptor HTTP_PROTOCOL_STRATEGY = new PropertyDescriptor.Builder()
         .name("HTTP Protocols")
-        .description("HTTP Protocols supported for Application Layer Protocol Negotiation with TLS")
+        .description("Các giao thức HTTP được hỗ trợ để Thương lượng Giao thức Lớp Ứng dụng với TLS")
         .required(true)
         .allowableValues(HttpProtocolStrategy.class)
         .defaultValue(HttpProtocolStrategy.H2_HTTP_1_1.getValue())
         .dependsOn(SSL_CONTEXT)
         .build();
-
     private static final ProxySpec[] PROXY_SPECS = { ProxySpec.HTTP_AUTH };
 
     private static final List<PropertyDescriptor> PROPERTIES = Collections.unmodifiableList(Arrays.asList(

@@ -46,8 +46,8 @@ import org.bson.Document;
 
 @Tags({"mongo", "mongodb", "service"})
 @CapabilityDescription(
-        "Provides a controller service that configures a connection to MongoDB and provides access to that connection to " +
-                "other Mongo-related components."
+"Cung cấp một dịch vụ điều khiển để cấu hình kết nối đến MongoDB và cung cấp quyền truy cập kết nối này cho " +
+"các thành phần khác liên quan đến Mongo."
 )
 public class MongoDBControllerService extends AbstractControllerService implements MongoDBClientService {
     private String uri;

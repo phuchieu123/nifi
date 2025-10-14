@@ -64,12 +64,12 @@ import java.util.stream.Collectors;
  * Standard Pretty Good Privacy Private Key Service reads Private Keys from configured Keyring files or properties
  */
 @Tags({"PGP", "GPG", "OpenPGP", "Encryption", "Private", "Key", "RFC 4880"})
-@CapabilityDescription("PGP Private Key Service provides Private Keys loaded from files or properties")
+@CapabilityDescription("Dịch vụ Khóa Cá nhân PGP cung cấp các Khóa Cá nhân được tải từ các tệp hoặc thuộc tính")
 public class StandardPGPPrivateKeyService extends AbstractControllerService implements PGPPrivateKeyService {
     public static final PropertyDescriptor KEYRING_FILE = new PropertyDescriptor.Builder()
             .name("keyring-file")
-            .displayName("Keyring File")
-            .description("File path to PGP Keyring or Secret Key encoded in binary or ASCII Armor")
+            .displayName("Tệp Vòng Khóa")
+            .description("Đường dẫn tệp đến Vòng Khóa PGP hoặc Khóa Bí mật được mã hóa ở định dạng nhị phân hoặc ASCII Armor")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.FILE_EXISTS_VALIDATOR)
@@ -77,8 +77,8 @@ public class StandardPGPPrivateKeyService extends AbstractControllerService impl
 
     public static final PropertyDescriptor KEYRING = new PropertyDescriptor.Builder()
             .name("keyring")
-            .displayName("Keyring")
-            .description("PGP Keyring or Secret Key encoded in ASCII Armor")
+            .displayName("Vòng Khóa")
+            .description("Vòng Khóa PGP hoặc Khóa Bí mật được mã hóa ở định dạng ASCII Armor")
             .required(false)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -86,8 +86,8 @@ public class StandardPGPPrivateKeyService extends AbstractControllerService impl
 
     public static final PropertyDescriptor KEY_PASSWORD = new PropertyDescriptor.Builder()
             .name("key-password")
-            .displayName("Key Password")
-            .description("Password used for decrypting Private Keys")
+            .displayName("Mật khẩu Khóa")
+            .description("Mật khẩu được sử dụng để giải mã các Khóa Cá nhân")
             .required(true)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)

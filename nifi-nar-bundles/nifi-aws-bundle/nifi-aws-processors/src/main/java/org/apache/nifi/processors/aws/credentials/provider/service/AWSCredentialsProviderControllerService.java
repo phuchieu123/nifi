@@ -58,18 +58,19 @@ import static org.apache.nifi.processors.aws.credentials.provider.factory.Creden
  *
  * @see AWSCredentialsProviderService
  */
-@CapabilityDescription("Defines credentials for Amazon Web Services processors. " +
-        "Uses default credentials without configuration. " +
-        "Default credentials support EC2 instance profile/role, default user profile, environment variables, etc. " +
-        "Additional options include access key / secret key pairs, credentials file, named profile, and assume role credentials.")
-@Tags({ "aws", "credentials","provider" })
+@CapabilityDescription("Định nghĩa thông tin xác thực cho các bộ xử lý Amazon Web Services (AWS). " +
+"Sử dụng thông tin xác thực mặc định mà không cần cấu hình. " +
+"Thông tin xác thực mặc định hỗ trợ EC2 instance profile/role, hồ sơ người dùng mặc định, biến môi trường, v.v. " +
+"Các tùy chọn bổ sung bao gồm cặp khóa truy cập/bí mật (access key / secret key), tệp thông tin xác thực, hồ sơ được đặt tên (named profile) và thông tin xác thực assume role.")
+
+@Tags({ "aws", "credentials", "provider" })
 @Restricted(
-        restrictions = {
-                @Restriction(
-                        requiredPermission = RequiredPermission.ACCESS_ENVIRONMENT_CREDENTIALS,
-                        explanation = "The default configuration can read environment variables and system properties for credentials"
-                )
-        }
+restrictions = {
+@Restriction(
+requiredPermission = RequiredPermission.ACCESS_ENVIRONMENT_CREDENTIALS,
+explanation = "Cấu hình mặc định có thể đọc biến môi trường và thuộc tính hệ thống để lấy thông tin xác thực."
+)
+}
 )
 public class AWSCredentialsProviderControllerService extends AbstractControllerService implements AWSCredentialsProviderService {
 

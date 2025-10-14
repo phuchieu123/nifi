@@ -70,7 +70,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RequiresInstanceClassLoading
 @Tags({"hive", "dbcp", "jdbc", "database", "connection", "pooling", "store"})
-@CapabilityDescription("Provides Database Connection Pooling Service for Apache Hive 1.1.x. Connections can be asked from pool and returned after usage.")
+@CapabilityDescription("Cung cấp Dịch vụ Pool Kết nối Cơ sở dữ liệu cho Apache Hive 1.1.x. Các kết nối có thể được lấy từ pool và trả về sau khi sử dụng.")
 @DeprecationNotice(classNames = "org.apache.nifi.dbcp.hive.Hive3ConnectionPool")
 public class Hive_1_1ConnectionPool extends AbstractControllerService implements Hive_1_1DBCPService {
 
@@ -78,10 +78,9 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DATABASE_URL = new PropertyDescriptor.Builder()
             .name("hive-db-connect-url")
-            .displayName("Database Connection URL")
-            .description("A database connection URL used to connect to a database. May contain database system name, host, port, database name and some parameters."
-                    + " The exact syntax of a database connection URL is specified by the Hive documentation. For example, the server principal is often included "
-                    + "as a connection parameter when connecting to a secure Hive server.")
+            .displayName("URL Kết nối Cơ sở dữ liệu")
+            .description("URL kết nối cơ sở dữ liệu được sử dụng để kết nối đến cơ sở dữ liệu. Có thể chứa tên hệ quản trị, host, port, tên cơ sở dữ liệu và một số tham số. "
+                    + "Cú pháp chính xác được quy định trong tài liệu Hive. Ví dụ, server principal thường được đưa vào khi kết nối đến Hive server bảo mật.")
             .defaultValue(null)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
@@ -90,10 +89,9 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor HIVE_CONFIGURATION_RESOURCES = new PropertyDescriptor.Builder()
             .name("hive-config-resources")
-            .displayName("Hive Configuration Resources")
-            .description("A file or comma separated list of files which contains the Hive configuration (hive-site.xml, e.g.). Without this, Hadoop "
-                    + "will search the classpath for a 'hive-site.xml' file or will revert to a default configuration. Note that to enable authentication "
-                    + "with Kerberos e.g., the appropriate properties must be set in the configuration files. Please see the Hive documentation for more details.")
+            .displayName("Tài nguyên Cấu hình Hive")
+            .description("Một file hoặc danh sách các file chứa cấu hình Hive (ví dụ hive-site.xml). Nếu không có, Hadoop "
+                    + "sẽ tìm trên classpath hoặc sử dụng cấu hình mặc định. Để bật xác thực với Kerberos, các thuộc tính thích hợp phải được thiết lập trong file cấu hình.")
             .required(false)
             .identifiesExternalResource(ResourceCardinality.MULTIPLE, ResourceType.FILE)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -101,8 +99,8 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DB_USER = new PropertyDescriptor.Builder()
             .name("hive-db-user")
-            .displayName("Database User")
-            .description("Database user name")
+            .displayName("Người dùng cơ sở dữ liệu")
+            .description("Tên người dùng cơ sở dữ liệu")
             .defaultValue(null)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -110,8 +108,8 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor DB_PASSWORD = new PropertyDescriptor.Builder()
             .name("hive-db-password")
-            .displayName("Password")
-            .description("The password for the database user")
+            .displayName("Mật khẩu")
+            .description("Mật khẩu của người dùng cơ sở dữ liệu")
             .defaultValue(null)
             .required(false)
             .sensitive(true)
@@ -121,9 +119,8 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor MAX_WAIT_TIME = new PropertyDescriptor.Builder()
             .name("hive-max-wait-time")
-            .displayName("Max Wait Time")
-            .description("The maximum amount of time that the pool will wait (when there are no available connections) "
-                    + " for a connection to be returned before failing, or -1 to wait indefinitely. ")
+            .displayName("Thời gian chờ tối đa")
+            .description("Thời gian tối đa mà pool sẽ chờ khi không có kết nối sẵn có trước khi thất bại, hoặc -1 để chờ vô thời hạn.")
             .defaultValue("500 millis")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -132,9 +129,8 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor MAX_TOTAL_CONNECTIONS = new PropertyDescriptor.Builder()
             .name("hive-max-total-connections")
-            .displayName("Max Total Connections")
-            .description("The maximum number of active connections that can be allocated from this pool at the same time, "
-                    + "or negative for no limit.")
+            .displayName("Số kết nối tối đa")
+            .description("Số kết nối tối đa có thể được cấp từ pool cùng lúc, hoặc giá trị âm nếu không giới hạn.")
             .defaultValue("8")
             .required(true)
             .addValidator(StandardValidators.INTEGER_VALIDATOR)
@@ -142,11 +138,9 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
             .build();
 
     public static final PropertyDescriptor MAX_CONN_LIFETIME = new PropertyDescriptor.Builder()
-            .displayName("Max Connection Lifetime")
+            .displayName("Thời gian sống tối đa của kết nối")
             .name("hive-max-conn-lifetime")
-            .description("The maximum lifetime in milliseconds of a connection. After this time is exceeded the " +
-                    "connection pool will invalidate the connection. A value of zero or -1 " +
-                    "means the connection has an infinite lifetime.")
+            .description("Thời gian tối đa một kết nối có thể tồn tại. Khi vượt quá, pool sẽ vô hiệu hóa kết nối. Giá trị 0 hoặc -1 nghĩa là kết nối có thời gian sống vô hạn.")
             .defaultValue(DEFAULT_MAX_CONN_LIFETIME)
             .required(true)
             .addValidator(DBCPValidator.CUSTOM_TIME_PERIOD_VALIDATOR)
@@ -155,10 +149,8 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
 
     public static final PropertyDescriptor VALIDATION_QUERY = new PropertyDescriptor.Builder()
             .name("Validation-query")
-            .displayName("Validation query")
-            .description("Validation query used to validate connections before returning them. "
-                    + "When a borrowed connection is invalid, it gets dropped and a new valid connection will be returned. "
-                    + "NOTE: Using validation may have a performance penalty.")
+            .displayName("Câu truy vấn kiểm tra")
+            .description("Câu truy vấn được sử dụng để kiểm tra kết nối trước khi trả về. Nếu kết nối mượn không hợp lệ, nó sẽ bị loại và một kết nối hợp lệ mới sẽ được trả về. Lưu ý: Kiểm tra có thể ảnh hưởng hiệu suất.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -167,7 +159,7 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
     static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
         .name("kerberos-credentials-service")
         .displayName("Dịch vụ chứng thực Kerberos")
-        .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
+        .description("Chỉ định Kerberos Credentials Controller Service sẽ được sử dụng để xác thực với Kerberos")
         .identifiesControllerService(KerberosCredentialsService.class)
         .required(false)
         .build();
@@ -175,7 +167,7 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
     static final PropertyDescriptor KERBEROS_PRINCIPAL = new PropertyDescriptor.Builder()
             .name("kerberos-principal")
             .displayName("Kerberos Principal")
-            .description("The principal to use when specifying the principal and password directly in the processor for authenticating via Kerberos.")
+            .description("Principal được sử dụng khi xác thực trực tiếp bằng principal và password trong processor.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .addValidator(StandardValidators.createAttributeExpressionLanguageValidator(AttributeExpression.ResultType.STRING))
@@ -185,11 +177,12 @@ public class Hive_1_1ConnectionPool extends AbstractControllerService implements
     static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescriptor.Builder()
             .name("kerberos-password")
             .displayName("Kerberos Password")
-            .description("The password to use when specifying the principal and password directly in the processor for authenticating via Kerberos.")
+            .description("Password được sử dụng khi xác thực trực tiếp bằng principal và password trong processor.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(true)
             .build();
+
 
 
     private List<PropertyDescriptor> properties;

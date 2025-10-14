@@ -45,8 +45,8 @@ import org.apache.nifi.distributed.cache.client.exception.SerializationException
 import org.apache.nifi.expression.ExpressionLanguageScope;
 
 @Tags({"lookup", "enrich", "key", "value", "map", "cache", "distributed"})
-@CapabilityDescription("Allows to choose a distributed map cache client to retrieve the value associated to a key. "
-    + "The coordinates that are passed to the lookup must contain the key 'key'.")
+@CapabilityDescription("Cho phép chọn một máy khách bộ nhớ đệm bản đồ phân tán để lấy giá trị liên kết với khóa. "
+    + "Các tọa độ được truyền đến tìm kiếm phải chứa khóa 'key'.")
 public class DistributedMapCacheLookupService extends AbstractControllerService implements StringLookupService {
 
     private static final List<Charset> STANDARD_CHARSETS = Arrays.asList(
@@ -67,16 +67,16 @@ public class DistributedMapCacheLookupService extends AbstractControllerService 
 
     public static final PropertyDescriptor PROP_DISTRIBUTED_CACHE_SERVICE = new PropertyDescriptor.Builder()
             .name("distributed-map-cache-service")
-            .displayName("Distributed Cache Service")
-            .description("The Controller Service that is used to get the cached values.")
+            .displayName("Dịch vụ Bộ nhớ đệm Phân tán")
+            .description("Dịch vụ Bộ điều khiển được sử dụng để lấy các giá trị được lưu vào bộ nhớ đệm.")
             .required(true)
             .identifiesControllerService(DistributedMapCacheClient.class)
             .build();
 
     public static final PropertyDescriptor CHARACTER_ENCODING = new PropertyDescriptor.Builder()
             .name("character-encoding")
-            .displayName("Character Encoding")
-            .description("Specifies a character encoding to use.")
+            .displayName("Mã hóa Ký tự")
+            .description("Chỉ định mã hóa ký tự sẽ được sử dụng.")
             .required(true)
             .allowableValues(getStandardCharsetNames())
             .defaultValue(StandardCharsets.UTF_8.displayName())

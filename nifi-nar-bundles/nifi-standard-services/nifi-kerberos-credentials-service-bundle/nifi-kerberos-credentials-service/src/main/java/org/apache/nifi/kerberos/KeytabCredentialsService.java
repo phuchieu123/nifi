@@ -40,19 +40,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@CapabilityDescription("Provides a mechanism for specifying a Keytab and a Principal that other components are able to use in order to "
-    + "perform authentication using Kerberos. By encapsulating this information into a Controller Service and allowing other components to make use of it "
-    + "(as opposed to specifying the principal and keytab directly in the processor) an administrator is able to choose which users are allowed to "
-    + "use which keytabs and principals. This provides a more robust security model for multi-tenant use cases.")
+@CapabilityDescription("Cung cấp cơ chế chỉ định Keytab và Principal để các component khác có thể sử dụng cho việc "
+        + "xác thực Kerberos. Bằng cách đóng gói thông tin này vào Controller Service và cho phép các component khác sử dụng "
+        + "(thay vì chỉ định trực tiếp principal và keytab trong processor), quản trị viên có thể kiểm soát người dùng nào "
+        + "được phép sử dụng keytab và principal nào. Điều này cung cấp mô hình bảo mật mạnh mẽ hơn cho môi trường đa tenant.")
 @Tags({"Kerberos", "Keytab", "Principal", "Credentials", "Authentication", "Security"})
 @Restricted(restrictions = {
-    @Restriction(requiredPermission = RequiredPermission.ACCESS_KEYTAB, explanation = "Allows user to define a Keytab and principal that can then be used by other components.")
+    @Restriction(requiredPermission = RequiredPermission.ACCESS_KEYTAB, explanation = "Cho phép người dùng định nghĩa Keytab và principal, sau đó có thể được các component khác sử dụng.")
 })
 public class KeytabCredentialsService extends AbstractControllerService implements KerberosCredentialsService {
 
     static final PropertyDescriptor PRINCIPAL = new PropertyDescriptor.Builder()
         .name("Kerberos Principal")
-        .description("Kerberos principal to authenticate as. Requires nifi.kerberos.krb5.file to be set in your nifi.properties")
+        .description("Kerberos principal để xác thực. Yêu cầu nifi.kerberos.krb5.file được thiết lập trong nifi.properties")
         .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .required(true)
@@ -60,7 +60,7 @@ public class KeytabCredentialsService extends AbstractControllerService implemen
 
     static final PropertyDescriptor KEYTAB = new PropertyDescriptor.Builder()
         .name("Kerberos Keytab")
-        .description("Kerberos keytab associated with the principal. Requires nifi.kerberos.krb5.file to be set in your nifi.properties")
+        .description("Keytab Kerberos liên kết với principal. Yêu cầu nifi.kerberos.krb5.file được thiết lập trong nifi.properties")
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .required(true)
@@ -79,20 +79,20 @@ public class KeytabCredentialsService extends AbstractControllerService implemen
     protected Collection<ValidationResult> customValidate(final ValidationContext validationContext) {
         final List<ValidationResult> results = new ArrayList<>();
 
-        // Check that the Kerberos configuration is set
+        // Kiểm tra Kerberos configuration
         if (kerberosConfigFile == null) {
             results.add(new ValidationResult.Builder()
                 .subject("Kerberos Configuration File")
                 .valid(false)
-                .explanation("The nifi.kerberos.krb5.file property must be set in nifi.properties in order to use Kerberos authentication")
+                .explanation("Cần thiết lập nifi.kerberos.krb5.file trong nifi.properties để sử dụng xác thực Kerberos")
                 .build());
         } else if (!kerberosConfigFile.canRead()) {
-            // Check that the Kerberos configuration is readable
+            // Kiểm tra quyền đọc file
             results.add(new ValidationResult.Builder()
                 .subject("Kerberos Configuration File")
                 .valid(false)
-                .explanation("Unable to read configured Kerberos Configuration File " + kerberosConfigFile.getAbsolutePath() + ", which is specified in nifi.properties. "
-                    + "Please ensure that the path is valid and that NiFi has adequate permissions to read the file.")
+                .explanation("Không thể đọc file Kerberos Configuration File " + kerberosConfigFile.getAbsolutePath()
+                    + " được chỉ định trong nifi.properties. Vui lòng đảm bảo đường dẫn hợp lệ và NiFi có quyền đọc file.")
                 .build());
         }
 

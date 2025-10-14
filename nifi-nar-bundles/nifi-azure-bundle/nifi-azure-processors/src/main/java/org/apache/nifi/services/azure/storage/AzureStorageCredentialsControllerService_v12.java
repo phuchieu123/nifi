@@ -38,7 +38,7 @@ import java.util.Map;
  * @see AbstractControllerService
  */
 @Tags({"azure", "microsoft", "cloud", "storage", "blob", "credentials", "queue"})
-@CapabilityDescription("Provides credentials for Azure Storage processors using Azure Storage client library v12.")
+@CapabilityDescription("Cung cấp thông tin xác thực cho các bộ xử lý Azure Storage bằng thư viện khách hàng Azure Storage phiên bản 12.")
 public class AzureStorageCredentialsControllerService_v12 extends AbstractControllerService implements AzureStorageCredentialsService_v12 {
 
     public static final PropertyDescriptor ACCOUNT_NAME = new PropertyDescriptor.Builder()

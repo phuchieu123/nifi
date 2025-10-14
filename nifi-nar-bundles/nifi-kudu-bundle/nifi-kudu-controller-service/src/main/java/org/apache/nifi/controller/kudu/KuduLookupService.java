@@ -71,16 +71,16 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-
-@CapabilityDescription("Lookup a record from Kudu Server associated with the specified key. Binary columns are base64 encoded. Only one matched row will be returned")
+@CapabilityDescription("Tra cứu một bản ghi từ Kudu Server dựa trên khóa được chỉ định. Các cột nhị phân sẽ được mã hóa base64. "
+        + "Chỉ một hàng khớp sẽ được trả về.")
 @Tags({"lookup", "enrich", "key", "value", "kudu"})
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@DeprecationNotice(reason = "Component này đã bị đánh dấu deprecated và sẽ bị loại bỏ trong NiFi 2.x.")
 public class KuduLookupService extends AbstractControllerService implements RecordLookupService {
 
     public static final PropertyDescriptor KUDU_MASTERS = new PropertyDescriptor.Builder()
             .name("kudu-lu-masters")
             .displayName("Kudu Masters")
-            .description("Comma separated addresses of the Kudu masters to connect to.")
+            .description("Danh sách các địa chỉ Kudu masters, cách nhau bằng dấu phẩy, để kết nối.")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -89,7 +89,7 @@ public class KuduLookupService extends AbstractControllerService implements Reco
     public static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("kudu-lu-kerberos-credentials-service")
             .displayName("Dịch vụ chứng thực Kerberos")
-            .description("Specifies the Kerberos Credentials to use for authentication")
+            .description("Xác định Kerberos Credentials sử dụng cho xác thực")
             .required(false)
             .identifiesControllerService(KerberosCredentialsService.class)
             .build();
@@ -97,7 +97,7 @@ public class KuduLookupService extends AbstractControllerService implements Reco
     public static final PropertyDescriptor KERBEROS_USER_SERVICE = new PropertyDescriptor.Builder()
             .name("kudu-lu-kerberos-user-service")
             .displayName("Kerberos User Service")
-            .description("Specifies the Kerberos User to use for authentication")
+            .description("Xác định Kerberos User sử dụng cho xác thực")
             .required(false)
             .identifiesControllerService(KerberosUserService.class)
             .build();
@@ -105,22 +105,28 @@ public class KuduLookupService extends AbstractControllerService implements Reco
     public static final PropertyDescriptor KUDU_OPERATION_TIMEOUT_MS = new PropertyDescriptor.Builder()
             .name("kudu-lu-operations-timeout-ms")
             .displayName("Kudu Operation Timeout")
-            .description("Default timeout used for user operations (using sessions and scanners)")
+            .description("Thời gian timeout mặc định cho các thao tác người dùng (sử dụng sessions và scanners)")
             .required(false)
             .defaultValue(AsyncKuduClient.DEFAULT_OPERATION_TIMEOUT_MS + "ms")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
 
-    public static final AllowableValue CLOSEST_REPLICA = new AllowableValue(ReplicaSelection.CLOSEST_REPLICA.toString(), ReplicaSelection.CLOSEST_REPLICA.name(),
-            "Select the closest replica to the client. Replicas are classified from closest to furthest as follows: "+
-                    "1) Local replicas 2) Replicas whose tablet server has the same location as the client 3) All other replicas");
-    public static final AllowableValue LEADER_ONLY = new AllowableValue(ReplicaSelection.LEADER_ONLY.toString(), ReplicaSelection.LEADER_ONLY.name(),
-            "Select the LEADER replica");
+    public static final AllowableValue CLOSEST_REPLICA = new AllowableValue(
+            ReplicaSelection.CLOSEST_REPLICA.toString(), 
+            ReplicaSelection.CLOSEST_REPLICA.name(),
+            "Chọn replica gần nhất với client. Các replica được xếp theo thứ tự từ gần đến xa: "
+            + "1) Replica local 2) Replica có tablet server cùng vị trí với client 3) Các replica khác");
+
+    public static final AllowableValue LEADER_ONLY = new AllowableValue(
+            ReplicaSelection.LEADER_ONLY.toString(), 
+            ReplicaSelection.LEADER_ONLY.name(),
+            "Chỉ chọn replica LEADER");
+
     public static final PropertyDescriptor KUDU_REPLICA_SELECTION = new PropertyDescriptor.Builder()
             .name("kudu-lu-replica-selection")
             .displayName("Kudu Replica Selection")
-            .description("Policy with which to choose amongst multiple replicas")
+            .description("Chính sách chọn một trong nhiều replica")
             .required(true)
             .defaultValue(CLOSEST_REPLICA.getValue())
             .allowableValues(CLOSEST_REPLICA, LEADER_ONLY)
@@ -131,7 +137,7 @@ public class KuduLookupService extends AbstractControllerService implements Reco
     public static final PropertyDescriptor TABLE_NAME = new PropertyDescriptor.Builder()
             .name("kudu-lu-table-name")
             .displayName("Kudu Table Name")
-            .description("Name of the table to access.")
+            .description("Tên bảng cần truy cập.")
             .required(true)
             .defaultValue("default")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -141,13 +147,12 @@ public class KuduLookupService extends AbstractControllerService implements Reco
     public static final PropertyDescriptor RETURN_COLUMNS = new PropertyDescriptor.Builder()
             .name("kudu-lu-return-cols")
             .displayName("Kudu Return Columns")
-            .description("A comma-separated list of columns to return when scanning. To return all columns set to \"*\"")
+            .description("Danh sách các cột trả về khi scan, cách nhau bằng dấu phẩy. Để trả về tất cả cột, đặt là \"*\"")
             .required(true)
             .defaultValue("*")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
-
 
     protected List<PropertyDescriptor> properties;
 

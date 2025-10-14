@@ -54,43 +54,43 @@ import java.util.regex.Pattern;
 
 @InputRequirement(InputRequirement.Requirement.INPUT_ALLOWED)
 @Tags({"hadoop", "HCFS", "HDFS", "delete", "remove", "filesystem"})
-@CapabilityDescription("Deletes one or more files or directories from HDFS. The path can be provided as an attribute from an incoming FlowFile, "
-        + "or a statically set path that is periodically removed. If this processor has an incoming connection, it"
-        + "will ignore running on a periodic basis and instead rely on incoming FlowFiles to trigger a delete. "
-        + "Note that you may use a wildcard character to match multiple files or directories. If there are"
-        + " no incoming connections no flowfiles will be transfered to any output relationships.  If there is an incoming"
-        + " flowfile then provided there are no detected failures it will be transferred to success otherwise it will be sent to false. If"
-        + " knowledge of globbed files deleted is necessary use ListHDFS first to produce a specific list of files to delete. ")
+@CapabilityDescription("Xóa một hoặc nhiều tệp hoặc thư mục từ HDFS. Đường dẫn có thể được cung cấp như một thuộc tính từ FlowFile đến, "
+        + "hoặc là một đường dẫn được thiết lập tĩnh và sẽ được xóa theo chu kỳ. Nếu processor này có kết nối đến, "
+        + "nó sẽ bỏ qua việc chạy theo chu kỳ và thay vào đó dựa vào FlowFile đến để kích hoạt việc xóa. "
+        + "Lưu ý rằng bạn có thể sử dụng ký tự đại diện để khớp nhiều tệp hoặc thư mục. "
+        + "Nếu không có kết nối đến, sẽ không có flowfile nào được chuyển tới bất kỳ quan hệ đầu ra nào. "
+        + "Nếu có flowfile đến và không có lỗi nào được phát hiện, flowfile sẽ được chuyển tới success, "
+        + "ngược lại sẽ được gửi tới failure. Nếu cần biết các tệp đã xóa theo mẫu, hãy sử dụng ListHDFS trước để tạo danh sách tệp cụ thể cần xóa.")
 @Restricted(restrictions = {
         @Restriction(
                 requiredPermission = RequiredPermission.WRITE_DISTRIBUTED_FILESYSTEM,
-                explanation = "Provides operator the ability to delete any file that NiFi has access to in HDFS or the local filesystem.")
+                explanation = "Cho phép người vận hành xóa bất kỳ tệp nào mà NiFi có quyền truy cập trên HDFS hoặc filesystem cục bộ.")
 })
 @WritesAttributes({
-        @WritesAttribute(attribute="hdfs.filename", description="HDFS file to be deleted. "
-                + "If multiple files are deleted, then only the last filename is set."),
-        @WritesAttribute(attribute="hdfs.path", description="HDFS Path specified in the delete request. "
-                + "If multiple paths are deleted, then only the last path is set."),
-        @WritesAttribute(attribute = "hadoop.file.url", description = "The hadoop url for the file to be deleted."),
-        @WritesAttribute(attribute="hdfs.error.message", description="HDFS error message related to the hdfs.error.code")
+        @WritesAttribute(attribute="hdfs.filename", description="Tên tệp HDFS sẽ bị xóa. "
+                + "Nếu nhiều tệp bị xóa, chỉ tên tệp cuối cùng được thiết lập."),
+        @WritesAttribute(attribute="hdfs.path", description="Đường dẫn HDFS được chỉ định trong yêu cầu xóa. "
+                + "Nếu nhiều đường dẫn bị xóa, chỉ đường dẫn cuối cùng được thiết lập."),
+        @WritesAttribute(attribute = "hadoop.file.url", description = "URL Hadoop cho tệp sẽ bị xóa."),
+        @WritesAttribute(attribute="hdfs.error.message", description="Thông điệp lỗi HDFS liên quan tới hdfs.error.code")
 })
 @SeeAlso({ListHDFS.class, PutHDFS.class})
 public class DeleteHDFS extends AbstractHadoopProcessor {
 
     public static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("When an incoming flowfile is used then if there are no errors invoking delete the flowfile will route here.")
+            .description("Khi có FlowFile đến và không có lỗi xảy ra trong quá trình xóa, FlowFile sẽ được chuyển tới đây.")
             .build();
 
     public static final Relationship REL_FAILURE = new Relationship.Builder()
             .name("failure")
-            .description("When an incoming flowfile is used and there is a failure while deleting then the flowfile will route here.")
+            .description("Khi có FlowFile đến và xảy ra lỗi trong quá trình xóa, FlowFile sẽ được chuyển tới đây.")
             .build();
 
     public static final PropertyDescriptor FILE_OR_DIRECTORY = new PropertyDescriptor.Builder()
             .name("file_or_directory")
             .displayName("Path")
-            .description("The HDFS file or directory to delete. A wildcard expression may be used to only delete certain files")
+            .description("Tệp hoặc thư mục HDFS cần xóa. Có thể sử dụng biểu thức đại diện để chỉ xóa các tệp nhất định")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -99,7 +99,7 @@ public class DeleteHDFS extends AbstractHadoopProcessor {
     public static final PropertyDescriptor RECURSIVE = new PropertyDescriptor.Builder()
             .name("recursive")
             .displayName("Recursive")
-            .description("Remove contents of a non-empty directory recursively")
+            .description("Xóa nội dung của thư mục không rỗng theo đệ quy")
             .allowableValues("true", "false")
             .required(true)
             .defaultValue("true")

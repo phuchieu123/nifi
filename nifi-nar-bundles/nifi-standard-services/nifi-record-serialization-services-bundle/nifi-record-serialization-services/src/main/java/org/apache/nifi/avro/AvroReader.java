@@ -45,20 +45,19 @@ import java.util.Map;
 import java.util.Optional;
 
 @Tags({"avro", "parse", "record", "row", "reader", "delimited", "comma", "separated", "values"})
-@CapabilityDescription("Parses Avro data and returns each Avro record as an separate Record object. The Avro data may contain the schema itself, "
-    + "or the schema can be externalized and accessed by one of the methods offered by the 'Schema Access Strategy' property.")
+@CapabilityDescription("Phân tích dữ liệu Avro và trả về từng bản ghi Avro dưới dạng một đối tượng Record riêng biệt. Dữ liệu Avro có thể chứa Schema bên trong, "
++ "hoặc Schema có thể được tách riêng và truy cập thông qua một trong các phương thức được cung cấp bởi thuộc tính 'Schema Access Strategy'.")
 public class AvroReader extends SchemaRegistryService implements RecordReaderFactory {
-    private final AllowableValue EMBEDDED_AVRO_SCHEMA = new AllowableValue("embedded-avro-schema",
-        "Use Embedded Avro Schema", "The FlowFile has the Avro Schema embedded within the content, and this schema will be used.");
-
-    static final PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()
-            .name("cache-size")
-            .displayName("Cache Size")
-            .description("Specifies how many Schemas should be cached")
-            .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
-            .defaultValue("1000")
-            .required(true)
-            .build();
+private final AllowableValue EMBEDDED_AVRO_SCHEMA = new AllowableValue("embedded-avro-schema",
+"Sử dụng Schema Avro nhúng", "FlowFile có chứa Schema Avro được nhúng trong nội dung, và Schema này sẽ được sử dụng.");
+   static final PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()  
+        .name("cache-size")  
+        .displayName("Kích thước bộ nhớ đệm")  
+        .description("Xác định số lượng Schema sẽ được lưu trong bộ nhớ đệm")  
+        .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)  
+        .defaultValue("1000")  
+        .required(true)  
+        .build();  
 
     private LoadingCache<String, Schema> compiledAvroSchemaCache;
 

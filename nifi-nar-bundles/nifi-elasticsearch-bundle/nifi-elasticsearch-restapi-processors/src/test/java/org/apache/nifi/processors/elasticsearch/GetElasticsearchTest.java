@@ -3,7 +3,7 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License") you may not use this file except in compliance with
+ * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -79,13 +79,15 @@ public class GetElasticsearchTest {
         runner.setProperty(GetElasticsearch.ATTRIBUTE_NAME, "");
 
         final AssertionError assertionError = assertThrows(AssertionError.class, () -> runner.run());
-        final String expected = String.format("Processor has 6 validation failures:\n" +
-                        "'%s' validated against '' is invalid because %s cannot be empty\n" +
-                        "'%s' validated against '' is invalid because %s cannot be empty\n" +
-                        "'%s' validated against '' is invalid because %s cannot be empty\n" +
-                        "'%s' validated against 'not-valid' is invalid because Given value not found in allowed set '%s'\n" +
-                        "'%s' validated against 'not-a-service' is invalid because Property references a Controller Service that does not exist\n" +
-                        "'%s' validated against 'not-a-service' is invalid because Invalid Controller Service: not-a-service is not a valid Controller Service Identifier\n",
+        // SỬA LỖI: Di chuyển dấu ngoặc của String.format xuống cuối
+        final String expected = String.format(
+                "Processor có 6 lỗi xác thực:\n" +
+                "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n" +
+                "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n" +
+                "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n" +
+                "'%s' được xác thực với 'not-valid' không hợp lệ vì giá trị được nhập không có trong tập giá trị hợp lệ '%s'\n" +
+                "'%s' được xác thực với 'not-a-service' không hợp lệ vì Property tham chiếu tới Controller Service không tồn tại\n" +
+                "'%s' được xác thực với 'not-a-service' không hợp lệ vì Controller Service không hợp lệ: not-a-service không phải là một Identifier hợp lệ của Controller Service\n",
                 GetElasticsearch.ID.getName(), GetElasticsearch.ID.getName(),
                 GetElasticsearch.INDEX.getName(), GetElasticsearch.INDEX.getName(),
                 GetElasticsearch.TYPE.getName(), GetElasticsearch.TYPE.getName(),
@@ -101,8 +103,8 @@ public class GetElasticsearchTest {
         runner.setProperty(GetElasticsearch.ATTRIBUTE_NAME, "");
 
         final AssertionError assertionError = assertThrows(AssertionError.class, () -> runner.run());
-        final String expected = String.format("Processor has 1 validation failures:\n" +
-                        "'%s' validated against '' is invalid because %s cannot be empty\n",
+        // SỬA LỖI: Di chuyển dấu ngoặc của String.format xuống cuối
+        final String expected = String.format("Processor có 1 lỗi xác thực:\n" + "'%s' được xác thực với '' không hợp lệ vì %s không được để trống\n",
                 GetElasticsearch.ATTRIBUTE_NAME.getName(), GetElasticsearch.ATTRIBUTE_NAME.getName());
         assertEquals(expected, assertionError.getMessage());
     }

@@ -40,21 +40,21 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"text", "freeform", "expression", "language", "el", "record", "recordset", "resultset", "writer", "serialize"})
-@CapabilityDescription("Writes the contents of a RecordSet as free-form text. The configured "
-        + "text is able to make use of the Expression Language to reference each of the fields that are available "
-        + "in a Record, as well as the attributes in the FlowFile and variables. If there is a name collision, the field name/value is used before attributes or variables. "
-        + "Each record in the RecordSet will be separated by a single newline character.")
+@CapabilityDescription("Ghi nội dung của một RecordSet dưới dạng văn bản tự do. "
+        + "Văn bản được cấu hình có thể sử dụng Expression Language để tham chiếu tới từng trường có trong Record, "
+        + "cũng như các thuộc tính trong FlowFile và các biến. Nếu có trùng tên, tên/giá trị của trường sẽ được ưu tiên trước thuộc tính hoặc biến. "
+        + "Mỗi bản ghi trong RecordSet sẽ được phân tách bằng một ký tự xuống dòng đơn.")
 public class FreeFormTextRecordSetWriter extends AbstractControllerService implements RecordSetWriterFactory {
     static final PropertyDescriptor TEXT = new PropertyDescriptor.Builder()
         .name("Text")
-        .description("The text to use when writing the results. This property will evaluate the Expression Language using any of the fields available in a Record.")
+        .description("Văn bản được sử dụng khi ghi kết quả. Thuộc tính này sẽ đánh giá Expression Language sử dụng bất kỳ trường nào có trong Record.")
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .required(true)
         .build();
     static final PropertyDescriptor CHARACTER_SET = new PropertyDescriptor.Builder()
         .name("Character Set")
-        .description("The Character set to use when writing the data to the FlowFile")
+        .description("Bảng ký tự được sử dụng khi ghi dữ liệu vào FlowFile")
         .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
         .defaultValue("UTF-8")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)

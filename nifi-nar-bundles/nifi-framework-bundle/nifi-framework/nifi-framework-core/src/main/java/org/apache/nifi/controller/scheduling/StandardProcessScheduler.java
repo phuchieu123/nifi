@@ -594,7 +594,7 @@ public final class StandardProcessScheduler implements ProcessScheduler {
     @Override
     public synchronized void enableFunnel(final Funnel funnel) {
         if (funnel.getScheduledState() != ScheduledState.DISABLED) {
-            throw new IllegalStateException("Funnel cannot be enabled because it is not disabled");
+            throw new IllegalStateException("Không thể bật kênh vì nó không bị tắt");
         }
         funnel.setScheduledState(ScheduledState.STOPPED);
     }
@@ -602,7 +602,7 @@ public final class StandardProcessScheduler implements ProcessScheduler {
     @Override
     public synchronized void disableFunnel(final Funnel funnel) {
         if (funnel.getScheduledState() != ScheduledState.STOPPED) {
-            throw new IllegalStateException("Funnel cannot be disabled because its state its state is set to " + funnel.getScheduledState());
+            throw new IllegalStateException("Không thể tắt kênh vì trạng thái của kênh được đặt thành " + funnel.getScheduledState());
         }
         funnel.setScheduledState(ScheduledState.DISABLED);
     }
@@ -610,7 +610,7 @@ public final class StandardProcessScheduler implements ProcessScheduler {
     @Override
     public synchronized void disablePort(final Port port) {
         if (port.getScheduledState() != ScheduledState.STOPPED) {
-            throw new IllegalStateException("Port cannot be disabled because its state is set to " + port.getScheduledState());
+            throw new IllegalStateException("Không thể tắt cổng vì trạng thái của nó được đặt thành " + port.getScheduledState());
         }
 
         if (!(port instanceof AbstractPort)) {
@@ -623,7 +623,7 @@ public final class StandardProcessScheduler implements ProcessScheduler {
     @Override
     public synchronized void enablePort(final Port port) {
         if (port.getScheduledState() != ScheduledState.DISABLED) {
-            throw new IllegalStateException("Funnel cannot be enabled because it is not disabled");
+            throw new IllegalStateException("Không thể bật kênh vì nó không bị tắt");
         }
 
         if (!(port instanceof AbstractPort)) {

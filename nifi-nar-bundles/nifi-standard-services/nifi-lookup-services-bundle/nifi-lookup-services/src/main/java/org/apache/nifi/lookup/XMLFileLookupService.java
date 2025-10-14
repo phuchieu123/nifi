@@ -26,11 +26,11 @@ import org.apache.nifi.lookup.configuration2.SafeXMLConfiguration;
 
 
 @Tags({"lookup", "cache", "enrich", "join", "xml", "reloadable", "key", "value"})
-@CapabilityDescription("A reloadable XML file-based lookup service." +
-        " This service uses Apache Commons Configuration." +
-        " Example XML configuration file and how to access specific configuration can be found at" +
+@CapabilityDescription("Một dịch vụ tra cứu dựa trên tệp XML có thể tải lại." +
+        " Dịch vụ này sử dụng Apache Commons Configuration." +
+        " Ví dụ về tệp cấu hình XML và cách truy cập cấu hình cụ thể có thể được tìm thấy tại" +
         " http://commons.apache.org/proper/commons-configuration/userguide/howto_hierarchical.html." +
-        " External entity processing is disabled.")
+        " Việc xử lý thực thể bên ngoài bị vô hiệu hóa.")
 @Restricted(
         restrictions = {
                 @Restriction(

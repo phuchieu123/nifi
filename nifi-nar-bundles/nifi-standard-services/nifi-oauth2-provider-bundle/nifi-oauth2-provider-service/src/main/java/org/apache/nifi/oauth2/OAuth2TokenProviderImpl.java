@@ -43,9 +43,9 @@ import org.apache.nifi.util.StringUtils;
 @Deprecated
 @DeprecationNotice(alternatives = {StandardOauth2AccessTokenProvider.class})
 @Tags({"oauth2", "provider", "authorization" })
-@CapabilityDescription("This controller service provides a way of working with access and refresh tokens via the " +
-        "password and client_credential grant flows in the OAuth2 specification. It is meant to provide a way for components " +
-        "to get a token from an oauth2 provider and pass that token as a part of a header to another service.")
+@CapabilityDescription("Dịch vụ controller này cung cấp cách làm việc với access token và refresh token thông qua " +
+        "các flow password và client_credential theo chuẩn OAuth2. Nó được thiết kế để các component " +
+        "có thể lấy token từ nhà cung cấp OAuth2 và gửi token đó như một phần của header tới dịch vụ khác.")
 public class OAuth2TokenProviderImpl extends AbstractControllerService implements OAuth2TokenProvider {
     @Override
     public List<PropertyDescriptor> getSupportedPropertyDescriptors() {

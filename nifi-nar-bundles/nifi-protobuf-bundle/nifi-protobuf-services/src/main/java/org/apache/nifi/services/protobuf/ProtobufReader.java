@@ -54,7 +54,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Tags({"protobuf", "record", "reader", "parser"})
-@CapabilityDescription("Parses a Protocol Buffers message from binary format.")
+@CapabilityDescription("Phân tích cú pháp một thông điệp Protocol Buffers từ định dạng nhị phân.")
 public class ProtobufReader extends SchemaRegistryService implements RecordReaderFactory {
 
     private static final String ANY_PROTO = "google/protobuf/any.proto";
@@ -65,18 +65,18 @@ public class ProtobufReader extends SchemaRegistryService implements RecordReade
     private static final String WRAPPERS_PROTO = "google/protobuf/wrappers.proto";
 
     private static final AllowableValue GENERATE_FROM_PROTO_FILE = new AllowableValue("generate-from-proto-file",
-            "Generate from Proto file", "The record schema is generated from the provided proto file");
+            "Generate from Proto file", "Schema bản ghi được tạo từ file proto được cung cấp");
 
     private volatile String messageType;
     private volatile Schema protoSchema;
 
-    // Holder of cached proto information so validation does not reload the same proto file over and over
+    // Bộ giữ thông tin proto đã cache để việc xác thực không phải nạp lại file proto cùng một lần nữa
     private final AtomicReference<ProtoValidationResource> validationResourceHolder = new AtomicReference<>();
 
     public static final PropertyDescriptor PROTOBUF_DIRECTORY = new PropertyDescriptor.Builder()
             .name("Proto Directory")
-            .displayName("Proto Directory")
-            .description("Directory containing Protocol Buffers message definition (.proto) file(s).")
+            .displayName("Thư mục Proto")
+            .description("Thư mục chứa file định nghĩa thông điệp Protocol Buffers (.proto).")
             .required(true)
             .addValidator(StandardValidators.createDirectoryExistsValidator(true, false))
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -84,9 +84,9 @@ public class ProtobufReader extends SchemaRegistryService implements RecordReade
 
     public static final PropertyDescriptor MESSAGE_TYPE = new PropertyDescriptor.Builder()
             .name("Message Type")
-            .displayName("Message Type")
-            .description("Fully qualified name of the Protocol Buffers message type including its package (eg. mypackage.MyMessage). " +
-                    "The .proto files configured in '" + PROTOBUF_DIRECTORY.getDisplayName() + "' must contain the definition of this message type.")
+            .displayName("Loại Thông điệp")
+            .description("Tên đầy đủ của loại thông điệp Protocol Buffers bao gồm package (ví dụ: mypackage.MyMessage). " +
+                    "Các file .proto được cấu hình trong '" + PROTOBUF_DIRECTORY.getDisplayName() + "' phải chứa định nghĩa loại thông điệp này.")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -112,7 +112,7 @@ public class ProtobufReader extends SchemaRegistryService implements RecordReade
                 problems.add(new ValidationResult.Builder()
                         .subject(MESSAGE_TYPE.getDisplayName())
                         .valid(false)
-                        .explanation(String.format("'%s' message type cannot be found in the provided proto files.", messageType))
+                        .explanation(String.format("Không tìm thấy loại thông điệp '%s' trong các file proto được cung cấp.", messageType))
                         .build());
             }
         }

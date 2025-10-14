@@ -46,16 +46,16 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Tags({"rules", "rules engine", "script", "invoke", "groovy", "python", "jython", "jruby", "ruby", "javascript", "js", "lua", "luaj"})
-@CapabilityDescription("Allows the user to provide a scripted RulesEngineService for custom firing of rules depending on the supplied facts. The script must set a variable 'rulesEngine' to an "
-        + "implementation of RulesEngineService.")
-@DynamicProperty(name = "Script Engine Binding property", value = "Binding property value passed to Script Runner",
+@CapabilityDescription("Cho phép người dùng cung cấp một RulesEngineService được viết bằng kịch bản để thực thi tùy chỉnh các quy tắc tùy thuộc vào các sự kiện được cung cấp. Kịch bản phải đặt một biến 'rulesEngine' thành một "
+        + "triển khai của RulesEngineService.")
+@DynamicProperty(name = "Thuộc tính ràng buộc Công cụ kịch bản", value = "Giá trị thuộc tính ràng buộc được truyền đến Script Runner",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Updates a script engine property specified by the Dynamic Property's key with the value specified by the Dynamic Property's value")
+        description = "Cập nhật một thuộc tính công cụ kịch bản được chỉ định bởi khóa Thuộc tính Động với giá trị được chỉ định bởi giá trị Thuộc tính Động")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXECUTE_CODE,
-                        explanation = "Provides operator the ability to execute arbitrary code assuming all permissions that NiFi has.")
+                        explanation = "Cung cấp cho nhà điều hành khả năng thực thi mã tùy ý giả định tất cả các quyền mà NiFi có.")
         }
 )
 public class ScriptedRulesEngine extends AbstractScriptedControllerService implements RulesEngineService {

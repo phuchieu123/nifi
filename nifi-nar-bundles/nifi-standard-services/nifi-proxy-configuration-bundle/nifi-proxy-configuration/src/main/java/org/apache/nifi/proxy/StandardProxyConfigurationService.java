@@ -33,14 +33,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@CapabilityDescription("Provides a set of configurations for different NiFi components to use a proxy server.")
+@CapabilityDescription("Cung cấp một bộ cấu hình cho các thành phần NiFi khác nhau để sử dụng máy chủ proxy.")
 @Tags({"Proxy"})
 public class StandardProxyConfigurationService extends AbstractControllerService implements ProxyConfigurationService {
 
     public static final PropertyDescriptor PROXY_TYPE = new PropertyDescriptor.Builder()
             .name("proxy-type")
-            .displayName("Proxy Type")
-            .description("Proxy type.")
+            .displayName("Loại Proxy")
+            .description("Loại Proxy.")
             .allowableValues(Proxy.Type.values())
             .defaultValue(Proxy.Type.DIRECT.name())
             .required(true)
@@ -48,8 +48,8 @@ public class StandardProxyConfigurationService extends AbstractControllerService
 
     public static final PropertyDescriptor SOCKS_VERSION = new PropertyDescriptor.Builder()
             .name("socks-version")
-            .displayName("SOCKS Version")
-            .description("SOCKS Protocol Version")
+            .displayName("Phiên bản SOCKS")
+            .description("Phiên bản Giao thức SOCKS")
             .allowableValues(SocksVersion.values())
             .defaultValue(SocksVersion.SOCKS5.name())
             .dependsOn(PROXY_TYPE, Proxy.Type.SOCKS.name())
@@ -58,37 +58,36 @@ public class StandardProxyConfigurationService extends AbstractControllerService
 
     public static final PropertyDescriptor PROXY_SERVER_HOST = new PropertyDescriptor.Builder()
             .name("proxy-server-host")
-            .displayName("Proxy Server Host")
-            .description("Proxy server hostname or ip-address.")
+            .displayName("Máy chủ Proxy")
+            .description("Tên máy chủ proxy hoặc địa chỉ IP.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
 
     public static final PropertyDescriptor PROXY_SERVER_PORT = new PropertyDescriptor.Builder()
             .name("proxy-server-port")
-            .displayName("Proxy Server Port")
-            .description("Proxy server port number.")
+            .displayName("Cổng Máy chủ Proxy")
+            .description("Số cổng của máy chủ proxy.")
             .addValidator(StandardValidators.PORT_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
 
     public static final PropertyDescriptor PROXY_USER_NAME = new PropertyDescriptor.Builder()
             .name("proxy-user-name")
-            .displayName("Proxy User Name")
-            .description("The name of the proxy client for user authentication.")
+            .displayName("Tên Người dùng Proxy")
+            .description("Tên của máy khách proxy để xác thực người dùng.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
 
     public static final PropertyDescriptor PROXY_USER_PASSWORD = new PropertyDescriptor.Builder()
             .name("proxy-user-password")
-            .displayName("Proxy User Password")
-            .description("The password of the proxy client for user authentication.")
+            .displayName("Mật khẩu Người dùng Proxy")
+            .description("Mật khẩu của máy khách proxy để xác thực người dùng.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .sensitive(true)
             .build();
-
     private volatile ProxyConfiguration configuration = ProxyConfiguration.DIRECT_CONFIGURATION;
 
     @Override

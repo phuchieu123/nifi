@@ -55,31 +55,31 @@ import static org.apache.nifi.parquet.utils.ParquetUtils.applyCommonConfig;
 
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"put", "parquet", "hadoop", "HDFS", "filesystem", "record"})
-@CapabilityDescription("Reads records from an incoming FlowFile using the provided Record Reader, and writes those records " +
-        "to a Parquet file. The schema for the Parquet file must be provided in the processor properties. This processor will " +
-        "first write a temporary dot file and upon successfully writing every record to the dot file, it will rename the " +
-        "dot file to it's final name. If the dot file cannot be renamed, the rename operation will be attempted up to 10 times, and " +
-        "if still not successful, the dot file will be deleted and the flow file will be routed to failure. " +
-        " If any error occurs while reading records from the input, or writing records to the output, " +
-        "the entire dot file will be removed and the flow file will be routed to failure or retry, depending on the error.")
-@ReadsAttribute(attribute = "filename", description = "The name of the file to write comes from the value of this attribute.")
+@CapabilityDescription("Đọc các bản ghi từ FlowFile đến sử dụng Record Reader được cung cấp, và ghi các bản ghi đó "
+        + "vào file Parquet. Sơ đồ cho file Parquet phải được cung cấp trong thuộc tính của processor. Processor này "
+        + "sẽ ghi trước vào một file tạm (.dot) và sau khi ghi thành công tất cả bản ghi, file .dot sẽ được đổi tên "
+        + "thành tên cuối cùng. Nếu không thể đổi tên file .dot, sẽ thử đổi tên tối đa 10 lần, nếu vẫn không thành công, "
+        + "file .dot sẽ bị xóa và FlowFile sẽ được chuyển tới failure. "
+        + "Nếu có lỗi xảy ra khi đọc bản ghi đầu vào hoặc ghi bản ghi ra đầu ra, toàn bộ file .dot sẽ bị xóa và FlowFile "
+        + "sẽ được chuyển tới failure hoặc retry tùy theo lỗi.")
+@ReadsAttribute(attribute = "filename", description = "Tên file ghi ra lấy từ giá trị của attribute này.")
 @WritesAttributes({
-        @WritesAttribute(attribute = "filename", description = "The name of the file is stored in this attribute."),
-        @WritesAttribute(attribute = "absolute.hdfs.path", description = "The absolute path to the file is stored in this attribute."),
-        @WritesAttribute(attribute = "hadoop.file.url", description = "The hadoop url for the file is stored in this attribute."),
-        @WritesAttribute(attribute = "record.count", description = "The number of records written to the Parquet file")
+        @WritesAttribute(attribute = "filename", description = "Tên file được lưu trong attribute này."),
+        @WritesAttribute(attribute = "absolute.hdfs.path", description = "Đường dẫn tuyệt đối tới file được lưu trong attribute này."),
+        @WritesAttribute(attribute = "hadoop.file.url", description = "URL Hadoop của file được lưu trong attribute này."),
+        @WritesAttribute(attribute = "record.count", description = "Số lượng bản ghi đã ghi vào file Parquet")
 })
 @Restricted(restrictions = {
     @Restriction(
         requiredPermission = RequiredPermission.WRITE_DISTRIBUTED_FILESYSTEM,
-        explanation = "Provides operator the ability to write any file that NiFi has access to in HDFS or the local filesystem.")
+        explanation = "Cho phép operator ghi bất kỳ file nào mà NiFi có quyền truy cập trong HDFS hoặc hệ thống file cục bộ.")
 })
 public class PutParquet extends AbstractPutHDFSRecord {
 
     public static final PropertyDescriptor REMOVE_CRC_FILES = new PropertyDescriptor.Builder()
             .name("remove-crc-files")
-            .displayName("Remove CRC Files")
-            .description("Specifies whether the corresponding CRC file should be deleted upon successfully writing a Parquet file")
+            .displayName("Xóa file CRC")
+            .description("Chỉ định có xóa file CRC tương ứng sau khi ghi thành công file Parquet hay không")
             .allowableValues("true", "false")
             .defaultValue("false")
             .build();

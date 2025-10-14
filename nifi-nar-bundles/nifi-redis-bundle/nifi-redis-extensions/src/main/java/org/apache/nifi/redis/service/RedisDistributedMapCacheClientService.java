@@ -37,17 +37,18 @@ import java.util.List;
 import static org.apache.nifi.redis.util.RedisUtils.REDIS_CONNECTION_POOL;
 
 @Tags({ "redis", "distributed", "cache", "map" })
-@CapabilityDescription("An implementation of DistributedMapCacheClient that uses Redis as the backing cache. This service relies on " +
-        "the WATCH, MULTI, and EXEC commands in Redis, which are not fully supported when Redis is clustered. As a result, this service " +
-        "can only be used with a Redis Connection Pool that is configured for standalone or sentinel mode. Sentinel mode can be used to " +
-        "provide high-availability configurations.")
+@CapabilityDescription("Một triển khai của DistributedMapCacheClient sử dụng Redis làm bộ nhớ đệm. Dịch vụ này dựa trên " +
+        "các lệnh WATCH, MULTI và EXEC trong Redis, vốn không được hỗ trợ đầy đủ khi Redis được cấu hình theo dạng cluster. Do đó, dịch vụ này " +
+        "chỉ có thể được sử dụng với Redis Connection Pool được cấu hình ở chế độ standalone hoặc sentinel. Chế độ sentinel có thể được sử dụng để " +
+        "cung cấp cấu hình High-Availability.")
 public class RedisDistributedMapCacheClientService extends SimpleRedisDistributedMapCacheClientService implements AtomicDistributedMapCacheClient<byte[]> {
 
     @Override
     protected Collection<ValidationResult> customValidate(ValidationContext validationContext) {
         final List<ValidationResult> results = new ArrayList<>();
 
-        final RedisConnectionPool redisConnectionPool = validationContext.getProperty(REDIS_CONNECTION_POOL).asControllerService(RedisConnectionPool.class);
+        final RedisConnectionPool redisConnectionPool = validationContext.getProperty(REDIS_CONNECTION_POOL)
+                .asControllerService(RedisConnectionPool.class);
         if (redisConnectionPool != null) {
             final RedisType redisType = redisConnectionPool.getRedisType();
             if (redisType != null && redisType == RedisType.CLUSTER) {
@@ -55,13 +56,15 @@ public class RedisDistributedMapCacheClientService extends SimpleRedisDistribute
                         .subject(REDIS_CONNECTION_POOL.getDisplayName())
                         .valid(false)
                         .explanation(REDIS_CONNECTION_POOL.getDisplayName()
-                                + " is configured in clustered mode, and this service requires a non-clustered Redis")
+                                + " được cấu hình ở chế độ cluster, trong khi dịch vụ này yêu cầu Redis không phải cluster")
                         .build());
             }
         }
 
         return results;
     }
+
+
 
     @Override
     public <K, V> AtomicCacheEntry<K, V, byte[]> fetch(final K key, final Serializer<K> keySerializer, final Deserializer<V> valueDeserializer) throws IOException {

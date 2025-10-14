@@ -51,21 +51,21 @@ import static org.apache.nifi.processors.azure.storage.utils.ADLSAttributes.ATTR
 @InputRequirement(Requirement.INPUT_REQUIRED)
 public class DeleteAzureDataLakeStorage extends AbstractAzureDataLakeStorageProcessor {
 
-    public static final AllowableValue FS_TYPE_FILE = new AllowableValue("file", "File", "The object to be deleted is a file.");
-    public static final AllowableValue FS_TYPE_DIRECTORY = new AllowableValue("directory", "Directory", "The object to be deleted is a directory.");
+    public static final AllowableValue FS_TYPE_FILE = new AllowableValue("file", "File", "Đối tượng cần xóa là một tập tin.");
+    public static final AllowableValue FS_TYPE_DIRECTORY = new AllowableValue("directory", "Directory", "Đối tượng cần xóa là một thư mục.");
 
     public static final PropertyDescriptor FILESYSTEM_OBJECT_TYPE = new PropertyDescriptor.Builder()
             .name("filesystem-object-type")
-            .displayName("Filesystem Object Type")
-            .description("They type of the file system object to be deleted. It can be either folder or file.")
+            .displayName("Loại đối tượng hệ thống tập tin")
+            .description("Họ gõ đối tượng hệ thống tập tin sẽ bị xóa. Nó có thể là thư mục hoặc tập tin.")
             .allowableValues(FS_TYPE_FILE, FS_TYPE_DIRECTORY)
             .required(true)
             .defaultValue(FS_TYPE_FILE.toString())
             .build();
 
     public static final PropertyDescriptor FILE = new PropertyDescriptor.Builder()
-            .name("file-name").displayName("File Name")
-            .description("The filename")
+            .name("file-name").displayName("Tên tệp")
+            .description("Tên tập tin")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(true)
@@ -103,7 +103,7 @@ public class DeleteAzureDataLakeStorage extends AbstractAzureDataLakeStorageProc
                 final DataLakeFileClient fileClient = directoryClient.getFileClient(fileName);
                 fileClient.delete();
                 session.transfer(flowFile, REL_SUCCESS);
-                session.getProvenanceReporter().invokeRemoteProcess(flowFile, fileClient.getFileUrl(), "File deleted");
+                session.getProvenanceReporter().invokeRemoteProcess(flowFile, fileClient.getFileUrl(), "Đã xóa tệp");
             } else {
                 directoryClient.deleteWithResponse(true, new DataLakeRequestConditions(), Duration.ofSeconds(10), Context.NONE);
                 session.transfer(flowFile, REL_SUCCESS);

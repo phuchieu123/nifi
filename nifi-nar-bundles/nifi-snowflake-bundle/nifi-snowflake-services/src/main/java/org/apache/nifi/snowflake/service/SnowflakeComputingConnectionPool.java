@@ -69,21 +69,22 @@ import static org.apache.nifi.dbcp.utils.DBCPProperties.extractMillisWithInfinit
  * functionality.
  */
 @Tags({"snowflake", "dbcp", "jdbc", "database", "connection", "pooling", "store"})
-@CapabilityDescription("Provides Snowflake Connection Pooling Service. Connections can be asked from pool and returned after usage.")
+@CapabilityDescription("Cung cấp dịch vụ quản lý kết nối Snowflake (Connection Pooling Service). " + "Các kết nối có thể được lấy từ pool và trả lại sau khi sử dụng.")
+
 @SupportsSensitiveDynamicProperties
 @DynamicProperties({
-        @DynamicProperty(name = "JDBC property name",
-                value = "Snowflake JDBC property value",
+        @DynamicProperty(name = "Tên thuộc tính JDBC",
+                value = "Giá trị thuộc tính JDBC của Snowflake",
                 expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-                description = "Snowflake JDBC driver property name and value applied to JDBC connections.")
+                description = "Tên và giá trị thuộc tính của Snowflake JDBC driver áp dụng cho các kết nối JDBC.")
 })
 @RequiresInstanceClassLoading
 public class SnowflakeComputingConnectionPool extends AbstractDBCPConnectionPool implements SnowflakeConnectionProviderService {
 
     public static final PropertyDescriptor CONNECTION_URL_FORMAT = new PropertyDescriptor.Builder()
             .name("connection-url-format")
-            .displayName("Connection URL Format")
-            .description("The format of the connection URL.")
+            .displayName("Định dạng URL kết nối")
+            .description("Định dạng của URL kết nối.")
             .allowableValues(ConnectionUrlFormat.class)
             .required(true)
             .defaultValue(ConnectionUrlFormat.FULL_URL.getValue())
@@ -91,9 +92,9 @@ public class SnowflakeComputingConnectionPool extends AbstractDBCPConnectionPool
 
     public static final PropertyDescriptor SNOWFLAKE_URL = new PropertyDescriptor.Builder()
             .fromPropertyDescriptor(DBCPProperties.DATABASE_URL)
-            .displayName("Snowflake URL")
-            .description("Example connection string: jdbc:snowflake://[account].[region]" + ConnectionUrlFormat.SNOWFLAKE_HOST_SUFFIX + "/?[connection_params]" +
-                    " The connection parameters can include db=DATABASE_NAME to avoid using qualified table names such as DATABASE_NAME.PUBLIC.TABLE_NAME")
+            .displayName("URL Snowflake")
+            .description("Ví dụ chuỗi kết nối: jdbc:snowflake://[account].[region]" + ConnectionUrlFormat.SNOWFLAKE_HOST_SUFFIX + "/?[connection_params]" +
+                    " Tham số kết nối có thể bao gồm db=DATABASE_NAME để tránh phải dùng tên bảng đầy đủ như DATABASE_NAME.PUBLIC.TABLE_NAME")
             .required(true)
             .dependsOn(CONNECTION_URL_FORMAT, ConnectionUrlFormat.FULL_URL)
             .build();
@@ -125,20 +126,20 @@ public class SnowflakeComputingConnectionPool extends AbstractDBCPConnectionPool
 
     public static final PropertyDescriptor SNOWFLAKE_USER = new PropertyDescriptor.Builder()
             .fromPropertyDescriptor(DBCPProperties.DB_USER)
-            .displayName("Username")
-            .description("The Snowflake user name.")
+            .displayName("Tên người dùng")
+            .description("Tên người dùng Snowflake.")
             .build();
 
     public static final PropertyDescriptor SNOWFLAKE_PASSWORD = new PropertyDescriptor.Builder()
             .fromPropertyDescriptor(DBCPProperties.DB_PASSWORD)
-            .displayName("Password")
-            .description("The password for the Snowflake user.")
+            .displayName("Mật khẩu")
+            .description("Mật khẩu của người dùng Snowflake.")
             .build();
 
     public static final PropertyDescriptor SNOWFLAKE_WAREHOUSE = new PropertyDescriptor.Builder()
             .name("warehouse")
             .displayName("Warehouse")
-            .description("The warehouse to use by default. The same as passing 'warehouse=WAREHOUSE' to the connection string.")
+            .description("Warehouse sử dụng mặc định. Tương đương với việc truyền 'warehouse=WAREHOUSE' vào chuỗi kết nối.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();

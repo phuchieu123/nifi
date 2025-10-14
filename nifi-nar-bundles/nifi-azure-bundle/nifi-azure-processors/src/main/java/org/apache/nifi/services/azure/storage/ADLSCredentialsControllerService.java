@@ -46,7 +46,7 @@ import java.util.function.Function;
  * @see AbstractControllerService
  */
 @Tags({"azure", "microsoft", "cloud", "storage", "adls", "credentials"})
-@CapabilityDescription("Defines credentials for ADLS processors.")
+@CapabilityDescription("Xác định thông tin xác thực cho bộ xử lý ADLS.")
 public class ADLSCredentialsControllerService extends AbstractControllerService implements ADLSCredentialsService {
 
     public static final PropertyDescriptor ACCOUNT_NAME = new PropertyDescriptor.Builder()

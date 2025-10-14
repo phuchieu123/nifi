@@ -25,15 +25,16 @@ import org.apache.nifi.service.lookup.AbstractSingleAttributeBasedControllerServ
 import java.util.Map;
 
 @Tags({ "azure", "microsoft", "cloud", "storage", "adls", "credentials" })
-@CapabilityDescription("Provides an ADLSCredentialsService that can be used to dynamically select another ADLSCredentialsService. " +
-        "This service requires an attribute named 'adls.credentials.name' to be passed in, and will throw an exception if the attribute is missing. " +
-        "The value of 'adls.credentials.name' will be used to select the ADLSCredentialsService that has been registered with that name. " +
-        "This will allow multiple ADLSCredentialsServices to be defined and registered, and then selected dynamically at runtime by tagging flow files " +
-        "with the appropriate 'adls.credentials.name' attribute.")
-@DynamicProperty(name = "The name to register ADLSCredentialsService", value = "The ADLSCredentialsService",
-        description = "If '" + ADLSCredentialsControllerServiceLookup.ADLS_CREDENTIALS_NAME_ATTRIBUTE + "' attribute contains " +
-                "the name of the dynamic property, then the ADLSCredentialsService (registered in the value) will be selected.",
-        expressionLanguageScope = ExpressionLanguageScope.NONE)
+@CapabilityDescription("Cung cấp một ADLSCredentialsService có thể được sử dụng để chọn động một ADLSCredentialsService khác. " +
+    "Dịch vụ này yêu cầu một thuộc tính có tên 'adls.credentials.name' được truyền vào, và sẽ ném ra ngoại lệ nếu thuộc tính này bị thiếu. " +
+    "Giá trị của 'adls.credentials.name' sẽ được dùng để chọn ADLSCredentialsService đã được đăng ký với tên đó. " +
+    "Điều này cho phép định nghĩa và đăng ký nhiều ADLSCredentialsService, sau đó chọn động trong thời gian chạy bằng cách gắn thuộc tính " +
+    "'adls.credentials.name' tương ứng vào flow file.")
+
+@DynamicProperty(name = "Tên đăng ký ADLSCredentialsService", value = "ADLSCredentialsService",
+    description = "Nếu thuộc tính '" + ADLSCredentialsControllerServiceLookup.ADLS_CREDENTIALS_NAME_ATTRIBUTE + "' chứa tên của thuộc tính động, " +
+    "thì ADLSCredentialsService (được đăng ký trong giá trị) sẽ được chọn.",
+    expressionLanguageScope = ExpressionLanguageScope.NONE)
 public class ADLSCredentialsControllerServiceLookup extends AbstractSingleAttributeBasedControllerServiceLookup<ADLSCredentialsService> implements ADLSCredentialsService {
 
     public static final String ADLS_CREDENTIALS_NAME_ATTRIBUTE = "adls.credentials.name";

@@ -37,8 +37,9 @@ import org.apache.nifi.serialization.RecordReader;
 import org.apache.nifi.serialization.RecordReaderFactory;
 
 @Tags({"parquet", "parse", "record", "row", "reader"})
-@CapabilityDescription("Parses Parquet data and returns each Parquet record as a separate Record object. " +
-        "The schema will come from the Parquet data itself.")
+@CapabilityDescription("Phân tích dữ liệu Parquet và trả về từng bản ghi Parquet dưới dạng một đối tượng Record riêng biệt. " +
+        "Schema sẽ được lấy từ chính dữ liệu Parquet.")
+
 public class ParquetReader extends AbstractControllerService implements RecordReaderFactory {
 
     @Override

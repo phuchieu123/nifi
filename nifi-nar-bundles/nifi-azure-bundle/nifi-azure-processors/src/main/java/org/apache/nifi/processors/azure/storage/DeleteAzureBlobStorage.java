@@ -45,21 +45,21 @@ import java.util.concurrent.TimeUnit;
 
 @Tags({ "azure", "microsoft", "cloud", "storage", "blob" })
 @SeeAlso({ ListAzureBlobStorage.class, FetchAzureBlobStorage.class, PutAzureBlobStorage.class})
-@CapabilityDescription("Deletes the provided blob from Azure Storage")
+@CapabilityDescription("Xóa blob đã cung cấp khỏi Azure Storage.")
 @InputRequirement(Requirement.INPUT_REQUIRED)
-@DeprecationNotice(alternatives = DeleteAzureBlobStorage_v12.class, reason = "Processor depends on legacy Microsoft Azure SDK")
+@DeprecationNotice(alternatives = DeleteAzureBlobStorage_v12.class, reason = "Bộ xử lý này phụ thuộc vào SDK Microsoft Azure cũ (legacy).")
 public class DeleteAzureBlobStorage extends AbstractAzureBlobProcessor {
 
-    private static final AllowableValue DELETE_SNAPSHOTS_NONE = new AllowableValue(DeleteSnapshotsOption.NONE.name(), "None", "Delete the blob only.");
+    private static final AllowableValue DELETE_SNAPSHOTS_NONE = new AllowableValue(DeleteSnapshotsOption.NONE.name(), "None", "Chỉ xóa blob.");
 
-    private static final AllowableValue DELETE_SNAPSHOTS_ALSO = new AllowableValue(DeleteSnapshotsOption.INCLUDE_SNAPSHOTS.name(), "Include Snapshots", "Delete the blob and its snapshots.");
+    private static final AllowableValue DELETE_SNAPSHOTS_ALSO = new AllowableValue(DeleteSnapshotsOption.INCLUDE_SNAPSHOTS.name(), "Include Snapshots", "Xóa blob và tất cả snapshot của nó.");
 
-    private static final AllowableValue DELETE_SNAPSHOTS_ONLY = new AllowableValue(DeleteSnapshotsOption.DELETE_SNAPSHOTS_ONLY.name(), "Delete Snapshots Only", "Delete only the blob's snapshots.");
+    private static final AllowableValue DELETE_SNAPSHOTS_ONLY = new AllowableValue(DeleteSnapshotsOption.DELETE_SNAPSHOTS_ONLY.name(), "Delete Snapshots Only", "Chỉ xóa các snapshot của blob.");
 
     private static final PropertyDescriptor DELETE_SNAPSHOTS_OPTION = new PropertyDescriptor.Builder()
             .name("delete-snapshots-option")
             .displayName("Delete Snapshots Option")
-            .description("Specifies the snapshot deletion options to be used when deleting a blob.")
+            .description("Chỉ định tùy chọn xóa snapshot sẽ được sử dụng khi xóa một blob..")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .allowableValues(DELETE_SNAPSHOTS_NONE, DELETE_SNAPSHOTS_ALSO, DELETE_SNAPSHOTS_ONLY)
             .defaultValue(DELETE_SNAPSHOTS_NONE.getValue())

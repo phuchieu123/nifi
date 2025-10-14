@@ -15,40 +15,51 @@
  * limitations under the License.
  */
 package org.apache.nifi.processors.azure.storage.utils;
-
+// 📦 Thuộc tính dùng cho Azure Blob trong NiFi
 public final class BlobAttributes {
 
+    // 🪣 Tên container chứa blob
     public static final String ATTR_NAME_CONTAINER = "azure.container";
-    public static final String ATTR_DESCRIPTION_CONTAINER = "The name of the Azure Blob Storage container";
+    public static final String ATTR_DESCRIPTION_CONTAINER = "Tên của container trên Azure Blob Storage";
 
+    // 📄 Tên blob (tệp trên Azure)
     public static final String ATTR_NAME_BLOBNAME = "azure.blobname";
-    public static final String ATTR_DESCRIPTION_BLOBNAME = "The name of the blob on Azure Blob Storage";
+    public static final String ATTR_DESCRIPTION_BLOBNAME = "Tên của blob trên Azure Blob Storage";
 
+    // 🌐 Đường dẫn chính đến blob
     public static final String ATTR_NAME_PRIMARY_URI = "azure.primaryUri";
-    public static final String ATTR_DESCRIPTION_PRIMARY_URI = "Primary location of the blob";
+    public static final String ATTR_DESCRIPTION_PRIMARY_URI = "Vị trí chính (URI) của blob";
 
+    // 🧾 ETag của blob (dùng để xác thực phiên bản)
     public static final String ATTR_NAME_ETAG = "azure.etag";
-    public static final String ATTR_DESCRIPTION_ETAG = "ETag of the blob";
+    public static final String ATTR_DESCRIPTION_ETAG = "ETag (mã nhận dạng phiên bản) của blob";
 
+    // 🧱 Loại blob (Block, Page hoặc Append)
     public static final String ATTR_NAME_BLOBTYPE = "azure.blobtype";
-    public static final String ATTR_DESCRIPTION_BLOBTYPE = "Type of the blob (either BlockBlob, PageBlob or AppendBlob)";
+    public static final String ATTR_DESCRIPTION_BLOBTYPE = "Loại của blob (BlockBlob, PageBlob hoặc AppendBlob)";
 
+    // 📑 Kiểu MIME của nội dung
     public static final String ATTR_NAME_MIME_TYPE = "mime.type";
-    public static final String ATTR_DESCRIPTION_MIME_TYPE = "MIME Type of the content";
+    public static final String ATTR_DESCRIPTION_MIME_TYPE = "Kiểu MIME của nội dung";
 
+    // 🌍 Mã ngôn ngữ của nội dung
     public static final String ATTR_NAME_LANG = "lang";
-    public static final String ATTR_DESCRIPTION_LANG = "Language code for the content";
+    public static final String ATTR_DESCRIPTION_LANG = "Mã ngôn ngữ của nội dung";
 
+    // ⏱️ Dấu thời gian của blob
     public static final String ATTR_NAME_TIMESTAMP = "azure.timestamp";
-    public static final String ATTR_DESCRIPTION_TIMESTAMP = "Timestamp of the blob";
+    public static final String ATTR_DESCRIPTION_TIMESTAMP = "Dấu thời gian (timestamp) của blob";
 
+    // 📏 Độ dài (kích thước) của blob
     public static final String ATTR_NAME_LENGTH = "azure.length";
-    public static final String ATTR_DESCRIPTION_LENGTH = "Length of the blob";
+    public static final String ATTR_DESCRIPTION_LENGTH = "Độ dài hoặc kích thước của blob";
 
+    // ⚠️ Mã lỗi khi thao tác blob thất bại
     public static final String ATTR_NAME_ERROR_CODE = "azure.error.code";
-    public static final String ATTR_DESCRIPTION_ERROR_CODE = "Error code reported during blob operation";
+    public static final String ATTR_DESCRIPTION_ERROR_CODE = "Mã lỗi được báo cáo trong quá trình thao tác blob";
 
+    // 🚫 Trạng thái bị bỏ qua (khi chọn chiến lược 'ignore')
     public static final String ATTR_NAME_IGNORED = "azure.ignored";
-    public static final String ATTR_DESCRIPTION_IGNORED = "When Conflict Resolution Strategy is 'ignore', " +
-            "this property will be true/false depending on whether the blob was ignored.";
+    public static final String ATTR_DESCRIPTION_IGNORED = 
+        "Khi chiến lược xử lý xung đột là 'ignore', thuộc tính này sẽ là true/false tùy theo blob có bị bỏ qua hay không.";
 }

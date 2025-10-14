@@ -37,9 +37,9 @@ import java.util.Optional;
 import static org.apache.nifi.couchbase.CouchbaseConfigurationProperties.LOOKUP_SUB_DOC_PATH;
 
 @Tags({"lookup", "enrich", "key", "value", "couchbase"})
-@CapabilityDescription("Lookup a string value from Couchbase Server associated with the specified key."
-        + " The coordinates that are passed to the lookup must contain the key 'key'.")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Tìm kiếm một giá trị chuỗi từ Couchbase Server liên kết với khóa được chỉ định."
+        + " Các tọa độ được truyền đến tìm kiếm phải chứa khóa 'key'.")
+@DeprecationNotice(reason = "Thành phần này đã bị loại bỏ và sẽ bị xóa trong NiFi 2.x.")
 public class CouchbaseKeyValueLookupService extends AbstractCouchbaseLookupService implements StringLookupService {
 
     private volatile String subDocPath;

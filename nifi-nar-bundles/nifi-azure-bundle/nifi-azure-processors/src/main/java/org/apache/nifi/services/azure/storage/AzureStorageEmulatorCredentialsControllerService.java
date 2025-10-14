@@ -34,7 +34,7 @@ import org.apache.nifi.controller.ConfigurationContext;
 import org.apache.nifi.processor.util.StandardValidators;
 
 @Tags({ "azure", "microsoft", "emulator", "storage", "blob", "queue", "credentials" })
-@CapabilityDescription("Defines credentials for Azure Storage processors that connects to Azurite emulator.")
+@CapabilityDescription("Định nghĩa thông tin xác thực cho các bộ xử lý Azure Storage kết nối tới trình giả lập Azurite.")
 public class AzureStorageEmulatorCredentialsControllerService extends AbstractControllerService implements AzureStorageCredentialsService {
 
     public static final PropertyDescriptor DEVELOPMENT_STORAGE_PROXY_URI = new PropertyDescriptor.Builder()

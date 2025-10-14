@@ -1399,7 +1399,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                 if (connection.getSource().equals(this)) {
                     connection.verifyCanDelete();
                 } else {
-                    throw new IllegalStateException("Cannot delete " + this + " because it is the destination of another component");
+                    throw new IllegalStateException("Không thể xóa " + this + " vì nó là đích của thành phần khác");
                 }
             }
         }

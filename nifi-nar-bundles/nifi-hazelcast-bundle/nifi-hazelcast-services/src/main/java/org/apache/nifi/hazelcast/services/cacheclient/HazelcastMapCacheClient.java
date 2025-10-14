@@ -51,14 +51,14 @@ import java.util.regex.Pattern;
  * Note: By design, the client should not directly depend on Hazelcast specific classes to allow easy version and implementation changes.
  */
 @Tags({ "hazelcast", "cache", "map"})
-@CapabilityDescription("An implementation of DistributedMapCacheClient that uses Hazelcast as the backing cache. This service relies on " +
-        "an other controller service, manages the actual Hazelcast calls, set in Hazelcast Cache Manager.")
+@CapabilityDescription("Một triển khai của DistributedMapCacheClient sử dụng Hazelcast làm bộ nhớ đệm nền tảng. Dịch vụ này phụ thuộc vào "
+        + "một dịch vụ controller khác, quản lý các lệnh gọi Hazelcast thực tế, được thiết lập trong Hazelcast Cache Manager.")
 public class HazelcastMapCacheClient extends AbstractControllerService implements AtomicDistributedMapCacheClient<Long> {
 
     public static final PropertyDescriptor HAZELCAST_CACHE_MANAGER = new PropertyDescriptor.Builder()
             .name("hazelcast-cache-manager")
             .displayName("Hazelcast Cache Manager")
-            .description("A Hazelcast Cache Manager which manages connections to Hazelcast and provides cache instances.")
+            .description("Một Hazelcast Cache Manager quản lý các kết nối tới Hazelcast và cung cấp các instance của cache.")
             .identifiesControllerService(HazelcastCacheManager.class)
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -67,8 +67,8 @@ public class HazelcastMapCacheClient extends AbstractControllerService implement
     public static final PropertyDescriptor HAZELCAST_CACHE_NAME = new PropertyDescriptor.Builder()
             .name("hazelcast-cache-name")
             .displayName("Hazelcast Cache Name")
-            .description("The name of a given cache. A Hazelcast cluster may handle multiple independent caches, each identified by a name." +
-                    " Clients using caches with the same name are working on the same data structure within Hazelcast.")
+            .description("Tên của một cache cụ thể. Một cluster Hazelcast có thể quản lý nhiều cache độc lập, mỗi cache được xác định bằng tên. "
+                    + "Các client sử dụng cache cùng tên sẽ thao tác trên cùng một cấu trúc dữ liệu trong Hazelcast.")
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -77,13 +77,14 @@ public class HazelcastMapCacheClient extends AbstractControllerService implement
     public static final PropertyDescriptor HAZELCAST_ENTRY_TTL = new PropertyDescriptor.Builder()
             .name("hazelcast-entry-ttl")
             .displayName("Hazelcast Entry Lifetime")
-            .description("Indicates how long the written entries should exist in Hazelcast. Setting it to '0 secs' means that the data" +
-                    "will exists until its deletion or until the Hazelcast server is shut down. Using `EmbeddedHazelcastCacheManager` as" +
-                    "cache manager will not provide policies to limit the size of the cache.")
+            .description("Xác định thời gian tồn tại của các entry đã ghi trong Hazelcast. "
+                    + "Thiết lập thành '0 secs' nghĩa là dữ liệu tồn tại cho tới khi bị xóa hoặc Hazelcast server bị tắt. "
+                    + "Sử dụng `EmbeddedHazelcastCacheManager` làm cache manager sẽ không cung cấp chính sách giới hạn kích thước cache.")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
-            .defaultValue("5 min") // Note: in case of Hazelcast IMap, negative value would mean "map default" which might be overridden by a different client.
+            .defaultValue("5 min") // Lưu ý: với Hazelcast IMap, giá trị âm có nghĩa là "map mặc định" có thể bị ghi đè bởi client khác.
             .build();
+
 
     private static final long STARTING_REVISION = 1;
     private static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS;

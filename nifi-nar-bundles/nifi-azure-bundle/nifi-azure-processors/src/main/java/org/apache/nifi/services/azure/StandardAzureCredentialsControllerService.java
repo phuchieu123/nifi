@@ -40,17 +40,17 @@ import java.util.List;
  * @see AbstractControllerService
  */
 @Tags({"azure", "security", "credentials", "provider", "session"})
-@CapabilityDescription("Provide credentials to use with an Azure client.")
+@CapabilityDescription("Cung cấp thông tin xác thực để sử dụng với máy khách Azure.")
 public class StandardAzureCredentialsControllerService extends AbstractControllerService implements AzureCredentialsService {
     public static AllowableValue DEFAULT_CREDENTIAL = new AllowableValue("default-credential",
-            "Default Credential",
-            "Uses default credential chain. It first checks environment variables, before trying managed identity.");
+            "Thông tin Xác thực Mặc định",
+            "Sử dụng chuỗi thông tin xác thực mặc định. Trước tiên nó kiểm tra các biến môi trường, trước khi thử sử dụng danh tính được quản lý.");
     public static AllowableValue MANAGED_IDENTITY = new AllowableValue("managed-identity",
-            "Managed Identity",
-            "Azure Virtual Machine Managed Identity (it can only be used when NiFi is running on Azure)");
+            "Danh tính được Quản lý",
+            "Danh tính được Quản lý của Máy ảo Azure (chỉ có thể được sử dụng khi NiFi đang chạy trên Azure)");
     public static final PropertyDescriptor CREDENTIAL_CONFIGURATION_STRATEGY = new PropertyDescriptor.Builder()
             .name("credential-configuration-strategy")
-            .displayName("Credential Configuration Strategy")
+            .displayName("Chiến lược Cấu hình Thông tin Xác thực")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .required(true)
             .sensitive(false)
@@ -60,16 +60,15 @@ public class StandardAzureCredentialsControllerService extends AbstractControlle
 
     public static final PropertyDescriptor MANAGED_IDENTITY_CLIENT_ID = new PropertyDescriptor.Builder()
             .name("managed-identity-client-id")
-            .displayName("Managed Identity Client ID")
-            .description("Client ID of the managed identity. The property is required when User Assigned Managed Identity is used for authentication. " +
-                    "It must be empty in case of System Assigned Managed Identity.")
+            .displayName("ID Máy khách Danh tính được Quản lý")
+            .description("ID máy khách của danh tính được quản lý. Thuộc tính được yêu cầu khi Danh tính được Quản lý do Người dùng Gán được sử dụng để xác thực. " +
+                    "Nó phải để trống trong trường hợp Danh tính được Quản lý do Hệ thống Gán.")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .required(false)
             .sensitive(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .dependsOn(CREDENTIAL_CONFIGURATION_STRATEGY, MANAGED_IDENTITY)
             .build();
-
     private static final List<PropertyDescriptor> PROPERTIES;
 
     static {

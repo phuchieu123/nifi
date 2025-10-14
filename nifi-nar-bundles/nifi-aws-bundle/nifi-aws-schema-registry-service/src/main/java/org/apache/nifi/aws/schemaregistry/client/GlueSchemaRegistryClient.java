@@ -102,8 +102,8 @@ public class GlueSchemaRegistryClient implements SchemaRegistryClient {
                     .build();
             return AvroTypeUtil.createSchema(avroSchema, schemaText, schemaId);
         } catch (final SchemaParseException spe) {
-            throw new SchemaNotFoundException("Obtained Schema with name " + namespace
-                    + " from Glue Schema Registry but the Schema Text that was returned is not a valid Avro Schema");
+          throw new SchemaNotFoundException("Đã lấy Schema có tên " + namespace
++ " từ Glue Schema Registry nhưng nội dung Schema trả về không phải là Schema Avro hợp lệ");
         }
     }
 }

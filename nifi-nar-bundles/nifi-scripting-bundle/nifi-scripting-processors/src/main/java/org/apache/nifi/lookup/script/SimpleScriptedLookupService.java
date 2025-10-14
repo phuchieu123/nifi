@@ -34,21 +34,26 @@ import java.util.Set;
  * A Controller service that allows the user to script the lookup operation to be performed (by LookupAttribute, e.g.)
  */
 @Tags({"lookup", "script", "invoke", "groovy", "python", "jython", "jruby", "ruby", "javascript", "js", "lua", "luaj"})
-@CapabilityDescription("Allows the user to provide a scripted LookupService instance in order to enrich records from "
-        + "an incoming flow file. The script is expected to return an optional string value rather than an arbitrary object (record, e.g.). "
-        + "Also the scripted lookup service should implement StringLookupService, otherwise the getValueType() method must be implemented even "
-        + "though it will be ignored, as SimpleScriptedLookupService returns String as the value type on the script's behalf. Please note that due to "
-        + "a bug in Jython that remains unresolved, it is not possible to use Jython to write a script for this service in Python.")
-@DynamicProperty(name = "Script Engine Binding property", value = "Binding property value passed to Script Runner",
+@CapabilityDescription("Cho phép người dùng cung cấp một instance LookupService được viết bằng script để làm giàu các bản ghi từ flow file đến. " +
+        "Script được kỳ vọng sẽ trả về một giá trị chuỗi tùy chọn thay vì một đối tượng tùy ý (ví dụ: record). " +
+        "Ngoài ra, dịch vụ lookup được script hóa nên triển khai StringLookupService, nếu không, phương thức getValueType() phải được triển khai mặc dù sẽ bị bỏ qua, " +
+        "vì SimpleScriptedLookupService trả về String như kiểu giá trị thay mặt cho script. Lưu ý rằng do một lỗi trong Jython chưa được giải quyết, " +
+        "không thể sử dụng Jython để viết script cho dịch vụ này bằng Python.")
+@DynamicProperty(
+        name = "Thuộc tính binding của Script Engine",
+        value = "Giá trị thuộc tính binding được truyền vào Script Runner",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Updates a script engine property specified by the Dynamic Property's key with the value specified by the Dynamic Property's value")
+        description = "Cập nhật một thuộc tính của script engine được chỉ định bởi key của Dynamic Property với giá trị được chỉ định bởi value của Dynamic Property"
+)
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXECUTE_CODE,
-                        explanation = "Provides operator the ability to execute arbitrary code assuming all permissions that NiFi has.")
+                        explanation = "Cho phép người điều hành thực thi mã tùy ý với tất cả quyền mà NiFi có."
+                )
         }
 )
+
 public class SimpleScriptedLookupService extends BaseScriptedLookupService implements StringLookupService {
 
     @Override

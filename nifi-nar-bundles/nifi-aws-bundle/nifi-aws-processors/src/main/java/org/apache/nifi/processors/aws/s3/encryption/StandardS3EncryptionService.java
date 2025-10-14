@@ -54,7 +54,7 @@ import java.util.Map;
 
 
 @Tags({"service", "aws", "s3", "encryption", "encrypt", "decryption", "decrypt", "key"})
-@CapabilityDescription("Adds configurable encryption to S3 Put and S3 Fetch operations.")
+@CapabilityDescription("Thêm mã hóa có thể cấu hình vào các hoạt động S3 Put và S3 Fetch.")
 public class StandardS3EncryptionService extends AbstractControllerService implements AmazonS3EncryptionService {
     private static final Logger logger = LoggerFactory.getLogger(StandardS3EncryptionService.class);
 
@@ -85,8 +85,8 @@ public class StandardS3EncryptionService extends AbstractControllerService imple
 
     public static final PropertyDescriptor ENCRYPTION_STRATEGY = new PropertyDescriptor.Builder()
             .name("encryption-strategy")
-            .displayName("Encryption Strategy")
-            .description("Strategy to use for S3 data encryption and decryption.")
+            .displayName("Chiến lược Mã hóa")
+            .description("Chiến lược sẽ được sử dụng cho mã hóa và giải mã dữ liệu S3.")
             .allowableValues(NONE, SSE_S3, SSE_KMS, SSE_C, CSE_KMS, CSE_C)
             .required(true)
             .defaultValue(NONE.getValue())
@@ -94,20 +94,20 @@ public class StandardS3EncryptionService extends AbstractControllerService imple
 
     public static final PropertyDescriptor ENCRYPTION_VALUE = new PropertyDescriptor.Builder()
             .name("key-id-or-key-material")
-            .displayName("Key ID or Key Material")
-            .description("For None and Server-side S3: not used. For Server-side KMS and Client-side KMS: the KMS Key ID must be configured. " +
-                    "For Server-side Customer Key and Client-side Customer Key: the Key Material must be specified in Base64 encoded form. " +
-                    "In case of Server-side Customer Key, the key must be an AES-256 key. In case of Client-side Customer Key, it can be an AES-256, AES-192 or AES-128 key.")
+            .displayName("ID Khóa hoặc Tài liệu Khóa")
+            .description("Đối với Không có và S3 Phía máy chủ: không được sử dụng. Đối với KMS Phía máy chủ và KMS Phía máy khách: ID Khóa KMS phải được cấu hình. " +
+                    "Đối với Khóa Khách hàng Phía máy chủ và Khóa Khách hàng Phía máy khách: Tài liệu Khóa phải được chỉ định ở dạng mã hóa Base64. " +
+                    "Trong trường hợp Khóa Khách hàng Phía máy chủ, khóa phải là khóa AES-256. Trong trường hợp Khóa Khách hàng Phía máy khách, nó có thể là khóa AES-256, AES-192 hoặc AES-128.")
             .required(false)
             .sensitive(true)
-            .addValidator((subject, input, context) -> new ValidationResult.Builder().valid(true).build()) // will be validated in customValidate()
+            .addValidator((subject, input, context) -> new ValidationResult.Builder().valid(true).build()) // sẽ được xác thực trong customValidate()
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
 
     public static final PropertyDescriptor KMS_REGION = new PropertyDescriptor.Builder()
             .name("kms-region")
-            .displayName("KMS Region")
-            .description("The Region of the AWS Key Management Service. Only used in case of Client-side KMS.")
+            .displayName("Khu vực KMS")
+            .description("Khu vực của Dịch vụ Quản lý Khóa AWS. Chỉ được sử dụng trong trường hợp KMS Phía máy khách.")
             .required(false)
             .allowableValues(AbstractS3Processor.getAvailableRegions())
             .defaultValue(AbstractS3Processor.createAllowableValue(Regions.DEFAULT_REGION).getValue())

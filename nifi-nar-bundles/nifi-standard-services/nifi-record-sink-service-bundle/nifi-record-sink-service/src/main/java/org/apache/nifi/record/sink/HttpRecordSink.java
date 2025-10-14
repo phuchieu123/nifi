@@ -55,15 +55,15 @@ import java.util.OptionalLong;
 import java.util.stream.Collectors;
 
 @Tags({"http", "post", "record", "sink"})
-@CapabilityDescription("Format and send Records to a configured uri using HTTP post. The Record Writer formats the records which are sent as the body of the HTTP post request. " +
-        "JsonRecordSetWriter is often used with this processor because many HTTP posts require a JSON body.")
+@CapabilityDescription("Định dạng và gửi Records đến một URI được cấu hình sử dụng HTTP POST. Record Writer sẽ định dạng các bản ghi được gửi như phần thân (body) của yêu cầu HTTP POST. " +
+        "JsonRecordSetWriter thường được sử dụng với processor này vì nhiều HTTP POST yêu cầu body ở định dạng JSON.")
 public class HttpRecordSink extends AbstractControllerService implements RecordSinkService {
     protected static final String HEADER_AUTHORIZATION = "Authorization";
     protected static final String HEADER_CONTENT_TYPE = "Content-Type";
 
     public static final PropertyDescriptor API_URL = new PropertyDescriptor.Builder()
-            .name("API URL")
-            .description("The URL which receives the HTTP requests.")
+            .name("URL API")
+            .description("URL nhận các yêu cầu HTTP.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .addValidator(StandardValidators.URL_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -71,9 +71,9 @@ public class HttpRecordSink extends AbstractControllerService implements RecordS
             .build();
 
     static final PropertyDescriptor MAX_BATCH_SIZE = new PropertyDescriptor.Builder()
-            .name("Maximum Batch Size")
-            .description("Specifies the maximum number of records to send in the body of each HTTP request. Zero means the batch size is not limited, "
-                    + "and all records are sent together in a single HTTP request.")
+            .name("Kích thước Lô tối đa")
+            .description("Chỉ định số bản ghi tối đa được gửi trong phần thân của mỗi yêu cầu HTTP. Giá trị 0 nghĩa là không giới hạn kích thước lô, " +
+                    "và tất cả các bản ghi sẽ được gửi cùng nhau trong một yêu cầu HTTP duy nhất.")
             .defaultValue("0")
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -81,18 +81,19 @@ public class HttpRecordSink extends AbstractControllerService implements RecordS
             .build();
 
     public static final PropertyDescriptor WEB_SERVICE_CLIENT_PROVIDER = new PropertyDescriptor.Builder()
-            .name("Web Service Client Provider")
-            .description("Controller service to provide the HTTP client for sending the HTTP requests.")
+            .name("Nhà cung cấp Client Web Service")
+            .description("Controller Service cung cấp HTTP client để gửi các yêu cầu HTTP.")
             .required(true)
             .identifiesControllerService(WebClientServiceProvider.class)
             .build();
 
     public static final PropertyDescriptor OAUTH2_ACCESS_TOKEN_PROVIDER = new PropertyDescriptor.Builder()
-            .name("OAuth2 Access Token Provider")
-            .description("OAuth2 service that provides the access tokens for the HTTP requests.")
+            .name("Nhà cung cấp Access Token OAuth2")
+            .description("Dịch vụ OAuth2 cung cấp access token cho các yêu cầu HTTP.")
             .identifiesControllerService(OAuth2AccessTokenProvider.class)
             .required(false)
             .build();
+
 
     private String apiUrl;
     private int maxBatchSize;

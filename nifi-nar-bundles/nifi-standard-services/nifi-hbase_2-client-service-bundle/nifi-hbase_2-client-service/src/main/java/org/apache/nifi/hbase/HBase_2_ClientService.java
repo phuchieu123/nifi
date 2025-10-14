@@ -89,18 +89,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RequiresInstanceClassLoading
 @Tags({ "hbase", "client"})
-@CapabilityDescription("Implementation of HBaseClientService using the HBase 2.1.1 client. This service can be configured " +
-        "by providing a comma-separated list of configuration files, or by specifying values for the other properties. If configuration files " +
-        "are provided, they will be loaded first, and the values of the additional properties will override the values from " +
-        "the configuration files. In addition, any user defined properties on the processor will also be passed to the HBase " +
-        "configuration.")
-@DynamicProperty(name="The name of an HBase configuration property.", value="The value of the given HBase configuration property.",
-        description="These properties will be set on the HBase configuration after loading any provided configuration files.")
+@CapabilityDescription("Triển khai HBaseClientService sử dụng client HBase 2.1.1. Dịch vụ này có thể được cấu hình "
+        + "bằng cách cung cấp danh sách các file cấu hình phân tách bằng dấu phẩy, hoặc bằng cách chỉ định giá trị cho các thuộc tính khác. "
+        + "Nếu các file cấu hình được cung cấp, chúng sẽ được tải trước, và các giá trị của các thuộc tính bổ sung sẽ ghi đè các giá trị từ "
+        + "file cấu hình. Ngoài ra, bất kỳ thuộc tính do người dùng định nghĩa trên processor cũng sẽ được truyền tới cấu hình HBase.")
+@DynamicProperty(name="Tên thuộc tính cấu hình HBase.", value="Giá trị của thuộc tính cấu hình HBase tương ứng.",
+        description="Các thuộc tính này sẽ được đặt trên cấu hình HBase sau khi tải các file cấu hình được cung cấp.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.REFERENCE_REMOTE_RESOURCES,
-                        explanation = "Client JAR Location can reference resources over HTTP"
+                        explanation = "Vị trí Client JAR có thể tham chiếu tới tài nguyên qua HTTP"
                 )
         }
 )
@@ -112,7 +111,7 @@ public class HBase_2_ClientService extends AbstractControllerService implements 
     static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
         .name("kerberos-credentials-service")
         .displayName("Dịch vụ chứng thực Kerberos")
-        .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
+        .description("Chỉ định Kerberos Credentials Controller Service được sử dụng để chứng thực với Kerberos")
         .identifiesControllerService(KerberosCredentialsService.class)
         .required(false)
         .build();
@@ -120,53 +119,53 @@ public class HBase_2_ClientService extends AbstractControllerService implements 
     static final PropertyDescriptor KERBEROS_USER_SERVICE = new PropertyDescriptor.Builder()
             .name("kerberos-user-service")
             .displayName("Kerberos User Service")
-            .description("Specifies the Kerberos User Controller Service that should be used for authenticating with Kerberos")
+            .description("Chỉ định Kerberos User Controller Service được sử dụng để chứng thực với Kerberos")
             .identifiesControllerService(KerberosUserService.class)
             .required(false)
             .build();
 
     static final PropertyDescriptor HADOOP_CONF_FILES = new PropertyDescriptor.Builder()
         .name("Hadoop Configuration Files")
-        .description("Comma-separated list of Hadoop Configuration files," +
-            " such as hbase-site.xml and core-site.xml for kerberos, " +
-            "including full paths to the files.")
+        .description("Danh sách các file cấu hình Hadoop phân tách bằng dấu phẩy, "
+            + "chẳng hạn hbase-site.xml và core-site.xml cho Kerberos, "
+            + "bao gồm đường dẫn đầy đủ tới các file.")
         .identifiesExternalResource(ResourceCardinality.MULTIPLE, ResourceType.FILE, ResourceType.DIRECTORY)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .build();
 
     static final PropertyDescriptor ZOOKEEPER_QUORUM = new PropertyDescriptor.Builder()
         .name("ZooKeeper Quorum")
-        .description("Comma-separated list of ZooKeeper hosts for HBase. Required if Hadoop Configuration Files are not provided.")
+        .description("Danh sách các host ZooKeeper phân tách bằng dấu phẩy cho HBase. Bắt buộc nếu không cung cấp file cấu hình Hadoop.")
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .build();
 
     static final PropertyDescriptor ZOOKEEPER_CLIENT_PORT = new PropertyDescriptor.Builder()
         .name("ZooKeeper Client Port")
-        .description("The port on which ZooKeeper is accepting client connections. Required if Hadoop Configuration Files are not provided.")
+        .description("Cổng mà ZooKeeper chấp nhận kết nối client. Bắt buộc nếu không cung cấp file cấu hình Hadoop.")
         .addValidator(StandardValidators.PORT_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .build();
 
     static final PropertyDescriptor ZOOKEEPER_ZNODE_PARENT = new PropertyDescriptor.Builder()
         .name("ZooKeeper ZNode Parent")
-        .description("The ZooKeeper ZNode Parent value for HBase (example: /hbase). Required if Hadoop Configuration Files are not provided.")
+        .description("Giá trị ZNode Parent của ZooKeeper cho HBase (ví dụ: /hbase). Bắt buộc nếu không cung cấp file cấu hình Hadoop.")
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .build();
 
     static final PropertyDescriptor HBASE_CLIENT_RETRIES = new PropertyDescriptor.Builder()
         .name("HBase Client Retries")
-        .description("The number of times the HBase client will retry connecting. Required if Hadoop Configuration Files are not provided.")
+        .description("Số lần client HBase thử kết nối lại. Bắt buộc nếu không cung cấp file cấu hình Hadoop.")
         .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
         .defaultValue("1")
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .build();
 
-    // This property is never referenced directly but is necessary so that the classpath will be dynamically modified.
+    // Thuộc tính này không được tham chiếu trực tiếp nhưng cần thiết để lớp có thể sửa đổi classpath động.
     static final PropertyDescriptor PHOENIX_CLIENT_JAR_LOCATION = new PropertyDescriptor.Builder()
         .name("Phoenix Client JAR Location")
-        .description("The full path to the Phoenix client JAR. Required if Phoenix is installed on top of HBase.")
+        .description("Đường dẫn đầy đủ tới JAR client Phoenix. Bắt buộc nếu Phoenix được cài đặt trên HBase.")
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE, ResourceType.DIRECTORY, ResourceType.URL)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .dynamicallyModifiesClasspath(true)

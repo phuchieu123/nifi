@@ -54,7 +54,7 @@ abstract class AbstractStorageClientFactory<CREDENTIAL, CLIENT> {
      */
     public CLIENT getStorageClient(final CREDENTIAL credentialsDetails) {
         return clientCache.get(credentialsDetails, __ -> {
-            logger.debug(credentialsDetails.getClass().getSimpleName() + " is not found in the cache with the given credentials. Creating it.");
+            logger.debug(credentialsDetails.getClass().getSimpleName() + " không được tìm thấy trong bộ đệm với thông tin xác thực đã cho. Tạo ra nó.");
             return createStorageClient(credentialsDetails, proxyOptions);
         });
     }

@@ -46,19 +46,18 @@ public final class ZendeskProperties {
     public static final String REL_FAILURE_NAME = "failure";
 
     private ZendeskProperties() {}
-
-    public static final PropertyDescriptor WEB_CLIENT_SERVICE_PROVIDER = new PropertyDescriptor.Builder()
+public static final PropertyDescriptor WEB_CLIENT_SERVICE_PROVIDER = new PropertyDescriptor.Builder()
             .name(WEB_CLIENT_SERVICE_PROVIDER_NAME)
-            .displayName("Web Client Service Provider")
-            .description("Controller service for HTTP client operations.")
+            .displayName("Nhà cung cấp Dịch vụ Máy khách Web")
+            .description("Dịch vụ Bộ điều khiển cho các hoạt động máy khách HTTP.")
             .identifiesControllerService(WebClientServiceProvider.class)
             .required(true)
             .build();
 
     public static final PropertyDescriptor ZENDESK_SUBDOMAIN = new PropertyDescriptor.Builder()
             .name(ZENDESK_SUBDOMAIN_NAME)
-            .displayName("Subdomain Name")
-            .description("Name of the Zendesk subdomain.")
+            .displayName("Tên Miền phụ")
+            .description("Tên của miền phụ Zendesk.")
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -66,8 +65,8 @@ public final class ZendeskProperties {
 
     public static final PropertyDescriptor ZENDESK_USER = new PropertyDescriptor.Builder()
             .name(ZENDESK_USER_NAME)
-            .displayName("User Name")
-            .description("Login user to Zendesk subdomain.")
+            .displayName("Tên Người dùng")
+            .description("Người dùng đăng nhập vào miền phụ Zendesk.")
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -75,16 +74,16 @@ public final class ZendeskProperties {
 
     public static final PropertyDescriptor ZENDESK_AUTHENTICATION_TYPE = new PropertyDescriptor.Builder()
             .name(ZENDESK_AUTHENTICATION_TYPE_NAME)
-            .displayName("Authentication Type")
-            .description("Type of authentication to Zendesk API.")
+            .displayName("Loại Xác thực")
+            .description("Loại xác thực đến API Zendesk.")
             .required(true)
             .allowableValues(ZendeskAuthenticationType.class)
             .build();
 
     public static final PropertyDescriptor ZENDESK_AUTHENTICATION_CREDENTIAL = new PropertyDescriptor.Builder()
             .name(ZENDESK_AUTHENTICATION_CREDENTIAL_NAME)
-            .displayName("Authentication Credential")
-            .description("Password or authentication token for Zendesk login user.")
+            .displayName("Thông tin Xác thực")
+            .description("Mật khẩu hoặc mã thông báo xác thực cho người dùng đăng nhập Zendesk.")
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .sensitive(true)
             .required(true)
@@ -93,8 +92,8 @@ public final class ZendeskProperties {
 
     public static final PropertyDescriptor ZENDESK_TICKET_COMMENT_BODY = new PropertyDescriptor.Builder()
             .name(ZENDESK_TICKET_COMMENT_BODY_NAME)
-            .displayName("Comment Body")
-            .description("The content or the path to the comment body in the incoming record.")
+            .displayName("Nội dung Bình luận")
+            .description("Nội dung hoặc đường dẫn đến nội dung bình luận trong bản ghi đến.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .required(true)
@@ -102,24 +101,24 @@ public final class ZendeskProperties {
 
     public static final PropertyDescriptor ZENDESK_TICKET_SUBJECT = new PropertyDescriptor.Builder()
             .name(ZENDESK_TICKET_SUBJECT_NAME)
-            .displayName("Subject")
-            .description("The content or the path to the subject in the incoming record.")
+            .displayName("Chủ đề")
+            .description("Nội dung hoặc đường dẫn đến chủ đề trong bản ghi đến.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .build();
 
     public static final PropertyDescriptor ZENDESK_TICKET_PRIORITY = new PropertyDescriptor.Builder()
             .name(ZENDESK_TICKET_PRIORITY_NAME)
-            .displayName("Priority")
-            .description("The content or the path to the priority in the incoming record.")
+            .displayName("Ưu tiên")
+            .description("Nội dung hoặc đường dẫn đến ưu tiên trong bản ghi đến.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .build();
 
     public static final PropertyDescriptor ZENDESK_TICKET_TYPE = new PropertyDescriptor.Builder()
             .name(ZENDESK_TICKET_TYPE_NAME)
-            .displayName("Type")
-            .description("The content or the path to the type in the incoming record.")
+            .displayName("Loại")
+            .description("Nội dung hoặc đường dẫn đến loại trong bản ghi đến.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
             .build();

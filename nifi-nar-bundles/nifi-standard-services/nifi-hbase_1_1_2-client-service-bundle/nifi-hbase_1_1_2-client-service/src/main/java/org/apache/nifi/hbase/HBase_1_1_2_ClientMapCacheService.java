@@ -50,47 +50,48 @@ import static org.apache.nifi.hbase.VisibilityLabelUtils.AUTHORIZATIONS;
 
 @Tags({"distributed", "cache", "state", "map", "cluster","hbase"})
 @SeeAlso(classNames = {"org.apache.nifi.hbase.HBase_1_1_2_ClientService"})
-@CapabilityDescription("Provides the ability to use an HBase table as a cache, in place of a DistributedMapCache."
-    + " Uses a HBase_1_1_2_ClientService controller to communicate with HBase.")
+@CapabilityDescription("Cung cấp khả năng sử dụng bảng HBase như một bộ nhớ đệm, thay cho DistributedMapCache. "
+    + "Sử dụng controller HBase_1_1_2_ClientService để giao tiếp với HBase.")
 
 public class HBase_1_1_2_ClientMapCacheService extends AbstractControllerService implements AtomicDistributedMapCacheClient<byte[]> {
 
     static final PropertyDescriptor HBASE_CLIENT_SERVICE = new PropertyDescriptor.Builder()
         .name("HBase Client Service")
-        .description("Specifies the HBase Client Controller Service to use for accessing HBase.")
+        .description("Chỉ định HBase Client Controller Service được sử dụng để truy cập HBase.")
         .required(true)
         .identifiesControllerService(HBaseClientService.class)
         .build();
 
-    public static final PropertyDescriptor HBASE_CACHE_TABLE_NAME = new PropertyDescriptor.Builder()
+public static final PropertyDescriptor HBASE_CACHE_TABLE_NAME = new PropertyDescriptor.Builder()
         .name("HBase Cache Table Name")
-        .description("Name of the table on HBase to use for the cache.")
+        .description("Tên bảng trên HBase được sử dụng làm bộ nhớ đệm.")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
 
-    public static final PropertyDescriptor HBASE_COLUMN_FAMILY = new PropertyDescriptor.Builder()
+public static final PropertyDescriptor HBASE_COLUMN_FAMILY = new PropertyDescriptor.Builder()
         .name("HBase Column Family")
-        .description("Name of the column family on HBase to use for the cache.")
+        .description("Tên column family trên HBase được sử dụng cho bộ nhớ đệm.")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .defaultValue("f")
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
 
-    public static final PropertyDescriptor HBASE_COLUMN_QUALIFIER = new PropertyDescriptor.Builder()
+public static final PropertyDescriptor HBASE_COLUMN_QUALIFIER = new PropertyDescriptor.Builder()
         .name("HBase Column Qualifier")
-        .description("Name of the column qualifier on HBase to use for the cache")
+        .description("Tên column qualifier trên HBase được sử dụng cho bộ nhớ đệm.")
         .defaultValue("q")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
-    public static final PropertyDescriptor VISIBILITY_EXPRESSION = new PropertyDescriptor.Builder()
+
+public static final PropertyDescriptor VISIBILITY_EXPRESSION = new PropertyDescriptor.Builder()
         .name("hbase-cache-visibility-expression")
         .displayName("Visibility Expression")
-        .description("The default visibility expression to apply to cells when visibility expression support is enabled.")
+        .description("Biểu thức visibility mặc định áp dụng cho các cell khi hỗ trợ visibility expression được bật.")
         .defaultValue("")
         .addValidator(Validator.VALID)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)

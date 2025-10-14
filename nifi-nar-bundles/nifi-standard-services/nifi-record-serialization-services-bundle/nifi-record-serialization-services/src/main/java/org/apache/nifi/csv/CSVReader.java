@@ -52,28 +52,28 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"csv", "parse", "record", "row", "reader", "delimited", "comma", "separated", "values"})
-@CapabilityDescription("Parses CSV-formatted data, returning each row in the CSV file as a separate record. "
-    + "This reader allows for inferring a schema based on the first line of the CSV, if a 'header line' is present, or providing an explicit schema "
-    + "for interpreting the values. See Controller Service's Usage for further documentation.")
+@CapabilityDescription("Phân tích dữ liệu định dạng CSV, trả về mỗi dòng trong file CSV như một bản ghi riêng biệt. "
+    + "Reader này cho phép suy luận schema dựa trên dòng đầu tiên của CSV, nếu có 'dòng header', hoặc cung cấp một schema rõ ràng "
+    + "để diễn giải các giá trị. Xem phần Sử dụng Controller Service để biết thêm tài liệu.")
 public class CSVReader extends SchemaRegistryService implements RecordReaderFactory {
 
-    private static final AllowableValue HEADER_DERIVED = new AllowableValue("csv-header-derived", "Use String Fields From Header",
-        "The first non-comment line of the CSV file is a header line that contains the names of the columns. The schema will be derived by using the "
-            + "column names in the header and assuming that all columns are of type String.");
+    private static final AllowableValue HEADER_DERIVED = new AllowableValue("csv-header-derived", "Sử dụng trường từ Header",
+        "Dòng đầu tiên không phải comment trong file CSV là dòng header chứa tên các cột. Schema sẽ được suy luận bằng cách sử dụng "
+            + "tên các cột trong header và giả định rằng tất cả các cột đều có kiểu String.");
 
     // CSV parsers
     public static final AllowableValue APACHE_COMMONS_CSV = new AllowableValue("commons-csv", "Apache Commons CSV",
-            "The CSV parser implementation from the Apache Commons CSV library.");
+            "Triển khai parser CSV từ thư viện Apache Commons CSV.");
 
     public static final AllowableValue JACKSON_CSV = new AllowableValue("jackson-csv", "Jackson CSV",
-            "The CSV parser implementation from the Jackson Dataformats library.");
+            "Triển khai parser CSV từ thư viện Jackson Dataformats.");
 
 
     public static final PropertyDescriptor CSV_PARSER = new PropertyDescriptor.Builder()
             .name("csv-reader-csv-parser")
             .displayName("CSV Parser")
-            .description("Specifies which parser to use to read CSV records. NOTE: Different parsers may support different subsets of functionality "
-                    + "and may also exhibit different levels of performance.")
+            .description("Xác định parser nào được sử dụng để đọc các bản ghi CSV. LƯU Ý: Các parser khác nhau có thể hỗ trợ các tập chức năng khác nhau "
+                    + "và cũng có thể có hiệu suất khác nhau.")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues(APACHE_COMMONS_CSV, JACKSON_CSV)
             .defaultValue(APACHE_COMMONS_CSV.getValue())
@@ -82,9 +82,9 @@ public class CSVReader extends SchemaRegistryService implements RecordReaderFact
 
     public static final PropertyDescriptor TRIM_DOUBLE_QUOTE = new PropertyDescriptor.Builder()
             .name("Trim double quote")
-            .description("Whether or not to trim starting and ending double quotes. For example: with trim string '\"test\"'"
-                    +" would be parsed to 'test', without trim would be parsed to '\"test\"'."
-                    + "If set to 'false' it means full compliance with RFC-4180. Default value is true, with trim.")
+            .description("Xác định có cắt bỏ dấu ngoặc kép đầu và cuối hay không. Ví dụ: với trim, chuỗi '\"test\"'"
+                    +" sẽ được phân tích thành 'test', nếu không trim sẽ được phân tích thành '\"test\"'."
+                    + "Nếu đặt là 'false', có nghĩa là tuân thủ đầy đủ RFC-4180. Giá trị mặc định là true, tức có trim.")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
             .defaultValue("true")

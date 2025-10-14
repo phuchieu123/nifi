@@ -25,14 +25,15 @@ import org.apache.nifi.components.RequiredPermission;
 import org.apache.nifi.lookup.configuration2.CommonsConfigurationLookupService;
 
 @Tags({"lookup", "cache", "enrich", "join", "properties", "reloadable", "key", "value"})
-@CapabilityDescription("A reloadable properties file-based lookup service")
+@CapabilityDescription("Một dịch vụ tra cứu dựa trên file properties có thể nạp lại được")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.READ_FILESYSTEM,
-                        explanation = "Provides operator the ability to read from any file that NiFi has access to.")
+                        explanation = "Cung cấp cho người điều hành khả năng đọc từ bất kỳ file nào mà NiFi có quyền truy cập.")
         }
 )
 public class PropertiesFileLookupService extends CommonsConfigurationLookupService<PropertiesConfiguration> {
 
 }
+

@@ -48,17 +48,18 @@ import java.util.Map;
  * A RecordReader implementation that allows the user to script the RecordReader instance
  */
 @Tags({"record", "recordFactory", "script", "invoke", "groovy", "python", "jython", "jruby", "ruby", "javascript", "js", "lua", "luaj"})
-@CapabilityDescription("Allows the user to provide a scripted RecordReaderFactory instance in order to read/parse/generate records from an incoming flow file.")
-@DynamicProperty(name = "Script Engine Binding property", value = "Binding property value passed to Script Runner",
+@CapabilityDescription("Cho phép người dùng cung cấp một instance RecordReaderFactory được script hóa để đọc/ phân tích/ tạo bản ghi từ FlowFile đầu vào.")
+@DynamicProperty(name = "Thuộc tính ràng buộc của Script Engine", value = "Giá trị thuộc tính được truyền cho Script Runner",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Updates a script engine property specified by the Dynamic Property's key with the value specified by the Dynamic Property's value")
+        description = "Cập nhật một thuộc tính của script engine được chỉ định bởi key của Dynamic Property với giá trị được chỉ định bởi value của Dynamic Property")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXECUTE_CODE,
-                        explanation = "Provides operator the ability to execute arbitrary code assuming all permissions that NiFi has.")
+                        explanation = "Cho phép operator thực thi mã tùy ý với tất cả quyền mà NiFi có.")
         }
 )
+
 public class ScriptedReader extends AbstractScriptedRecordFactory<RecordReaderFactory> implements RecordReaderFactory {
 
     @OnEnabled

@@ -66,30 +66,32 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Tags({"kafka", "record", "sink"})
-@CapabilityDescription("Provides a service to write records to a Kafka 1.x topic.")
+@CapabilityDescription("Cung cấp dịch vụ ghi các record vào một topic Kafka 1.x.")
 @DeprecationNotice(classNames = "org.apache.nifi.record.sink.kafka.KafkaRecordSink_2_6")
-@DynamicProperty(name = "The name of a Kafka configuration property.", value = "The value of a given Kafka configuration property.",
-        description = "These properties will be added on the Kafka configuration after loading any provided configuration properties."
-                + " In the event a dynamic property represents a property that was already set, its value will be ignored and WARN message logged."
-                + " For the list of available Kafka properties please refer to: http://kafka.apache.org/documentation.html#configuration. ",
-        expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY)
+@DynamicProperty(
+    description = "Để thực hiện JNDI Lookup, một Initial Context phải được thiết lập. Bất kỳ property động/được người dùng định nghĩa nào "
+                + "được thêm vào Controller Service này sẽ được thêm làm biến cấu hình/Environment cho Context này. "
+                + "Nếu một dynamic property trùng với property đã được thiết lập trước đó, giá trị mới sẽ bị bỏ qua và ghi log cảnh báo. "
+                + "Danh sách các property Kafka có thể tham khảo tại: http://kafka.apache.org/documentation.html#configuration.",
+    name = "Tên property cấu hình Kafka",
+    value = "Giá trị của property Kafka tương ứng",
+    expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY
+)
 public class KafkaRecordSink_1_0 extends AbstractControllerService implements RecordSinkService, KafkaPublishComponent {
 
     static final AllowableValue DELIVERY_REPLICATED = new AllowableValue("all", "Guarantee Replicated Delivery",
-            "Records are considered 'transmitted unsuccessfully' unless the message is replicated to the appropriate "
-                    + "number of Kafka Nodes according to the Topic configuration.");
+            "Các record được coi là 'gửi thất bại' trừ khi message được replicate đến đủ số node Kafka theo cấu hình topic.");
     static final AllowableValue DELIVERY_ONE_NODE = new AllowableValue("1", "Guarantee Single Node Delivery",
-            "Records are considered 'transmitted successfully' if the message is received by a single Kafka node, "
-                    + "whether or not it is replicated. This is faster than <Guarantee Replicated Delivery> "
-                    + "but can result in data loss if a Kafka node crashes.");
+            "Các record được coi là 'gửi thành công' nếu message được nhận bởi một node Kafka duy nhất, "
+            + "không quan tâm việc replicate. Nhanh hơn <Guarantee Replicated Delivery> nhưng có thể mất dữ liệu nếu node Kafka gặp sự cố.");
     static final AllowableValue DELIVERY_BEST_EFFORT = new AllowableValue("0", "Best Effort",
-            "Records are considered 'transmitted successfully' after successfully writing the content to a Kafka node, "
-                    + "without waiting for a response. This provides the best performance but may result in data loss.");
+            "Các record được coi là 'gửi thành công' ngay sau khi ghi nội dung vào node Kafka mà không đợi phản hồi. "
+            + "Hiệu năng tốt nhất nhưng có thể dẫn đến mất dữ liệu.");
 
     static final PropertyDescriptor TOPIC = new PropertyDescriptor.Builder()
             .name("topic")
             .displayName("Topic Name")
-            .description("The name of the Kafka Topic to publish to.")
+            .description("Tên topic Kafka để publish đến.")
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -98,7 +100,7 @@ public class KafkaRecordSink_1_0 extends AbstractControllerService implements Re
     static final PropertyDescriptor DELIVERY_GUARANTEE = new PropertyDescriptor.Builder()
             .name("acks")
             .displayName("Delivery Guarantee")
-            .description("Specifies the requirement for guaranteeing that a message is sent to Kafka. Corresponds to Kafka's 'acks' property.")
+            .description("Xác định yêu cầu đảm bảo message được gửi đến Kafka. Tương ứng với property 'acks' của Kafka.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues(DELIVERY_BEST_EFFORT, DELIVERY_ONE_NODE, DELIVERY_REPLICATED)
@@ -108,8 +110,8 @@ public class KafkaRecordSink_1_0 extends AbstractControllerService implements Re
     static final PropertyDescriptor METADATA_WAIT_TIME = new PropertyDescriptor.Builder()
             .name("max.block.ms")
             .displayName("Max Metadata Wait Time")
-            .description("The amount of time publisher will wait to obtain metadata or wait for the buffer to flush during the 'send' call before failing the "
-                    + "entire 'send' call. Corresponds to Kafka's 'max.block.ms' property")
+            .description("Thời gian publisher sẽ đợi để lấy metadata hoặc đợi buffer flush khi gọi 'send' trước khi thất bại. "
+                    + "Tương ứng với property 'max.block.ms' của Kafka.")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -119,8 +121,7 @@ public class KafkaRecordSink_1_0 extends AbstractControllerService implements Re
     static final PropertyDescriptor ACK_WAIT_TIME = new PropertyDescriptor.Builder()
             .name("ack.wait.time")
             .displayName("Acknowledgment Wait Time")
-            .description("After sending a message to Kafka, this indicates the amount of time that we are willing to wait for a response from Kafka. "
-                    + "If Kafka does not acknowledge the message within this time period, the FlowFile will be routed to 'failure'.")
+            .description("Thời gian đợi phản hồi từ Kafka sau khi gửi message. Nếu Kafka không ack trong thời gian này, FlowFile sẽ bị route sang 'failure'.")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .required(true)
@@ -130,7 +131,7 @@ public class KafkaRecordSink_1_0 extends AbstractControllerService implements Re
     static final PropertyDescriptor MAX_REQUEST_SIZE = new PropertyDescriptor.Builder()
             .name("max.request.size")
             .displayName("Max Request Size")
-            .description("The maximum size of a request in bytes. Corresponds to Kafka's 'max.request.size' property and defaults to 1 MB (1048576).")
+            .description("Kích thước tối đa của một request tính bằng bytes. Tương ứng với property 'max.request.size' của Kafka, mặc định 1 MB (1048576).")
             .required(true)
             .addValidator(StandardValidators.DATA_SIZE_VALIDATOR)
             .defaultValue("1 MB")
@@ -139,7 +140,7 @@ public class KafkaRecordSink_1_0 extends AbstractControllerService implements Re
     static final PropertyDescriptor COMPRESSION_CODEC = new PropertyDescriptor.Builder()
             .name("compression.type")
             .displayName("Compression Type")
-            .description("This parameter allows you to specify the compression codec for all data generated by this producer.")
+            .description("Chỉ định codec nén cho tất cả dữ liệu được producer tạo ra.")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .allowableValues("none", "gzip", "snappy", "lz4")
@@ -149,8 +150,7 @@ public class KafkaRecordSink_1_0 extends AbstractControllerService implements Re
     static final PropertyDescriptor MESSAGE_HEADER_ENCODING = new PropertyDescriptor.Builder()
             .name("message-header-encoding")
             .displayName("Message Header Encoding")
-            .description("For any attribute that is added as a message header, as configured via the <Attributes to Send as Headers> property, "
-                    + "this property indicates the Character Encoding to use for serializing the headers.")
+            .description("Đối với bất kỳ attribute nào được gửi làm header message, thuộc tính này chỉ định Character Encoding dùng để serialize header.")
             .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
             .defaultValue("UTF-8")
             .required(false)

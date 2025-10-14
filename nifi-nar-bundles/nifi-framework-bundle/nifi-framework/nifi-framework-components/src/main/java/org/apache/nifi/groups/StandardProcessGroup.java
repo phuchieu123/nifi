@@ -1701,7 +1701,7 @@ public final class StandardProcessGroup implements ProcessGroup {
         readLock.lock();
         try {
             if (getFunnel(funnel.getIdentifier()) == null) {
-                throw new IllegalStateException("Funnel is not a member of this Process Group");
+                throw new IllegalStateException("Phễu is not a member of this Process Group");
             }
 
             final ScheduledState state = funnel.getScheduledState();
@@ -1804,7 +1804,7 @@ public final class StandardProcessGroup implements ProcessGroup {
 
             final ScheduledState state = funnel.getScheduledState();
             if (state == ScheduledState.DISABLED) {
-                throw new IllegalStateException("Funnel is disabled");
+                throw new IllegalStateException("Phễu bị tắt");
             } else if (state == ScheduledState.STOPPED) {
                 return;
             }
@@ -2398,7 +2398,7 @@ public final class StandardProcessGroup implements ProcessGroup {
         try {
             final Funnel existing = funnels.get(requireNonNull(funnel).getIdentifier());
             if (existing == null) {
-                throw new IllegalStateException("Funnel " + funnel.getIdentifier() + " is not a member of this ProcessGroup");
+                throw new IllegalStateException("Pheu " + funnel.getIdentifier() + " không phải là thành viên của ProcessGroup này");
             }
 
             funnel.verifyCanDelete();

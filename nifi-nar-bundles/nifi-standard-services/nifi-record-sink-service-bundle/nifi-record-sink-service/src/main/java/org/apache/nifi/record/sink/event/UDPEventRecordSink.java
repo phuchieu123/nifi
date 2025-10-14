@@ -49,13 +49,13 @@ import java.util.Map;
  * Record Sink Service implementation writes Records and sends a serialized Record to a UDP destination
  */
 @Tags({"UDP", "event", "record", "sink"})
-@CapabilityDescription("Format and send Records as UDP Datagram Packets to a configurable destination")
+@CapabilityDescription("Định dạng và gửi các Bản ghi dưới dạng Gói dữ liệu UDP đến một đích có thể định cấu hình")
 public class UDPEventRecordSink extends AbstractControllerService implements RecordSinkService {
 
     public static final PropertyDescriptor HOSTNAME = new PropertyDescriptor.Builder()
             .name("hostname")
-            .displayName("Hostname")
-            .description("Destination hostname or IP address")
+            .displayName("Tên máy chủ")
+            .description("Tên máy chủ hoặc địa chỉ IP của đích")
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -63,8 +63,8 @@ public class UDPEventRecordSink extends AbstractControllerService implements Rec
 
     public static final PropertyDescriptor PORT = new PropertyDescriptor.Builder()
             .name("port")
-            .displayName("Port")
-            .description("Destination port number")
+            .displayName("Cổng")
+            .description("Số cổng của đích")
             .required(true)
             .addValidator(StandardValidators.PORT_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -72,8 +72,8 @@ public class UDPEventRecordSink extends AbstractControllerService implements Rec
 
     public static final PropertyDescriptor SENDER_THREADS = new PropertyDescriptor.Builder()
             .name("sender-threads")
-            .displayName("Sender Threads")
-            .description("Number of worker threads allocated for handling socket communication")
+            .displayName("Luồng gửi")
+            .description("Số lượng luồng công nhân được phân bổ để xử lý giao tiếp socket")
             .required(true)
             .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -88,7 +88,6 @@ public class UDPEventRecordSink extends AbstractControllerService implements Rec
                     SENDER_THREADS
             )
     );
-
     private static final String TRANSIT_URI_ATTRIBUTE_KEY = "record.sink.url";
 
     private static final String TRANSIT_URI_FORMAT = "udp://%s:%d";

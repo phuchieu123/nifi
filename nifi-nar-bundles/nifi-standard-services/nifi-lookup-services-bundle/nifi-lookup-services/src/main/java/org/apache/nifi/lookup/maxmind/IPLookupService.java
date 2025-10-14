@@ -64,11 +64,11 @@ import java.util.stream.Stream;
 
 
 @Tags({"lookup", "enrich", "ip", "geo", "ipgeo", "maxmind", "isp", "domain", "cellular", "anonymous", "tor"})
-@CapabilityDescription("A lookup service that provides several types of enrichment information for IP addresses. The service is configured by providing a MaxMind "
-    + "Database file and specifying which types of enrichment should be provided for an IP Address or Hostname. Each type of enrichment is a separate lookup, so configuring the "
-    + "service to provide all of the available enrichment data may be slower than returning only a portion of the available enrichments. In order to use this service, a lookup "
-    + "must be performed using key of 'ip' and a value that is a valid IP address or hostname. View the Usage of this component "
-    + "and choose to view Additional Details for more information, such as the Schema that pertains to the information that is returned.")
+@CapabilityDescription("Dịch vụ tra cứu cung cấp nhiều loại thông tin bổ sung cho địa chỉ IP. Dịch vụ được cấu hình bằng cách cung cấp tệp cơ sở dữ liệu MaxMind "
+    + "và xác định loại thông tin bổ sung nào sẽ được cung cấp cho địa chỉ IP hoặc tên máy chủ. Mỗi loại bổ sung là một tra cứu riêng biệt, "
+    + "vì vậy việc cấu hình dịch vụ để cung cấp tất cả dữ liệu bổ sung có thể chậm hơn so với chỉ trả về một phần thông tin. "
+    + "Để sử dụng dịch vụ này, cần thực hiện tra cứu với khóa 'ip' và giá trị là một địa chỉ IP hoặc tên máy chủ hợp lệ. "
+    + "Xem phần Usage của thành phần này và chọn Additional Details để biết thêm thông tin, chẳng hạn như Schema liên quan đến thông tin trả về.")
 public class IPLookupService extends AbstractControllerService implements RecordLookupService {
 
     private volatile String databaseFile = null;
@@ -85,54 +85,59 @@ public class IPLookupService extends AbstractControllerService implements Record
 
     static final PropertyDescriptor GEO_DATABASE_FILE = new PropertyDescriptor.Builder()
         .name("database-file")
-        .displayName("MaxMind Database File")
-        .description("Path to Maxmind IP Enrichment Database File")
+        .displayName("Tệp Cơ sở Dữ liệu MaxMind")
+        .description("Đường dẫn đến tệp cơ sở dữ liệu MaxMind dùng để bổ sung thông tin IP")
         .required(true)
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .build();
+
     static final PropertyDescriptor LOOKUP_CITY = new PropertyDescriptor.Builder()
         .name("lookup-city")
-        .displayName("Lookup Geo Enrichment")
-        .description("Specifies whether or not information about the geographic information, such as cities, corresponding to the IP address should be returned")
+        .displayName("Tra cứu thông tin địa lý")
+        .description("Xác định có hay không thông tin về địa lý, chẳng hạn như thành phố, liên quan đến địa chỉ IP sẽ được trả về")
         .allowableValues("true", "false")
         .defaultValue("true")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .required(true)
         .build();
+
     static final PropertyDescriptor LOOKUP_ISP = new PropertyDescriptor.Builder()
         .name("lookup-isp")
-        .displayName("Lookup ISP")
-        .description("Specifies whether or not information about the Information Service Provider corresponding to the IP address should be returned")
+        .displayName("Tra cứu Nhà cung cấp Dịch vụ Internet")
+        .description("Xác định có hay không thông tin về nhà cung cấp dịch vụ Internet liên quan đến địa chỉ IP sẽ được trả về")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .allowableValues("true", "false")
         .defaultValue("false")
         .required(true)
         .build();
+
     static final PropertyDescriptor LOOKUP_DOMAIN = new PropertyDescriptor.Builder()
         .name("lookup-domain")
-        .displayName("Lookup Domain Name")
-        .description("Specifies whether or not information about the Domain Name corresponding to the IP address should be returned. "
-            + "If true, the lookup will contain second-level domain information, such as foo.com but will not contain bar.foo.com")
+        .displayName("Tra cứu Tên miền")
+        .description("Xác định có hay không thông tin về Tên miền liên quan đến địa chỉ IP sẽ được trả về. "
+            + "Nếu true, tra cứu sẽ chứa thông tin về miền cấp hai, như foo.com, nhưng sẽ không chứa bar.foo.com")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .allowableValues("true", "false")
         .defaultValue("false")
         .required(true)
         .build();
+
     static final PropertyDescriptor LOOKUP_CONNECTION_TYPE = new PropertyDescriptor.Builder()
         .name("lookup-connection-type")
-        .displayName("Lookup Connection Type")
-        .description("Specifies whether or not information about the Connection Type corresponding to the IP address should be returned. "
-            + "If true, the lookup will contain a 'connectionType' field that (if populated) will contain a value of 'Dialup', 'Cable/DSL', 'Corporate', or 'Cellular'")
+        .displayName("Tra cứu Loại Kết nối")
+        .description("Xác định có hay không thông tin về Loại kết nối liên quan đến địa chỉ IP sẽ được trả về. "
+            + "Nếu true, tra cứu sẽ chứa trường 'connectionType' (nếu có), với giá trị 'Dialup', 'Cable/DSL', 'Corporate', hoặc 'Cellular'")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .allowableValues("true", "false")
         .defaultValue("false")
         .required(true)
         .build();
+
     static final PropertyDescriptor LOOKUP_ANONYMOUS_IP_INFO = new PropertyDescriptor.Builder()
         .name("lookup-anonymous-ip")
-        .displayName("Lookup Anonymous IP Information")
-        .description("Specifies whether or not information about whether or not the IP address belongs to an anonymous network should be returned.")
+        .displayName("Tra cứu Thông tin IP ẩn danh")
+        .description("Xác định có hay không thông tin về việc địa chỉ IP thuộc mạng ẩn danh sẽ được trả về")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .allowableValues("true", "false")
         .defaultValue("false")

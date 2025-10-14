@@ -145,10 +145,10 @@ public class StandardFunnel implements Funnel {
         writeLock.lock();
         try {
             if (!requireNonNull(connection).getSource().equals(this) && !connection.getDestination().equals(this)) {
-                throw new IllegalArgumentException("Cannot add a connection to a Funnel for which the Funnel is neither the Source nor the Destination");
+                throw new IllegalArgumentException("Không thể thêm một kết nối đến Funnel cho biết Funnel không phải là nguồn cũng như đích");
             }
             if (connection.getSource().equals(this) && connection.getDestination().equals(this)) {
-                throw new IllegalArgumentException("Cannot add a connection from a Funnel back to itself");
+                throw new IllegalArgumentException("Không thể thêm một kết nối từ Funnel trở lại chính nó");
             }
 
             if (connection.getDestination().equals(this)) {
@@ -165,7 +165,7 @@ public class StandardFunnel implements Funnel {
                 if (!outgoingConnections.contains(connection)) {
                     for (final Relationship relationship : connection.getRelationships()) {
                         if (!relationship.equals(Relationship.ANONYMOUS)) {
-                            throw new IllegalArgumentException("No relationship with name " + relationship + " exists for Funnels");
+                            throw new IllegalArgumentException("Không có mối quan hệ với tên " + relationship + " tồn tại cho Funnels");
                         }
                     }
 
@@ -193,7 +193,7 @@ public class StandardFunnel implements Funnel {
             writeLock.lock();
             try {
                 if (!outgoingConnections.remove(connection)) {
-                    throw new IllegalStateException("No Connection with ID " + connection.getIdentifier() + " is currently registered with this Funnel");
+                    throw new IllegalStateException("Không có kết nối với ID " + connection.getIdentifier() + " hiện tại được đăng ký với Funnel này");
                 }
                 outgoingConnections.add(connection);
             } finally {
@@ -205,7 +205,7 @@ public class StandardFunnel implements Funnel {
             writeLock.lock();
             try {
                 if (!incomingConnections.remove(connection)) {
-                    throw new IllegalStateException("No Connection with ID " + connection.getIdentifier() + " is currently registered with this Funnel");
+                    throw new IllegalStateException("Không có kết nối với ID " + connection.getIdentifier() + " hiện tại được đăng ký với Funnel này");
                 }
                 incomingConnections.add(connection);
             } finally {
@@ -221,14 +221,14 @@ public class StandardFunnel implements Funnel {
             if (!requireNonNull(connection).getSource().equals(this)) {
                 final boolean existed = incomingConnections.remove(connection);
                 if (!existed) {
-                    throw new IllegalStateException("The given connection is not currently registered for this Funnel");
+                    throw new IllegalStateException("Kết nối đã cho hiện không được đăng ký cho Funnel này");
                 }
                 return;
             }
 
             final boolean removed = outgoingConnections.remove(connection);
             if (!removed) {
-                throw new IllegalStateException(connection.getIdentifier() + " is not registered with " + this.getIdentifier());
+                throw new IllegalStateException(connection.getIdentifier() + " không được đăng ký với " + this.getIdentifier());
             }
         } finally {
             writeLock.unlock();
@@ -253,7 +253,7 @@ public class StandardFunnel implements Funnel {
                 return Collections.unmodifiableSet(outgoingConnections);
             }
 
-            throw new IllegalArgumentException("No relationship with name " + relationship.getName() + " exists for Funnels");
+            throw new IllegalArgumentException("Không có mối quan hệ với tên " + relationship.getName() + " tồn tại cho Funnels");
         } finally {
             readLock.unlock();
         }
@@ -531,7 +531,7 @@ public class StandardFunnel implements Funnel {
                 if (connection.getSource().equals(this)) {
                     connection.verifyCanDelete();
                 } else {
-                    throw new IllegalStateException("Funnel " + this.getIdentifier() + " is the destination of another component");
+                    throw new IllegalStateException("Phễu " + this.getIdentifier() + " vì nó là đích đến của một thành phần khác");
                 }
             }
         } finally {
@@ -642,7 +642,7 @@ public class StandardFunnel implements Funnel {
             } else if (versionedComponentId == null) {
                 updated = this.versionedComponentId.compareAndSet(currentId, null);
             } else {
-                throw new IllegalStateException(this + " is already under version control");
+                throw new IllegalStateException(this + " đã được kiểm soát phiên bản");
             }
         }
     }

@@ -47,11 +47,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @Tags({"schema", "registry", "avro", "json", "csv"})
-@CapabilityDescription("Provides a service for registering and accessing schemas. You can register a schema "
-    + "as a dynamic property where 'name' represents the schema name and 'value' represents the textual "
-    + "representation of the actual schema following the syntax and semantics of Avro's Schema format.")
-@DynamicProperty(name = "Schema name", value = "Schema Content",
-        description = "Adds a named schema using the JSON string representation of an Avro schema",
+@CapabilityDescription("Cung cấp một dịch vụ để đăng ký và truy cập các schema. Bạn có thể đăng ký một schema "
+    + "dưới dạng thuộc tính động, trong đó 'name' là tên của schema và 'value' là nội dung dạng văn bản "
+    + "biểu diễn schema thực tế theo cú pháp và ngữ nghĩa của định dạng Schema Avro.")
+@DynamicProperty(name = "Tên Schema", value = "Nội dung Schema",
+        description = "Thêm một schema có tên, sử dụng chuỗi JSON biểu diễn của schema Avro.",
         expressionLanguageScope = ExpressionLanguageScope.NONE)
 public class AvroSchemaRegistry extends AbstractControllerService implements SchemaRegistry {
     private static final Set<SchemaField> schemaFields = EnumSet.of(SchemaField.SCHEMA_NAME, SchemaField.SCHEMA_TEXT, SchemaField.SCHEMA_TEXT_FORMAT);
@@ -59,13 +59,15 @@ public class AvroSchemaRegistry extends AbstractControllerService implements Sch
 
     static final PropertyDescriptor VALIDATE_FIELD_NAMES = new PropertyDescriptor.Builder()
             .name("avro-reg-validated-field-names")
-            .displayName("Validate Field Names")
-            .description("Whether or not to validate the field names in the Avro schema based on Avro naming rules. If set to true, all field names must be valid Avro names, "
-                    + "which must begin with [A-Za-z_], and subsequently contain only [A-Za-z0-9_]. If set to false, no validation will be performed on the field names.")
+            .displayName("Xác thực tên trường")
+            .description("Xác định có kiểm tra tính hợp lệ của tên trường trong schema Avro dựa theo quy tắc đặt tên của Avro hay không. "
+                    + "Nếu chọn true, tất cả các tên trường phải hợp lệ — bắt đầu bằng [A-Za-z_] và chỉ chứa các ký tự [A-Za-z0-9_]. "
+                    + "Nếu chọn false, việc xác thực tên trường sẽ bị bỏ qua.")
             .allowableValues("true", "false")
             .defaultValue("true")
             .required(true)
             .build();
+
 
     private List<PropertyDescriptor> propertyDescriptors = new ArrayList<>();
 

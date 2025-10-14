@@ -62,19 +62,18 @@ public final class AzureStorageUtils {
     public static final String STORAGE_ENDPOINT_SUFFIX_PROPERTY_DESCRIPTOR_NAME = "storage-endpoint-suffix";
 
     public static final String ACCOUNT_KEY_BASE_DESCRIPTION =
-            "The storage account key. This is an admin-like password providing access to every container in this account. It is recommended " +
-            "one uses Shared Access Signature (SAS) token instead for fine-grained control with policies.";
+            "Khóa tài khoản lưu trữ. Đây là mật khẩu có quyền quản trị, cho phép truy cập vào mọi vùng chứa (container) trong tài khoản này. " +
+            "Khuyến nghị nên sử dụng mã chia sẻ truy cập (SAS token) thay thế để có khả năng kiểm soát chi tiết hơn với chính sách riêng.";
 
     public static final String ACCOUNT_KEY_SECURITY_DESCRIPTION =
-            " There are certain risks in allowing the account key to be stored as a flowfile " +
-            "attribute. While it does provide for a more flexible flow by allowing the account key to " +
-            "be fetched dynamically from a flowfile attribute, care must be taken to restrict access to " +
-            "the event provenance data (e.g., by strictly controlling the policies governing provenance for this processor). " +
-            "In addition, the provenance repositories may be put on encrypted disk partitions.";
+            " Có một số rủi ro khi cho phép lưu khóa tài khoản trong thuộc tính của FlowFile. " +
+            "Mặc dù điều này giúp luồng xử lý linh hoạt hơn khi có thể lấy khóa tài khoản động từ thuộc tính của FlowFile, " +
+            "nhưng cần đảm bảo giới hạn quyền truy cập dữ liệu nguồn (provenance), ví dụ bằng cách kiểm soát chặt chẽ các chính sách truy cập. " +
+            "Ngoài ra, nên đặt các kho lưu trữ provenance trên phân vùng đĩa được mã hóa.";
 
     public static final PropertyDescriptor ACCOUNT_KEY = new PropertyDescriptor.Builder()
             .name(STORAGE_ACCOUNT_KEY_PROPERTY_DESCRIPTOR_NAME)
-            .displayName("Storage Account Key")
+            .displayName("Khóa tài khoản lưu trữ")
             .description(ACCOUNT_KEY_BASE_DESCRIPTION + ACCOUNT_KEY_SECURITY_DESCRIPTION)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -82,24 +81,22 @@ public final class AzureStorageUtils {
             .sensitive(true)
             .build();
 
-    public static final String ACCOUNT_NAME_BASE_DESCRIPTION = "The storage account name.";
+    public static final String ACCOUNT_NAME_BASE_DESCRIPTION = "Tên tài khoản lưu trữ.";
 
     public static final String ACCOUNT_NAME_SECURITY_DESCRIPTION =
-            " There are certain risks in allowing the account name to be stored as a flowfile " +
-            "attribute. While it does provide for a more flexible flow by allowing the account name to " +
-            "be fetched dynamically from a flowfile attribute, care must be taken to restrict access to " +
-            "the event provenance data (e.g., by strictly controlling the policies governing provenance for this processor). " +
-            "In addition, the provenance repositories may be put on encrypted disk partitions.";
+            " Có một số rủi ro khi cho phép lưu tên tài khoản trong thuộc tính của FlowFile. " +
+            "Mặc dù điều này giúp luồng xử lý linh hoạt hơn khi có thể lấy tên tài khoản động từ thuộc tính của FlowFile, " +
+            "nhưng cần đảm bảo giới hạn quyền truy cập dữ liệu nguồn (provenance), ví dụ bằng cách kiểm soát chặt chẽ các chính sách truy cập. " +
+            "Ngoài ra, nên đặt các kho lưu trữ provenance trên phân vùng đĩa được mã hóa.";
 
     public static final String ACCOUNT_NAME_CREDENTIAL_SERVICE_DESCRIPTION =
-            " Instead of defining the Storage Account Name, Storage Account Key and SAS Token properties directly on the processor, " +
-            "the preferred way is to configure them through a controller service specified in the Storage Credentials property. " +
-            "The controller service can provide a common/shared configuration for multiple/all Azure processors. Furthermore, the credentials " +
-            "can also be looked up dynamically with the 'Lookup' version of the service.";
+            " Thay vì khai báo trực tiếp các thuộc tính Tên tài khoản, Khóa tài khoản và Mã SAS trong bộ xử lý, " +
+            "cách được khuyến nghị là cấu hình chúng thông qua một dịch vụ điều khiển (controller service) được chỉ định trong thuộc tính Thông tin xác thực lưu trữ. " +
+            "Dịch vụ này có thể cung cấp cấu hình dùng chung cho nhiều bộ xử lý Azure. Ngoài ra, phiên bản 'Tra cứu' của dịch vụ cũng có thể cho phép lấy thông tin xác thực động theo thuộc tính FlowFile.";
 
     public static final PropertyDescriptor ACCOUNT_NAME = new PropertyDescriptor.Builder()
             .name(STORAGE_ACCOUNT_NAME_PROPERTY_DESCRIPTOR_NAME)
-            .displayName("Storage Account Name")
+            .displayName("Tên tài khoản lưu trữ")
             .description(ACCOUNT_NAME_BASE_DESCRIPTION + ACCOUNT_NAME_SECURITY_DESCRIPTION + ACCOUNT_NAME_CREDENTIAL_SERVICE_DESCRIPTION)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -109,13 +106,12 @@ public final class AzureStorageUtils {
 
     public static final PropertyDescriptor ENDPOINT_SUFFIX = new PropertyDescriptor.Builder()
             .name(STORAGE_ENDPOINT_SUFFIX_PROPERTY_DESCRIPTOR_NAME)
-            .displayName("Common Storage Account Endpoint Suffix")
+            .displayName("Hậu tố điểm cuối tài khoản lưu trữ chung")
             .description(
-                    "Storage accounts in public Azure always use a common FQDN suffix. " +
-                    "Override this endpoint suffix with a different suffix in certain circumstances (like Azure Stack or non-public Azure regions). " +
-                    "The preferred way is to configure them through a controller service specified in the Storage Credentials property. " +
-                    "The controller service can provide a common/shared configuration for multiple/all Azure processors. Furthermore, the credentials " +
-                    "can also be looked up dynamically with the 'Lookup' version of the service.")
+                    "Các tài khoản lưu trữ trong Azure công cộng luôn sử dụng hậu tố FQDN chung. " +
+                    "Có thể ghi đè hậu tố này trong một số trường hợp đặc biệt (như Azure Stack hoặc vùng Azure không công khai). " +
+                    "Cách khuyến nghị là cấu hình qua dịch vụ điều khiển được chỉ định trong thuộc tính Thông tin xác thực lưu trữ. " +
+                    "Dịch vụ này có thể cung cấp cấu hình dùng chung cho nhiều bộ xử lý Azure. Ngoài ra, phiên bản 'Tra cứu' của dịch vụ cũng cho phép chọn thông tin xác thực động khi chạy.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(false)
@@ -124,25 +120,24 @@ public final class AzureStorageUtils {
 
     public static final PropertyDescriptor CONTAINER = new PropertyDescriptor.Builder()
             .name("container-name")
-            .displayName("Container Name")
-            .description("Name of the Azure storage container. In case of PutAzureBlobStorage processor, container can be created if it does not exist.")
+            .displayName("Tên vùng chứa (Container)")
+            .description("Tên vùng chứa lưu trữ Azure. Trong trường hợp của bộ xử lý PutAzureBlobStorage, vùng chứa sẽ được tự động tạo nếu chưa tồn tại.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(true)
             .build();
 
-    public static final String SAS_TOKEN_BASE_DESCRIPTION = "Shared Access Signature token, including the leading '?'. Specify either SAS token (recommended) or Account Key.";
+    public static final String SAS_TOKEN_BASE_DESCRIPTION = "Mã chia sẻ truy cập (Shared Access Signature - SAS), bao gồm cả ký tự '?' ở đầu. Chỉ định hoặc mã SAS (được khuyến nghị) hoặc Khóa tài khoản.";
 
     public static final String SAS_TOKEN_SECURITY_DESCRIPTION =
-            " There are certain risks in allowing the SAS token to be stored as a flowfile " +
-            "attribute. While it does provide for a more flexible flow by allowing the SAS token to " +
-            "be fetched dynamically from a flowfile attribute, care must be taken to restrict access to " +
-            "the event provenance data (e.g., by strictly controlling the policies governing provenance for this processor). " +
-            "In addition, the provenance repositories may be put on encrypted disk partitions.";
+            " Có một số rủi ro khi cho phép lưu mã SAS trong thuộc tính của FlowFile. " +
+            "Mặc dù điều này giúp luồng xử lý linh hoạt hơn khi có thể lấy mã SAS động từ thuộc tính của FlowFile, " +
+            "nhưng cần đảm bảo giới hạn quyền truy cập dữ liệu nguồn (provenance), ví dụ bằng cách kiểm soát chặt chẽ các chính sách truy cập. " +
+            "Ngoài ra, nên đặt các kho lưu trữ provenance trên phân vùng đĩa được mã hóa.";
 
     public static final PropertyDescriptor PROP_SAS_TOKEN = new PropertyDescriptor.Builder()
             .name(STORAGE_SAS_TOKEN_PROPERTY_DESCRIPTOR_NAME)
-            .displayName("SAS Token")
+            .displayName("Mã SAS")
             .description(SAS_TOKEN_BASE_DESCRIPTION + SAS_TOKEN_SECURITY_DESCRIPTION)
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -152,20 +147,20 @@ public final class AzureStorageUtils {
 
     public static final PropertyDescriptor STORAGE_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("storage-credentials-service")
-            .displayName("Storage Credentials")
-            .description("The Controller Service used to obtain Azure Storage Credentials. Instead of the processor level properties, " +
-                    "the credentials can be configured here through a common/shared controller service, which is the preferred way. " +
-                    "The 'Lookup' version of the service can also be used to select the credentials dynamically at runtime " +
-                    "based on a FlowFile attribute (if the processor has FlowFile input).")
+            .displayName("Thông tin xác thực lưu trữ")
+            .description("Dịch vụ điều khiển (Controller Service) được sử dụng để lấy thông tin xác thực Azure Storage. " +
+                    "Thay vì khai báo trực tiếp trong bộ xử lý, thông tin xác thực nên được cấu hình tại đây để dùng chung giữa nhiều bộ xử lý. " +
+                    "Phiên bản 'Tra cứu' của dịch vụ cũng có thể được sử dụng để chọn thông tin xác thực động trong quá trình chạy, " +
+                    "dựa trên thuộc tính của FlowFile (nếu bộ xử lý có đầu vào FlowFile).")
             .identifiesControllerService(AzureStorageCredentialsService.class)
             .required(false)
             .build();
 
     public static final PropertyDescriptor MANAGED_IDENTITY_CLIENT_ID = new PropertyDescriptor.Builder()
             .name("managed-identity-client-id")
-            .displayName("Managed Identity Client ID")
-            .description("Client ID of the managed identity. The property is required when User Assigned Managed Identity is used for authentication. " +
-                    "It must be empty in case of System Assigned Managed Identity.")
+            .displayName("Client ID của Managed Identity")
+            .description("Client ID của danh tính được quản lý (Managed Identity). Thuộc tính này bắt buộc khi sử dụng User Assigned Managed Identity để xác thực. " +
+                    "Thuộc tính phải để trống nếu sử dụng System Assigned Managed Identity.")
             .sensitive(true)
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -174,8 +169,8 @@ public final class AzureStorageUtils {
 
     public static final PropertyDescriptor SERVICE_PRINCIPAL_TENANT_ID = new PropertyDescriptor.Builder()
             .name("service-principal-tenant-id")
-            .displayName("Service Principal Tenant ID")
-            .description("Tenant ID of the Azure Active Directory hosting the Service Principal. The property is required when Service Principal authentication is used.")
+            .displayName("Tenant ID của Service Principal")
+            .description("Mã định danh Tenant của Azure Active Directory chứa Service Principal. Thuộc tính này bắt buộc khi sử dụng xác thực bằng Service Principal.")
             .sensitive(true)
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -184,8 +179,8 @@ public final class AzureStorageUtils {
 
     public static final PropertyDescriptor SERVICE_PRINCIPAL_CLIENT_ID = new PropertyDescriptor.Builder()
             .name("service-principal-client-id")
-            .displayName("Service Principal Client ID")
-            .description("Client ID (or Application ID) of the Client/Application having the Service Principal. The property is required when Service Principal authentication is used.")
+            .displayName("Client ID của Service Principal")
+            .description("Client ID (hoặc Application ID) của ứng dụng có Service Principal. Thuộc tính này bắt buộc khi sử dụng xác thực bằng Service Principal.")
             .sensitive(true)
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -194,13 +189,14 @@ public final class AzureStorageUtils {
 
     public static final PropertyDescriptor SERVICE_PRINCIPAL_CLIENT_SECRET = new PropertyDescriptor.Builder()
             .name("service-principal-client-secret")
-            .displayName("Service Principal Client Secret")
-            .description("Password of the Client/Application. The property is required when Service Principal authentication is used.")
+            .displayName("Mật khẩu của Service Principal")
+            .description("Mật khẩu của ứng dụng/Client có Service Principal. Thuộc tính này bắt buộc khi sử dụng xác thực bằng Service Principal.")
             .sensitive(true)
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .build();
+
 
     private AzureStorageUtils() {
         // do not instantiate

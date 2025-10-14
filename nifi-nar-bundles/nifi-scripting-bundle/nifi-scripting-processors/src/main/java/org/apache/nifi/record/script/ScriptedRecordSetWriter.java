@@ -48,15 +48,15 @@ import java.util.Map;
  * A RecordSetWriter implementation that allows the user to script the RecordWriter instance
  */
 @Tags({"record", "writer", "script", "invoke", "groovy", "python", "jython", "jruby", "ruby", "javascript", "js", "lua", "luaj"})
-@CapabilityDescription("Allows the user to provide a scripted RecordSetWriterFactory instance in order to write records to an outgoing flow file.")
-@DynamicProperty(name = "Script Engine Binding property", value = "Binding property value passed to Script Runner",
+@CapabilityDescription("Cho phép người dùng cung cấp một thể hiện RecordSetWriterFactory được viết bằng kịch bản để viết các bản ghi vào một tệp luồng đi.")
+@DynamicProperty(name = "Thuộc tính ràng buộc Công cụ kịch bản", value = "Giá trị thuộc tính ràng buộc được truyền đến Script Runner",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Updates a script engine property specified by the Dynamic Property's key with the value specified by the Dynamic Property's value")
+        description = "Cập nhật một thuộc tính công cụ kịch bản được chỉ định bởi khóa Thuộc tính Động với giá trị được chỉ định bởi giá trị Thuộc tính Động")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXECUTE_CODE,
-                        explanation = "Provides operator the ability to execute arbitrary code assuming all permissions that NiFi has.")
+                        explanation = "Cung cấp cho nhà điều hành khả năng thực thi mã tùy ý giả định tất cả các quyền mà NiFi có.")
         }
 )
 public class ScriptedRecordSetWriter extends AbstractScriptedRecordFactory<RecordSetWriterFactory> implements RecordSetWriterFactory {

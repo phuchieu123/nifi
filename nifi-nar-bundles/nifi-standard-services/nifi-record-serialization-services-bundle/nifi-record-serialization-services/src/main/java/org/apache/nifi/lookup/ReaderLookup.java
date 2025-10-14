@@ -52,22 +52,25 @@ import static org.apache.nifi.expression.ExpressionLanguageScope.NONE;
 
 @Tags({"lookup", "parse", "record", "row", "reader"})
 @SeeAlso({RecordSetWriterLookup.class})
-@CapabilityDescription("Provides a RecordReaderFactory that can be used to dynamically select another RecordReaderFactory. " +
-    "This will allow multiple RecordReaderFactories to be defined and registered, and then selected " +
-    "dynamically at runtime by referencing a FlowFile attribute in the Service to Use property.")
-@DynamicProperty(name = "Name of the RecordReader", value = "A RecordReaderFactory controller service", description = "", expressionLanguageScope = NONE)
+@CapabilityDescription("Cung cấp một RecordReaderFactory có thể được sử dụng để chọn động một RecordReaderFactory khác. " +
+        "Điều này cho phép nhiều RecordReaderFactory được định nghĩa và đăng ký, sau đó được chọn động tại thời điểm chạy bằng cách tham chiếu tới một thuộc tính FlowFile trong trường 'Service to Use'.")
+@DynamicProperty(
+        name = "Tên của RecordReader",
+        value = "Một controller service RecordReaderFactory",
+        description = "",
+        expressionLanguageScope = ExpressionLanguageScope.NONE
+)
 public class ReaderLookup extends AbstractControllerService implements RecordReaderFactory {
 
     static final PropertyDescriptor SERVICE_TO_USE = new Builder()
         .name("Service to Use")
         .displayName("Service to Use")
-        .description("Specifies the name of the user-defined property whose associated Controller Service should be used.")
+        .description("Chỉ định tên của thuộc tính do người dùng định nghĩa mà dịch vụ Controller liên kết sẽ được sử dụng.")
         .required(true)
         .defaultValue("${recordreader.name}")
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
-
 
     private volatile Map<String, RecordReaderFactory> recordReaderFactoryMap;
     private volatile PropertyValue serviceToUseValue;
@@ -81,7 +84,7 @@ public class ReaderLookup extends AbstractControllerService implements RecordRea
     protected PropertyDescriptor getSupportedDynamicPropertyDescriptor(final String propertyDescriptorName) {
         return new Builder()
             .name(propertyDescriptorName)
-            .description("The RecordReaderFactory to return when '" + propertyDescriptorName + "' is the chosen Record Reader")
+            .description("RecordReaderFactory sẽ được trả về khi '" + propertyDescriptorName + "' là Record Reader được chọn")
             .identifiesControllerService(RecordReaderFactory.class)
             .build();
     }
@@ -100,7 +103,7 @@ public class ReaderLookup extends AbstractControllerService implements RecordRea
             if (this.getIdentifier().equals(referencedId)) {
                 results.add(new ValidationResult.Builder()
                         .subject(descriptor.getDisplayName())
-                        .explanation("The current service cannot be registered as a RecordReaderFactory to lookup")
+                        .explanation("Dịch vụ hiện tại không thể được đăng ký làm RecordReaderFactory để lookup")
                         .valid(false)
                         .build());
             }
@@ -109,7 +112,7 @@ public class ReaderLookup extends AbstractControllerService implements RecordRea
         if (serviceNames.isEmpty()) {
             results.add(new ValidationResult.Builder()
                     .subject(this.getClass().getSimpleName())
-                    .explanation("At least one RecordReaderFactory must be defined via dynamic properties")
+                    .explanation("Ít nhất một RecordReaderFactory phải được định nghĩa thông qua các dynamic property")
                     .valid(false)
                     .build());
         }
@@ -120,7 +123,7 @@ public class ReaderLookup extends AbstractControllerService implements RecordRea
             if (!serviceNames.contains(selectedValue)) {
                 results.add(new ValidationResult.Builder()
                     .subject(SERVICE_TO_USE.getDisplayName())
-                    .explanation("No service is defined with the name <" + selectedValue + ">")
+                    .explanation("Không có dịch vụ nào được định nghĩa với tên <" + selectedValue + ">")
                     .valid(false)
                     .build());
             }

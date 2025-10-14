@@ -27,18 +27,19 @@ import org.apache.nifi.security.krb.KerberosUser;
 import java.util.Collections;
 import java.util.List;
 
-@CapabilityDescription("Provides a mechanism for creating a KerberosUser from a principal and password that other " +
-        "components are able to use in order to perform authentication using Kerberos.")
+@CapabilityDescription("Cung cấp cơ chế tạo KerberosUser từ principal và mật khẩu để các component khác "
+        + "có thể sử dụng cho việc xác thực Kerberos.")
 @Tags({"Kerberos", "Password", "Principal", "Credentials", "Authentication", "Security"})
 public class KerberosPasswordUserService extends AbstractKerberosUserService {
 
     static final PropertyDescriptor PASSWORD = new PropertyDescriptor.Builder()
             .name("Kerberos Password")
-            .description("Kerberos password associated with the principal.")
+            .description("Mật khẩu Kerberos liên kết với principal.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .sensitive(true)
             .build();
+
 
     private volatile String password;
 

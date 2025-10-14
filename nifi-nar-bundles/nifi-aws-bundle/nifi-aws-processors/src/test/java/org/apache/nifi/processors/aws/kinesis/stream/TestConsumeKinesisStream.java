@@ -103,7 +103,7 @@ public class TestConsumeKinesisStream {
         )));
     }
 
-    @Test
+   @Test
     public void testInvalidProperties() {
         runner.setProperty(ConsumeKinesisStream.APPLICATION_NAME, " ");
         runner.setProperty(ConsumeKinesisStream.TIMESTAMP_FORMAT, "not-valid-format");
@@ -120,25 +120,21 @@ public class TestConsumeKinesisStream {
         runner.assertNotValid();
 
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::run);
-        assertThat(assertionError.getMessage(), equalTo(String.format("Processor has 14 validation failures:\n" +
-                        "'%s' validated against ' ' is invalid because %s must contain at least one character that is not white space\n" +
-                        "'%s' validated against 'not-a-reader' is invalid because Property references a Controller Service that does not exist\n" +
-                        "'%s' validated against 'not-a-writer' is invalid because Property references a Controller Service that does not exist\n" +
-                        "'%s' validated against 'not-a-url' is invalid because Not a valid URL\n" +
-                        "'%s' validated against 'not-an-enum-match' is invalid because Given value not found in allowed set '%s, %s, %s'\n" +
-                        "'%s' validated against 'not-valid-format' is invalid because Must be a valid java.time.DateTimeFormatter pattern, e.g. %s\n" +
-                        "'%s' validated against 'not-a-period' is invalid because Must be of format <duration> <TimeUnit> where <duration> is a non-negative integer and " +
-                        "TimeUnit is a supported Time Unit, such as: nanos, millis, secs, mins, hrs, days\n" +
-                        "'%s' validated against 'not-a-period' is invalid because Must be of format <duration> <TimeUnit> where <duration> is a non-negative integer and " +
-                        "TimeUnit is a supported Time Unit, such as: nanos, millis, secs, mins, hrs, days\n" +
-                        "'%s' validated against 'not-a-long' is invalid because Must be of format <duration> <TimeUnit> where <duration> is a non-negative integer and " +
-                        "TimeUnit is a supported Time Unit, such as: nanos, millis, secs, mins, hrs, days\n" +
-                        "'%s' validated against 'not-an-int' is invalid because not a valid integer\n" +
-                        "'%s' validated against 'not-a-long' is invalid because Must be of format <duration> <TimeUnit> where <duration> is a non-negative integer and " +
-                        "TimeUnit is a supported Time Unit, such as: nanos, millis, secs, mins, hrs, days\n" +
-                        "'%s' validated against 'not-a-boolean' is invalid because Given value not found in allowed set 'true, false'\n" +
-                        "'%s' validated against 'not-a-reader' is invalid because Invalid Controller Service: not-a-reader is not a valid Controller Service Identifier\n" +
-                        "'%s' validated against 'not-a-writer' is invalid because Invalid Controller Service: not-a-writer is not a valid Controller Service Identifier\n",
+        assertThat(assertionError.getMessage(), equalTo(String.format("Processor có 14 lỗi xác thực:\n" +
+                        "'%s' được xác thực với ' ' không hợp lệ vì %s phải chứa ít nhất một ký tự không phải khoảng trắng\n" +
+                        "'%s' được xác thực với 'not-a-reader' không hợp lệ vì Thuộc tính tham chiếu đến Controller Service không tồn tại\n" +
+                        "'%s' được xác thực với 'not-a-writer' không hợp lệ vì Thuộc tính tham chiếu đến Controller Service không tồn tại\n" +
+                        "'%s' được xác thực với 'not-a-url' không hợp lệ vì Không phải là URL hợp lệ\n" +
+                        "'%s' được xác thực với 'not-an-enum-match' không hợp lệ vì Giá trị không nằm trong tập cho phép '%s, %s, %s'\n" +
+                        "'%s' được xác thực với 'not-valid-format' không hợp lệ vì Phải là mẫu hợp lệ của java.time.DateTimeFormatter, ví dụ: %s\n" +
+                        "'%s' được xác thực với 'not-a-period' không hợp lệ vì Phải có định dạng <duration> <TimeUnit> trong đó <duration> là số nguyên không âm và TimeUnit là đơn vị thời gian hợp lệ, ví dụ: nanos, millis, secs, mins, hrs, days\n" +
+                        "'%s' được xác thực với 'not-a-period' không hợp lệ vì Phải có định dạng <duration> <TimeUnit> trong đó <duration> là số nguyên không âm và TimeUnit là đơn vị thời gian hợp lệ, ví dụ: nanos, millis, secs, mins, hrs, days\n" +
+                        "'%s' được xác thực với 'not-a-long' không hợp lệ vì Phải có định dạng <duration> <TimeUnit> trong đó <duration> là số nguyên không âm và TimeUnit là đơn vị thời gian hợp lệ, ví dụ: nanos, millis, secs, mins, hrs, days\n" +
+                        "'%s' được xác thực với 'not-an-int' không hợp lệ vì Không phải là số nguyên hợp lệ\n" +
+                        "'%s' được xác thực với 'not-a-long' không hợp lệ vì Phải có định dạng <duration> <TimeUnit> trong đó <duration> là số nguyên không âm và TimeUnit là đơn vị thời gian hợp lệ, ví dụ: nanos, millis, secs, mins, hrs, days\n" +
+                        "'%s' được xác thực với 'not-a-boolean' không hợp lệ vì Giá trị không nằm trong tập cho phép 'true, false'\n" +
+                        "'%s' được xác thực với 'not-a-reader' không hợp lệ vì Controller Service không hợp lệ: not-a-reader không phải là mã định danh dịch vụ hợp lệ\n" +
+                        "'%s' được xác thực với 'not-a-writer' không hợp lệ vì Controller Service không hợp lệ: not-a-writer không phải là mã định danh dịch vụ hợp lệ\n",
                 ConsumeKinesisStream.APPLICATION_NAME.getName(), ConsumeKinesisStream.APPLICATION_NAME.getName(),
                 ConsumeKinesisStream.RECORD_READER.getDisplayName(),
                 ConsumeKinesisStream.RECORD_WRITER.getDisplayName(),
@@ -268,75 +264,75 @@ public class TestConsumeKinesisStream {
         runner.setProperty("shutdownGraceMillis", "not-long");
 
         final AssertionError ae = assertThrows(AssertionError.class, runner::assertValid);
-        assertThat(ae.getMessage(), startsWith("Processor has 17 validation failures:\n"));
+        assertThat(ae.getMessage(), startsWith("Processor có 17 lỗi xác thực:\n"));
 
-        // blank properties
-        assertThat(ae.getMessage(), containsString("'Property Name' validated against '' is invalid because Invalid attribute key: <Empty String>\n"));
-        assertThat(ae.getMessage(), containsString("'Property Name' validated against ' ' is invalid because Invalid attribute key: <Empty String>\n"));
+        // thuộc tính trống
+        assertThat(ae.getMessage(), containsString("'Property Name' được xác thực với '' không hợp lệ vì Khóa thuộc tính không hợp lệ: <Chuỗi rỗng>\n"));
+        assertThat(ae.getMessage(), containsString("'Property Name' được xác thực với ' ' không hợp lệ vì Khóa thuộc tính không hợp lệ: <Chuỗi rỗng>\n"));
 
-        // invalid property names
+        // tên thuộc tính không hợp lệ
         assertThat(ae.getMessage(), containsString(
-                "'withPrefixNotAllowed' validated against 'a-value' is invalid because Property name must not have a prefix of \"with\", " +
-                "must start with a letter and contain only letters, numbers or underscores\n"
+                "'withPrefixNotAllowed' được xác thực với 'a-value' không hợp lệ vì Tên thuộc tính không được bắt đầu bằng tiền tố \"with\", " +
+                "phải bắt đầu bằng chữ cái và chỉ được chứa chữ cái, số hoặc dấu gạch dưới\n"
         ));
         assertThat(ae.getMessage(), containsString(
-                "'unknownProperty' validated against 'a-third-value' is invalid because Kinesis Client Library Configuration property with name " +
-                "UnknownProperty does not exist or is not writable\n"
+                "'unknownProperty' được xác thực với 'a-third-value' không hợp lệ vì Thuộc tính cấu hình Kinesis Client Library có tên " +
+                "UnknownProperty không tồn tại hoặc không thể ghi\n"
         ));
         assertThat(ae.getMessage(), containsString(
-                "'toString' validated against 'cannot-call' is invalid because Kinesis Client Library Configuration property with name " +
-                "ToString does not exist or is not writable\n"
-        ));
-
-        // invalid property names (cannot use nested/indexed/mapped properties via BeanUtils)
-        assertThat(ae.getMessage(), containsString(
-                "'no.allowed' validated against 'no-.' is invalid because Property name must not have a prefix of \"with\", " +
-                "must start with a letter and contain only letters, numbers or underscores\n"
-        ));
-        assertThat(ae.getMessage(), containsString(
-                "'no[allowed' validated against 'no-[' is invalid because Property name must not have a prefix of \"with\", " +
-                "must start with a letter and contain only letters, numbers or underscores\n"
-        ));
-        assertThat(ae.getMessage(), containsString(
-                "'no]allowed' validated against 'no-]' is invalid because Property name must not have a prefix of \"with\", " +
-                "must start with a letter and contain only letters, numbers or underscores\n"
-        ));
-        assertThat(ae.getMessage(), containsString(
-                "'no(allowed' validated against 'no-(' is invalid because Property name must not have a prefix of \"with\", " +
-                "must start with a letter and contain only letters, numbers or underscores\n"
-        ));
-        assertThat(ae.getMessage(), containsString(
-                "'no)allowed' validated against 'no-)' is invalid because Property name must not have a prefix of \"with\", " +
-                "must start with a letter and contain only letters, numbers or underscores\n"
+                "'toString' được xác thực với 'cannot-call' không hợp lệ vì Thuộc tính cấu hình Kinesis Client Library có tên " +
+                "ToString không tồn tại hoặc không thể ghi\n"
         ));
 
-        // can't override static properties
-        assertThat(ae.getMessage(), containsString("'regionName' validated against 'af-south-1' is invalid because Use \"Region\" instead of a dynamic property\n"));
+        // tên thuộc tính không hợp lệ (không thể dùng thuộc tính lồng nhau/index/mapping qua BeanUtils)
         assertThat(ae.getMessage(), containsString(
-                "'timestampAtInitialPositionInStream' validated against '2021-01-01 00:00:00' is invalid because Use \"Stream Position Timestamp\" instead of a dynamic property\n"
+                "'no.allowed' được xác thực với 'no-.' không hợp lệ vì Tên thuộc tính không được bắt đầu bằng tiền tố \"with\", " +
+                "phải bắt đầu bằng chữ cái và chỉ được chứa chữ cái, số hoặc dấu gạch dưới\n"
         ));
         assertThat(ae.getMessage(), containsString(
-                "'initialPositionInStream' validated against 'AT_TIMESTAMP' is invalid because Use \"Initial Stream Position\" instead of a dynamic property\n"
+                "'no[allowed' được xác thực với 'no-[' không hợp lệ vì Tên thuộc tính không được bắt đầu bằng tiền tố \"with\", " +
+                "phải bắt đầu bằng chữ cái và chỉ được chứa chữ cái, số hoặc dấu gạch dưới\n"
         ));
         assertThat(ae.getMessage(), containsString(
-                "'dynamoDBEndpoint' validated against 'http://localhost:4566/dynamodb' is invalid because Use \"DynamoDB Override\" instead of a dynamic property\n"
+                "'no]allowed' được xác thực với 'no-]' không hợp lệ vì Tên thuộc tính không được bắt đầu bằng tiền tố \"with\", " +
+                "phải bắt đầu bằng chữ cái và chỉ được chứa chữ cái, số hoặc dấu gạch dưới\n"
         ));
         assertThat(ae.getMessage(), containsString(
-                "'kinesisEndpoint' validated against 'http://localhost:4566/kinesis' is invalid because Use \"Endpoint Override URL\" instead of a dynamic property\n"
+                "'no(allowed' được xác thực với 'no-(' không hợp lệ vì Tên thuộc tính không được bắt đầu bằng tiền tố \"with\", " +
+                "phải bắt đầu bằng chữ cái và chỉ được chứa chữ cái, số hoặc dấu gạch dưới\n"
+        ));
+        assertThat(ae.getMessage(), containsString(
+                "'no)allowed' được xác thực với 'no-)' không hợp lệ vì Tên thuộc tính không được bắt đầu bằng tiền tố \"with\", " +
+                "phải bắt đầu bằng chữ cái và chỉ được chứa chữ cái, số hoặc dấu gạch dưới\n"
         ));
 
-        // invalid parameter conversions
+        // không thể ghi đè các thuộc tính tĩnh
+        assertThat(ae.getMessage(), containsString("'regionName' được xác thực với 'af-south-1' không hợp lệ vì Hãy sử dụng \"Region\" thay vì thuộc tính động\n"));
         assertThat(ae.getMessage(), containsString(
-                "'dynamoDBClientConfig' validated against 'too-complex' is invalid because Kinesis Client Library Configuration property " +
-                "with name DynamoDBClientConfig cannot be used with value \"too-complex\" : " +
-                "Cannot invoke com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration.withDynamoDBClientConfig on bean class " +
-                "'class com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration' - argument type mismatch - " +
-                "had objects of type \"java.lang.String\" but expected signature \"com.amazonaws.ClientConfiguration\"\n"
+                "'timestampAtInitialPositionInStream' được xác thực với '2021-01-01 00:00:00' không hợp lệ vì Hãy sử dụng \"Stream Position Timestamp\" thay vì thuộc tính động\n"
         ));
-        assertThat(ae.getMessage(), containsString("'shutdownGraceMillis' validated against 'not-long' is invalid because " +
-                "Kinesis Client Library Configuration property with name ShutdownGraceMillis " +
-                "cannot be used with value \"not-long\" : Value of ShutdownGraceMillis should be positive, but current value is 0\n"));
-    }
+        assertThat(ae.getMessage(), containsString(
+                "'initialPositionInStream' được xác thực với 'AT_TIMESTAMP' không hợp lệ vì Hãy sử dụng \"Initial Stream Position\" thay vì thuộc tính động\n"
+        ));
+        assertThat(ae.getMessage(), containsString(
+                "'dynamoDBEndpoint' được xác thực với 'http://localhost:4566/dynamodb' không hợp lệ vì Hãy sử dụng \"DynamoDB Override\" thay vì thuộc tính động\n"
+        ));
+        assertThat(ae.getMessage(), containsString(
+                "'kinesisEndpoint' được xác thực với 'http://localhost:4566/kinesis' không hợp lệ vì Hãy sử dụng \"Endpoint Override URL\" thay vì thuộc tính động\n"
+        ));
+
+        // lỗi khi chuyển đổi tham số không hợp lệ
+        assertThat(ae.getMessage(), containsString(
+                "'dynamoDBClientConfig' được xác thực với 'too-complex' không hợp lệ vì Thuộc tính cấu hình Kinesis Client Library " +
+                "có tên DynamoDBClientConfig không thể sử dụng với giá trị \"too-complex\" : " +
+                "Không thể gọi phương thức com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration.withDynamoDBClientConfig " +
+                "trên lớp 'class com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration' - kiểu tham số không khớp - " +
+                "nhận đối tượng kiểu \"java.lang.String\" nhưng yêu cầu kiểu \"com.amazonaws.ClientConfiguration\"\n"
+        ));
+        assertThat(ae.getMessage(), containsString("'shutdownGraceMillis' được xác thực với 'not-long' không hợp lệ vì " +
+                "Thuộc tính cấu hình Kinesis Client Library có tên ShutdownGraceMillis " +
+                "không thể sử dụng với giá trị \"not-long\" : Giá trị của ShutdownGraceMillis phải là số dương, nhưng hiện tại là 0\n"));
+    } // <-- ĐÃ THÊM DẤU } BỊ THIẾU Ở ĐÂY
 
     @Test
     public void testValidDynamicKCLProperties() {

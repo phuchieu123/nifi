@@ -25,15 +25,18 @@ import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.service.lookup.AbstractSingleAttributeBasedControllerServiceLookup;
 
 @Tags({ "azure", "microsoft", "cloud", "storage", "blob", "queue", "credentials" })
-@CapabilityDescription("Provides an AzureStorageCredentialsService that can be used to dynamically select another AzureStorageCredentialsService. " +
-        "This service requires an attribute named 'azure.storage.credentials.name' to be passed in, and will throw an exception if the attribute is missing. " +
-        "The value of 'azure.storage.credentials.name' will be used to select the AzureStorageCredentialsService that has been registered with that name. " +
-        "This will allow multiple AzureStorageCredentialsServices to be defined and registered, and then selected dynamically at runtime by tagging flow files " +
-        "with the appropriate 'azure.storage.credentials.name' attribute.")
-@DynamicProperty(name = "The name to register AzureStorageCredentialsService", value = "The AzureStorageCredentialsService",
-        description = "If '" + AzureStorageCredentialsControllerServiceLookup.AZURE_STORAGE_CREDENTIALS_NAME_ATTRIBUTE + "' attribute contains " +
-                "the name of the dynamic property, then the AzureStorageCredentialsService (registered in the value) will be selected.",
-        expressionLanguageScope = ExpressionLanguageScope.NONE)
+@CapabilityDescription("Cung cấp một AzureStorageCredentialsService có thể được sử dụng để chọn động một AzureStorageCredentialsService khác. " +
+"Dịch vụ này yêu cầu một thuộc tính có tên 'azure.storage.credentials.name' được truyền vào và sẽ ném ngoại lệ nếu thuộc tính này bị thiếu. " +
+"Giá trị của thuộc tính 'azure.storage.credentials.name' sẽ được sử dụng để chọn AzureStorageCredentialsService đã được đăng ký với tên đó. " +
+"Điều này cho phép định nghĩa và đăng ký nhiều AzureStorageCredentialsService khác nhau, và sau đó chọn động tại thời điểm chạy bằng cách gán cho FlowFile thuộc tính 'azure.storage.credentials.name' tương ứng.")
+
+@DynamicProperty(
+name = "Tên được dùng để đăng ký AzureStorageCredentialsService",
+value = "AzureStorageCredentialsService",
+description = "Nếu thuộc tính '" + AzureStorageCredentialsControllerServiceLookup.AZURE_STORAGE_CREDENTIALS_NAME_ATTRIBUTE +
+"' chứa tên của thuộc tính động, thì AzureStorageCredentialsService (được đăng ký trong giá trị) sẽ được chọn.",
+expressionLanguageScope = ExpressionLanguageScope.NONE
+)
 public class AzureStorageCredentialsControllerServiceLookup
         extends AbstractSingleAttributeBasedControllerServiceLookup<AzureStorageCredentialsService> implements AzureStorageCredentialsService {
 

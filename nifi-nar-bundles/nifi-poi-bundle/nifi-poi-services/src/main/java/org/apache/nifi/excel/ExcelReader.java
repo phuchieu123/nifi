@@ -55,17 +55,17 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"excel", "spreadsheet", "xlsx", "parse", "record", "row", "reader", "values", "cell"})
-@CapabilityDescription("Parses a Microsoft Excel document returning each row in each sheet as a separate record. "
-        + "This reader allows for inferring a schema from all the required sheets "
-        + "or providing an explicit schema for interpreting the values."
-        + "See Controller Service's Usage for further documentation. "
-        + "This reader is currently only capable of processing .xlsx "
-        + "(XSSF 2007 OOXML file format) Excel documents and not older .xls (HSSF '97(-2007) file format) documents.")
+@CapabilityDescription("Phân tích một tài liệu Microsoft Excel, trả về mỗi dòng trong mỗi sheet như một bản ghi riêng biệt. "
+        + "Reader này cho phép suy luận schema từ tất cả các sheet cần thiết "
+        + "hoặc cung cấp một schema rõ ràng để diễn giải các giá trị."
+        + "Xem phần Sử dụng Controller Service để biết thêm tài liệu. "
+        + "Reader này hiện chỉ có khả năng xử lý các tài liệu Excel .xlsx "
+        + "(định dạng XSSF 2007 OOXML) và không hỗ trợ các tài liệu .xls cũ (định dạng HSSF '97(-2007)).")
 public class ExcelReader extends SchemaRegistryService implements RecordReaderFactory {
 
     public enum ProtectionType implements DescribedValue {
-        UNPROTECTED("Unprotected", "An Excel spreadsheet not protected by a password"),
-        PASSWORD("Password Protected", "An Excel spreadsheet protected by a password");
+        UNPROTECTED("Không bảo vệ", "Một bảng tính Excel không được bảo vệ bằng mật khẩu"),
+        PASSWORD("Bảo vệ bằng mật khẩu", "Một bảng tính Excel được bảo vệ bằng mật khẩu");
 
         ProtectionType(String displayName, String description) {
             this.displayName = displayName;
@@ -93,10 +93,10 @@ public class ExcelReader extends SchemaRegistryService implements RecordReaderFa
 
     public static final PropertyDescriptor REQUIRED_SHEETS = new PropertyDescriptor
             .Builder().name("Required Sheets")
-            .displayName("Required Sheets")
-            .description("Comma-separated list of Excel document sheet names whose rows should be extracted from the excel document. If this property" +
-                    " is left blank then all the rows from all the sheets will be extracted from the Excel document. The list of names is case sensitive. Any sheets not" +
-                    " specified in this value will be ignored. An exception will be thrown if a specified sheet(s) are not found.")
+            .displayName("Các Sheet Cần Thiết")
+            .description("Danh sách các tên sheet trong tài liệu Excel, cách nhau bằng dấu phẩy, từ đó các dòng sẽ được trích xuất. Nếu thuộc tính này" +
+                    " để trống thì tất cả các dòng từ tất cả các sheet sẽ được trích xuất. Danh sách tên phân biệt chữ hoa chữ thường. Bất kỳ sheet nào không" +
+                    " được chỉ định trong giá trị này sẽ bị bỏ qua. Một ngoại lệ sẽ được ném ra nếu sheet được chỉ định không tìm thấy.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -104,10 +104,10 @@ public class ExcelReader extends SchemaRegistryService implements RecordReaderFa
 
     public static final PropertyDescriptor STARTING_ROW = new PropertyDescriptor
             .Builder().name("Starting Row")
-            .displayName("Starting Row")
-            .description("The row number of the first row to start processing (One based)." +
-                    " Use this to skip over rows of data at the top of a worksheet that are not part of the dataset." +
-                    " When using the '" + ExcelHeaderSchemaStrategy.USE_STARTING_ROW.getValue() + "' strategy this should be the column header row.")
+            .displayName("Dòng Bắt đầu")
+            .description("Số thứ tự của dòng đầu tiên để bắt đầu xử lý (tính từ 1)." +
+                    " Sử dụng thuộc tính này để bỏ qua các dòng dữ liệu ở đầu worksheet mà không thuộc tập dữ liệu." +
+                    " Khi sử dụng chiến lược '" + ExcelHeaderSchemaStrategy.USE_STARTING_ROW.getValue() + "' thì dòng này nên là dòng header của cột.")
             .required(true)
             .defaultValue("1")
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -116,8 +116,8 @@ public class ExcelReader extends SchemaRegistryService implements RecordReaderFa
 
     public static final PropertyDescriptor PROTECTION_TYPE = new PropertyDescriptor
             .Builder().name("Protection Type")
-            .displayName("Protection Type")
-            .description("Specifies whether an Excel spreadsheet is protected by a password or not.")
+            .displayName("Loại Bảo vệ")
+            .description("Xác định liệu bảng tính Excel có được bảo vệ bằng mật khẩu hay không.")
             .required(true)
             .allowableValues(ProtectionType.class)
             .defaultValue(ProtectionType.UNPROTECTED.getValue())
@@ -125,8 +125,8 @@ public class ExcelReader extends SchemaRegistryService implements RecordReaderFa
 
     public static final PropertyDescriptor PASSWORD = new PropertyDescriptor
             .Builder().name("Password")
-            .displayName("Password")
-            .description("The password for a password protected Excel spreadsheet")
+            .displayName("Mật khẩu")
+            .description("Mật khẩu của bảng tính Excel được bảo vệ")
             .required(true)
             .sensitive(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)

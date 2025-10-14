@@ -20,9 +20,13 @@ import org.apache.nifi.components.DescribedValue;
 
 public enum WritingStrategy implements DescribedValue {
 
-    WRITE_AND_RENAME("Write and Rename", "The processor writes the Azure file into a temporary directory and then renames/moves it to the final destination." +
-            " This prevents other processes from reading partially written files."),
-    SIMPLE_WRITE("Simple Write", "The processor writes the Azure file directly to the destination. This might result in the reading of partially written files.");
+    WRITE_AND_RENAME("Write and Rename", 
+        "Processor ghi tệp Azure vào thư mục tạm, sau đó đổi tên/chuyển nó đến vị trí đích cuối cùng. " +
+        "Cách này giúp ngăn chặn các tiến trình khác đọc phải tệp chưa được ghi hoàn tất."),
+        
+    SIMPLE_WRITE("Simple Write", 
+        "Processor ghi tệp Azure trực tiếp đến vị trí đích. " +
+        "Cách này có thể khiến tiến trình khác đọc phải tệp chưa được ghi xong.");
 
     private final String displayName;
     private final String description;

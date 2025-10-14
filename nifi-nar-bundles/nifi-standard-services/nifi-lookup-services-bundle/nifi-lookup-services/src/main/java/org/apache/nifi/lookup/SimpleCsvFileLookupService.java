@@ -48,13 +48,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Tags({"lookup", "cache", "enrich", "join", "csv", "reloadable", "key", "value"})
-@CapabilityDescription("A reloadable CSV file-based lookup service. The first line of the csv file is considered as " +
-        "header.")
+@CapabilityDescription("Một dịch vụ tìm kiếm dựa trên tệp CSV có thể tải lại. Dòng đầu tiên của tệp csv được coi là " +
+        "tiêu đề.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.READ_FILESYSTEM,
-                        explanation = "Provides operator the ability to read from any file that NiFi has access to.")
+                        explanation = "Cung cấp cho nhà điều hành khả năng đọc từ bất kỳ tệp nào mà NiFi có quyền truy cập.")
         }
 )
 public class SimpleCsvFileLookupService extends AbstractCSVLookupService implements StringLookupService {
@@ -64,13 +64,12 @@ public class SimpleCsvFileLookupService extends AbstractCSVLookupService impleme
     public static final PropertyDescriptor LOOKUP_VALUE_COLUMN =
         new PropertyDescriptor.Builder()
             .name("lookup-value-column")
-            .displayName("Lookup Value Column")
-            .description("Lookup value column.")
+            .displayName("Cột Giá trị Tìm kiếm")
+            .description("Cột giá trị tìm kiếm.")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
-
     private volatile ConcurrentMap<String, String> cache;
 
     private volatile String lookupValueColumn;

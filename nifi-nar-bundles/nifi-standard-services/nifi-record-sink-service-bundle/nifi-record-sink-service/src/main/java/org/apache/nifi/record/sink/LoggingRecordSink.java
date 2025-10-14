@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"record", "sink", "log"})
-@CapabilityDescription("Provides a RecordSinkService that can be used to log records to the application log (nifi-app.log, e.g.) using the specified writer for formatting.")
+@CapabilityDescription("Cung cấp RecordSinkService để ghi các bản ghi vào log ứng dụng (ví dụ: nifi-app.log) sử dụng writer được chỉ định để định dạng.")
 public class LoggingRecordSink extends AbstractControllerService implements RecordSinkService {
 
     private List<PropertyDescriptor> properties;
@@ -50,12 +50,13 @@ public class LoggingRecordSink extends AbstractControllerService implements Reco
 
     public static final PropertyDescriptor LOG_LEVEL = new PropertyDescriptor.Builder()
             .name("logsink-log-level")
-            .displayName("Log Level")
+            .displayName("Mức Log")
             .required(true)
-            .description("The Log Level at which to log records (INFO, DEBUG, e.g.)")
+            .description("Mức độ log để ghi các bản ghi (INFO, DEBUG, v.v.)")
             .allowableValues(LogLevel.values())
             .defaultValue(LogLevel.INFO.name())
             .build();
+
 
     @Override
     protected void init(final ControllerServiceInitializationContext context) throws InitializationException {

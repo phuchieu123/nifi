@@ -46,8 +46,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"lookup", "cache", "enrich", "join", "rdbms", "database", "reloadable", "key", "value"})
-@CapabilityDescription("A relational-database-based lookup service. When the lookup key is found in the database, " +
-        "the specified lookup value column is returned. Only one value will be returned for each lookup, duplicate database entries are ignored.")
+@CapabilityDescription("Một dịch vụ tìm kiếm dựa trên cơ sở dữ liệu quan hệ. Khi khóa tìm kiếm được tìm thấy trong cơ sở dữ liệu, " +
+        "cột giá trị tìm kiếm được chỉ định sẽ được trả về. Chỉ một giá trị sẽ được trả về cho mỗi lần tìm kiếm, các mục nhập cơ sở dữ liệu trùng lặp sẽ bị bỏ qua.")
 public class SimpleDatabaseLookupService extends AbstractDatabaseLookupService implements StringLookupService {
 
     private volatile Cache<Tuple<String, Object>, String> cache;
@@ -55,8 +55,8 @@ public class SimpleDatabaseLookupService extends AbstractDatabaseLookupService i
     static final PropertyDescriptor LOOKUP_VALUE_COLUMN =
             new PropertyDescriptor.Builder()
                     .name("lookup-value-column")
-                    .displayName("Lookup Value Column")
-                    .description("The column whose value will be returned when the Lookup value is matched")
+                    .displayName("Cột Giá trị Tìm kiếm")
+                    .description("Cột mà giá trị của nó sẽ được trả về khi giá trị Tìm kiếm khớp")
                     .required(true)
                     .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
                     .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)

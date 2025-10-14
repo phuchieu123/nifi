@@ -47,20 +47,20 @@ import org.apache.nifi.processor.util.StandardValidators;
 @SeeAlso(classNames = {
     "org.apache.nifi.processors.standard.HandleHttpRequest",
     "org.apache.nifi.processors.standard.HandleHttpResponse"})
-@CapabilityDescription("Provides the ability to store and retrieve HTTP requests and responses external to a Processor, so that "
-        + "multiple Processors can interact with the same HTTP request.")
+@CapabilityDescription("Cung cấp khả năng lưu trữ và truy xuất các yêu cầu và phản hồi HTTP bên ngoài một Bộ xử lý, để "
+        + "nhiều Bộ xử lý có thể tương tác với cùng một yêu cầu HTTP.")
 public class StandardHttpContextMap extends AbstractControllerService implements HttpContextMap {
 
     public static final PropertyDescriptor MAX_OUTSTANDING_REQUESTS = new PropertyDescriptor.Builder()
-            .name("Maximum Outstanding Requests")
-            .description("The maximum number of HTTP requests that can be outstanding at any one time. Any attempt to register an additional HTTP Request will cause an error")
+            .name("Số lượng Yêu cầu Tối đa Đang Chờ xử lý")
+            .description("Số lượng tối đa các yêu cầu HTTP có thể đang chờ xử lý tại bất kỳ thời điểm nào. Bất kỳ nỗ lực nào để đăng ký một yêu cầu HTTP bổ sung sẽ gây ra lỗi")
             .required(true)
             .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
             .defaultValue("5000")
             .build();
     public static final PropertyDescriptor REQUEST_EXPIRATION = new PropertyDescriptor.Builder()
-            .name("Request Expiration")
-            .description("Specifies how long an HTTP Request should be left unanswered before being evicted from the cache and being responded to with a Service Unavailable status code")
+            .name("Hết hạn Yêu cầu")
+            .description("Chỉ định khoảng thời gian một yêu cầu HTTP nên được để mà không có câu trả lời trước khi bị loại bỏ khỏi bộ nhớ đệm và được phản hồi bằng mã trạng thái Dịch vụ Không khả dụng")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .defaultValue("1 min")

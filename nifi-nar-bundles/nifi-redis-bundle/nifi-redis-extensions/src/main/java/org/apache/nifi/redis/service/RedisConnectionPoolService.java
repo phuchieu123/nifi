@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Tags({"redis", "cache"})
-@CapabilityDescription("A service that provides connections to Redis.")
+@CapabilityDescription("Một dịch vụ cung cấp các kết nối đến Redis.")
 public class RedisConnectionPoolService extends AbstractControllerService implements RedisConnectionPool {
 
     private volatile PropertyContext context;

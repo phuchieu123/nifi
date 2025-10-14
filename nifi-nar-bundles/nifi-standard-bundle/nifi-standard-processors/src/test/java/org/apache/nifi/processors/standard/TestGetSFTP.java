@@ -140,16 +140,16 @@ public class TestGetSFTP {
 
         //Verify non-dotted files were deleted and dotted files were not deleted
         Path file1 = Paths.get(sshTestServer.getVirtualFileSystemPath() + "/testFile1.txt");
-        assertFalse(file1.toAbsolutePath().toFile().exists(), "File not deleted.");
+        assertFalse(file1.toAbsolutePath().toFile().exists(), "Tập tin chưa bị xóa.");
 
         file1 = Paths.get(sshTestServer.getVirtualFileSystemPath() + "/testFile3.txt");
-        assertFalse(file1.toAbsolutePath().toFile().exists(), "File not deleted.");
+        assertFalse(file1.toAbsolutePath().toFile().exists(), "Tập tin chưa bị xóa.");
 
         file1 = Paths.get(sshTestServer.getVirtualFileSystemPath() + "/.testFile2.txt");
-        assertTrue(file1.toAbsolutePath().toFile().exists(), "File deleted.");
+        assertTrue(file1.toAbsolutePath().toFile().exists(), "Đã xóa tệp.");
 
         file1 = Paths.get(sshTestServer.getVirtualFileSystemPath() + "/.testFile4.txt");
-        assertTrue(file1.toAbsolutePath().toFile().exists(), "File deleted.");
+        assertTrue(file1.toAbsolutePath().toFile().exists(), "Đã xóa tệp.");
 
         runner.clearTransferState();
     }

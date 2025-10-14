@@ -52,20 +52,20 @@ import java.util.concurrent.atomic.AtomicReference;
  * Standard implementation of Private Key Service supporting encrypted or unencrypted sources
  */
 @Tags({"PEM", "PKCS8"})
-@CapabilityDescription("Private Key Service provides access to a Private Key loaded from configured sources")
+@CapabilityDescription("Dịch vụ Khóa Cá nhân cung cấp quyền truy cập vào Khóa Cá nhân được tải từ các nguồn được cấu hình")
 public class StandardPrivateKeyService extends AbstractControllerService implements PrivateKeyService {
     public static final PropertyDescriptor KEY_FILE = new PropertyDescriptor.Builder()
             .name("key-file")
-            .displayName("Key File")
-            .description("File path to Private Key structured using PKCS8 and encoded as PEM")
+            .displayName("Tệp Khóa")
+            .description("Đường dẫn tệp đến Khóa Cá nhân được cấu trúc bằng PKCS8 và được mã hóa dưới dạng PEM")
             .required(false)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .build();
 
     public static final PropertyDescriptor KEY = new PropertyDescriptor.Builder()
             .name("key")
-            .displayName("Key")
-            .description("Private Key structured using PKCS8 and encoded as PEM")
+            .displayName("Khóa")
+            .description("Khóa Cá nhân được cấu trúc bằng PKCS8 và được mã hóa dưới dạng PEM")
             .required(false)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -73,13 +73,12 @@ public class StandardPrivateKeyService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor KEY_PASSWORD = new PropertyDescriptor.Builder()
             .name("key-password")
-            .displayName("Key Password")
-            .description("Password used for decrypting Private Keys")
+            .displayName("Mật khẩu Khóa")
+            .description("Mật khẩu được sử dụng để giải mã các Khóa Cá nhân")
             .required(false)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
-
     private static final List<PropertyDescriptor> DESCRIPTORS = Arrays.asList(
             KEY_FILE,
             KEY,

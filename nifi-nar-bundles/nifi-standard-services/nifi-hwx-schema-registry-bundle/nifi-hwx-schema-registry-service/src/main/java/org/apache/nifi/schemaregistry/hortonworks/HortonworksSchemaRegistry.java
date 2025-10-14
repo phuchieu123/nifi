@@ -64,8 +64,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"schema", "registry", "avro", "hortonworks", "hwx"})
-@CapabilityDescription("Provides a Schema Registry Service that interacts with a Hortonworks Schema Registry, available at https://github.com/hortonworks/registry")
-@DeprecationNotice(reason = "This controller service is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Cung cấp một Schema Registry Service tương tác với Hortonworks Schema Registry, có sẵn tại https://github.com/hortonworks/registry")
+@DeprecationNotice(reason = "Dịch vụ điều khiển này đã lỗi thời và sẽ bị loại bỏ trong NiFi 2.x.")
 public class HortonworksSchemaRegistry extends AbstractControllerService implements SchemaRegistry {
     private static final Set<SchemaField> schemaFields = EnumSet.of(SchemaField.SCHEMA_NAME,
             SchemaField.SCHEMA_BRANCH_NAME,

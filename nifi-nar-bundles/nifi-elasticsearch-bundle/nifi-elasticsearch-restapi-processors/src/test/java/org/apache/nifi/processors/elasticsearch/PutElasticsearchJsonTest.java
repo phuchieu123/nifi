@@ -292,7 +292,7 @@ public class PutElasticsearchJsonTest extends AbstractPutElasticsearchTest<PutEl
         runner.setProperty(PutElasticsearchJson.INDEX_OP, "not-valid");
         runner.assertNotValid();
         final AssertionError ae = assertThrows(AssertionError.class, () -> runner.run());
-        assertEquals(String.format("Processor has 1 validation failures:\n'%s' validated against 'not-valid' is invalid because %s must be Expression Language or one of %s\n",
+        assertEquals(String.format("Processor có 1 lỗi xác thực:\n" + "'%s' được xác thực với 'not-valid' không hợp lệ vì %s phải là Expression Language hoặc một trong các giá trị %s\n",
                 PutElasticsearchJson.INDEX_OP.getName(), PutElasticsearchJson.INDEX_OP.getDisplayName(), PutElasticsearchJson.ALLOWED_INDEX_OPERATIONS), ae.getMessage());
 
         runner.setProperty(PutElasticsearchJson.INDEX_OP, "\\${operation}");

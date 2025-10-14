@@ -46,9 +46,9 @@ import java.util.Optional;
 import static org.apache.nifi.couchbase.CouchbaseConfigurationProperties.DOCUMENT_TYPE;
 
 @Tags({"lookup", "enrich", "couchbase"})
-@CapabilityDescription("Lookup a record from Couchbase Server associated with the specified key."
-        + " The coordinates that are passed to the lookup must contain the key 'key'.")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Tìm kiếm một bản ghi từ Couchbase Server liên kết với khóa được chỉ định."
+        + " Các tọa độ được truyền đến tìm kiếm phải chứa khóa 'key'.")
+@DeprecationNotice(reason = "Thành phần này đã bị loại bỏ và sẽ bị xóa trong Life 2.x.")
 public class CouchbaseRecordLookupService extends AbstractCouchbaseLookupService implements RecordLookupService {
 
     private volatile RecordReaderFactory readerFactory;

@@ -77,17 +77,19 @@ import static org.apache.nifi.dbcp.utils.DBCPProperties.extractMillisWithInfinit
  */
 @SupportsSensitiveDynamicProperties
 @Tags({"dbcp", "jdbc", "database", "connection", "pooling", "store"})
-@CapabilityDescription("Provides Database Connection Pooling Service. Connections can be asked from pool and returned after usage.")
+@CapabilityDescription("Cung cấp dịch vụ quản lý kết nối cơ sở dữ liệu (Database Connection Pooling Service). " +
+        "Các kết nối có thể được lấy từ pool và trả lại sau khi sử dụng.")
 @DynamicProperties({
-        @DynamicProperty(name = "JDBC property name",
-                value = "JDBC property value",
+        @DynamicProperty(name = "Tên thuộc tính JDBC",
+                value = "Giá trị thuộc tính JDBC",
                 expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-                description = "JDBC driver property name and value applied to JDBC connections."),
-        @DynamicProperty(name = "SENSITIVE.JDBC property name",
-                value = "JDBC property value",
+                description = "Tên và giá trị thuộc tính của driver JDBC được áp dụng cho các kết nối JDBC."),
+        @DynamicProperty(name = "SENSITIVE.Tên thuộc tính JDBC",
+                value = "Giá trị thuộc tính JDBC",
                 expressionLanguageScope = ExpressionLanguageScope.NONE,
-                description = "JDBC driver property name prefixed with 'SENSITIVE.' handled as a sensitive property.")
+                description = "Tên thuộc tính JDBC được tiền tố 'SENSITIVE.' sẽ được xử lý như thuộc tính nhạy cảm.")
 })
+
 @RequiresInstanceClassLoading
 @Restricted(
         restrictions = {
@@ -105,32 +107,33 @@ public class DBCPConnectionPool extends AbstractDBCPConnectionPool implements DB
 
     private static final List<PropertyDescriptor> PROPERTIES;
 
-    public static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
-            .name("kerberos-credentials-service")
-            .displayName("Dịch vụ chứng thực Kerberos")
-            .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
-            .identifiesControllerService(KerberosCredentialsService.class)
-            .required(false)
-            .build();
+public static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
+        .name("kerberos-credentials-service")
+        .displayName("Dịch vụ chứng thực Kerberos")
+        .description("Xác định Controller Service cung cấp chứng thực Kerberos để sử dụng cho việc xác thực.")
+        .identifiesControllerService(KerberosCredentialsService.class)
+        .required(false)
+        .build();
 
-    public static final PropertyDescriptor KERBEROS_PRINCIPAL = new PropertyDescriptor.Builder()
-            .name("kerberos-principal")
-            .displayName("Kerberos Principal")
-            .description("The principal to use when specifying the principal and password directly in the processor for authenticating via Kerberos.")
-            .required(false)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .addValidator(StandardValidators.createAttributeExpressionLanguageValidator(AttributeExpression.ResultType.STRING))
-            .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .build();
+public static final PropertyDescriptor KERBEROS_PRINCIPAL = new PropertyDescriptor.Builder()
+        .name("kerberos-principal")
+        .displayName("Kerberos Principal")
+        .description("Principal sử dụng khi cung cấp trực tiếp principal và mật khẩu trong processor để xác thực Kerberos.")
+        .required(false)
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .addValidator(StandardValidators.createAttributeExpressionLanguageValidator(AttributeExpression.ResultType.STRING))
+        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+        .build();
 
-    public static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescriptor.Builder()
-            .name("kerberos-password")
-            .displayName("Kerberos Password")
-            .description("The password to use when specifying the principal and password directly in the processor for authenticating via Kerberos.")
-            .required(false)
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .sensitive(true)
-            .build();
+public static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescriptor.Builder()
+        .name("kerberos-password")
+        .displayName("Kerberos Password")
+        .description("Mật khẩu sử dụng khi cung cấp trực tiếp principal và mật khẩu trong processor để xác thực Kerberos.")
+        .required(false)
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .sensitive(true)
+        .build();
+
 
     static {
         final List<PropertyDescriptor> props = new ArrayList<>();

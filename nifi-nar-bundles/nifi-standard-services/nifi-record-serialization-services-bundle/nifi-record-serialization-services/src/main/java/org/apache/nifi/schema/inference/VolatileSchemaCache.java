@@ -44,21 +44,20 @@ import java.util.UUID;
 import static org.apache.nifi.expression.ExpressionLanguageScope.VARIABLE_REGISTRY;
 import static org.apache.nifi.processor.util.StandardValidators.POSITIVE_INTEGER_VALIDATOR;
 
-@CapabilityDescription("Provides a Schema Cache that evicts elements based on a Least-Recently-Used algorithm. This cache is not persisted, so any restart of NiFi will result in " +
-    "the cache being cleared. Additionally, the cache will be cleared any time that the Controller Service is stopped and restarted.")
+@CapabilityDescription("Cung cấp một Bộ đệm Lược đồ (Schema Cache) loại bỏ các phần tử dựa trên thuật toán Ít được sử dụng gần đây nhất (Least-Recently-Used). Bộ đệm này không được lưu trữ lâu dài, vì vậy bất kỳ lần khởi động lại nào của NiFi cũng sẽ dẫn đến " +
+    "việc bộ đệm bị xóa. Ngoài ra, bộ đệm sẽ bị xóa bất cứ khi nào Dịch vụ Controller bị dừng và khởi động lại.")
 @Tags({"record", "schema", "cache"})
 public class VolatileSchemaCache extends AbstractControllerService implements RecordSchemaCacheService {
 
     static final PropertyDescriptor MAX_SIZE = new Builder()
         .name("max-cache-size")
-        .displayName("Maximum Cache Size")
-        .description("The maximum number of Schemas to cache.")
+        .displayName("Kích thước bộ đệm tối đa")
+        .description("Số lượng Lược đồ (Schema) tối đa được lưu vào bộ đệm.")
         .required(true)
         .addValidator(POSITIVE_INTEGER_VALIDATOR)
         .expressionLanguageSupported(VARIABLE_REGISTRY)
         .defaultValue("100")
         .build();
-
     private static final Base64.Encoder ENCODER = Base64.getEncoder().withoutPadding();
 
     private volatile Cache<String, RecordSchema> cache;

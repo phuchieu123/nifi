@@ -48,8 +48,8 @@ import static org.apache.nifi.redis.util.RedisUtils.REDIS_CONNECTION_POOL;
 import static org.apache.nifi.redis.util.RedisUtils.TTL;
 
 @Tags({ "redis", "distributed", "cache", "map" })
-@CapabilityDescription("An implementation of DistributedMapCacheClient that uses Redis as the backing cache. " +
-        "This service is intended to be used when a non-atomic DistributedMapCacheClient is required.")
+@CapabilityDescription("Một triển khai của DistributedMapCacheClient sử dụng Redis làm bộ nhớ đệm hỗ trợ. " +
+        "Dịch vụ này nhằm được sử dụng khi cần một DistributedMapCacheClient không nguyên tử.")
 public class SimpleRedisDistributedMapCacheClientService extends AbstractControllerService implements DistributedMapCacheClient {
 
     static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS;

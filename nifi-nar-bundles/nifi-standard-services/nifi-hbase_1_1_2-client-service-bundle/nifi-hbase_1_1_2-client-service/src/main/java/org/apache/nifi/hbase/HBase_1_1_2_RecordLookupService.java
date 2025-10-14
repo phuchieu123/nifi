@@ -38,8 +38,9 @@ import java.util.Optional;
 import java.util.Set;
 
 @Tags({"hbase", "record", "lookup", "service"})
-@CapabilityDescription("A lookup service that retrieves one or more columns from HBase and returns them as a record. The lookup coordinates " +
-        "must contain 'rowKey' which will be the HBase row id.")
+@CapabilityDescription("Một dịch vụ tra cứu lấy một hoặc nhiều cột từ HBase và trả về chúng dưới dạng record. "
+        + "Các tọa độ tra cứu phải chứa 'rowKey', đây sẽ là ID của dòng HBase.")
+
 public class HBase_1_1_2_RecordLookupService extends AbstractHBaseLookupService implements LookupService<Record> {
     @Override
     public Optional<Record> lookup(Map<String, Object> coordinates) throws LookupFailureException {

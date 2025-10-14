@@ -307,15 +307,15 @@ public final class StandardConnection implements Connection, ConnectionEventList
         }
 
         if (previousDestination.isRunning() && !(previousDestination instanceof Funnel || previousDestination instanceof LocalPort)) {
-            throw new IllegalStateException(String.format("Cannot change destination of Connection because the current destination ([%s]) is running", previousDestination));
+            throw new IllegalStateException(String.format("Không thể thay đổi đích của Kết nối vì đích hiện tại ([%s]) đang chạy", previousDestination));
         }
 
         if (getFlowFileQueue().isUnacknowledgedFlowFile()) {
-            throw new IllegalStateException("Cannot change destination of Connection because FlowFiles from this Connection are currently held by " + previousDestination);
+            throw new IllegalStateException("Không thể thay đổi đích của Kết nối vì FlowFiles từ Kết nối này hiện đang được giữ bởi " + previousDestination);
         }
 
         if (newDestination instanceof Funnel && newDestination.equals(source)) {
-            throw new IllegalStateException("Funnels do not support self-looping connections.");
+            throw new IllegalStateException("Phễu không hỗ trợ kết nối tự lặp.");
         }
 
         try {
@@ -459,16 +459,16 @@ public final class StandardConnection implements Connection, ConnectionEventList
 
         public StandardConnection build() {
             if (processGroup == null) {
-                throw new IllegalStateException("Cannot build a Connection without a Process Group");
+                throw new IllegalStateException("Không thể xây dựng Kết nối mà không có Nhóm quy trình");
             }
             if (source == null) {
-                throw new IllegalStateException("Cannot build a Connection without a Source");
+                throw new IllegalStateException("Không thể xây dựng kết nối mà không có nguồn");
             }
             if (destination == null) {
-                throw new IllegalStateException("Cannot build a Connection without a Destination");
+                throw new IllegalStateException("Không thể xây dựng kết nối mà không có đích đến");
             }
             if (flowFileQueueFactory == null) {
-                throw new IllegalStateException("Cannot build a Connection without a FlowFileQueueFactory");
+                throw new IllegalStateException("Không thể xây dựng Kết nối mà không có FlowFileQueueFactory");
             }
 
             if (relationships == null) {
@@ -478,7 +478,7 @@ public final class StandardConnection implements Connection, ConnectionEventList
             if (relationships.isEmpty()) {
                 // ensure relationships have been specified for processors, otherwise the anonymous relationship is used
                 if (source.getConnectableType() == ConnectableType.PROCESSOR) {
-                    throw new IllegalStateException("Cannot build a Connection without any relationships");
+                    throw new IllegalStateException("Không thể xây dựng Kết nối mà không có bất kỳ mối quan hệ nào");
                 }
                 relationships.add(Relationship.ANONYMOUS);
             }

@@ -21,26 +21,25 @@ import java.util.Collections;
 import java.util.Map;
 
 public class CommonPropertyKeys {
-    public static final String CORE_PROPS_KEY = "Core Properties";
-    public static final String FLOWFILE_REPO_KEY = "FlowFile Repository";
-    public static final String SWAP_PROPS_KEY = "Swap";
-    public static final String FLOW_CONTROLLER_PROPS_KEY = "Flow Controller";
-    public static final String CONTENT_REPO_KEY = "Content Repository";
-    public static final String COMPONENT_STATUS_REPO_KEY = "Component Status Repository";
-    public static final String SECURITY_PROPS_KEY = "Security Properties";
-    public static final String SENSITIVE_PROPS_KEY = "Sensitive Props";
-    public static final String PROCESSORS_KEY = "Processors";
-    public static final String CONNECTIONS_KEY = "Connections";
-    public static final String PROVENANCE_REPORTING_KEY = "Provenance Reporting";
-    public static final String GENERAL_REPORTING_KEY = "Reporting Tasks";
-    public static final String REMOTE_PROCESS_GROUPS_KEY = "Remote Process Groups";
-    public static final String INPUT_PORTS_KEY = "Input Ports";
-    public static final String OUTPUT_PORTS_KEY = "Output Ports";
-    public static final String CONTROLLER_SERVICES_KEY = "Controller Services";
-    public static final String FUNNELS_KEY = "Funnels";
-    public static final String PROVENANCE_REPO_KEY = "Provenance Repository";
-    public static final String NIFI_PROPERTIES_OVERRIDES_KEY = "NiFi Properties Overrides";
-
+  public static final String CORE_PROPS_KEY = "Thuộc tính lõi";
+    public static final String FLOWFILE_REPO_KEY = "Kho lưu trữ FlowFile";
+    public static final String SWAP_PROPS_KEY = "Hoán đổi";
+    public static final String FLOW_CONTROLLER_PROPS_KEY = "Bộ điều khiển luồng";
+    public static final String CONTENT_REPO_KEY = "Kho lưu trữ nội dung";
+    public static final String COMPONENT_STATUS_REPO_KEY = "Kho lưu trữ trạng thái thành phần";
+    public static final String SECURITY_PROPS_KEY = "Thuộc tính bảo mật";
+    public static final String SENSITIVE_PROPS_KEY = "Thuộc tính nhạy cảm";
+    public static final String PROCESSORS_KEY = "Bộ xử lý";
+    public static final String CONNECTIONS_KEY = "Kết nối";
+    public static final String PROVENANCE_REPORTING_KEY = "Báo cáo nguồn gốc";
+    public static final String GENERAL_REPORTING_KEY = "Tác vụ báo cáo";
+    public static final String REMOTE_PROCESS_GROUPS_KEY = "Nhóm xử lý từ xa";
+    public static final String INPUT_PORTS_KEY = "Cổng đầu vào";
+    public static final String OUTPUT_PORTS_KEY = "Cổng đầu ra";
+    public static final String CONTROLLER_SERVICES_KEY = "Dịch vụ điều khiển";
+    public static final String FUNNELS_KEY = "Phễu";
+    public static final String PROVENANCE_REPO_KEY = "Kho lưu trữ nguồn gốc";
+    public static final String NIFI_PROPERTIES_OVERRIDES_KEY = "Ghi đè thuộc tính Life";
 
     public static final String NAME_KEY = "name";
     public static final String COMMENT_KEY = "comment";

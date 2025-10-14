@@ -85,22 +85,24 @@ import org.w3c.dom.NodeList;
 @SupportsBatching
 @Tags({"XML", "evaluate", "XPath"})
 @InputRequirement(Requirement.INPUT_REQUIRED)
-@CapabilityDescription("Evaluates one or more XPaths against the content of a FlowFile. The results of those XPaths are assigned to "
-        + "FlowFile Attributes or are written to the content of the FlowFile itself, depending on configuration of the "
-        + "Processor. XPaths are entered by adding user-defined properties; the name of the property maps to the Attribute "
-        + "Name into which the result will be placed (if the Destination is flowfile-attribute; otherwise, the property name is ignored). "
-        + "The value of the property must be a valid XPath expression. If the XPath evaluates to more than one node and the Return Type is "
-        + "set to 'nodeset' (either directly, or via 'auto-detect' with a Destination of "
-        + "'flowfile-content'), the FlowFile will be unmodified and will be routed to failure. If the XPath does not "
-        + "evaluate to a Node, the FlowFile will be routed to 'unmatched' without having its contents modified. If Destination is "
-        + "flowfile-attribute and the expression matches nothing, attributes will be created with empty strings as the value, and the "
-        + "FlowFile will always be routed to 'matched'")
-@WritesAttribute(attribute = "user-defined", description = "This processor adds user-defined attributes if the <Destination> property is set to flowfile-attribute.")
-@DynamicProperty(name = "A FlowFile attribute(if <Destination> is set to 'flowfile-attribute'", value = "An XPath expression", description = "If <Destination>='flowfile-attribute' "
-        + "then the FlowFile attribute is set to the result of the XPath Expression.  If <Destination>='flowfile-content' then the FlowFile content is set to the result of the XPath Expression.")
+@CapabilityDescription("Đánh giá một hoặc nhiều biểu thức XPath đối với nội dung của FlowFile. Kết quả của các biểu thức XPath này "
+        + "sẽ được gán vào các thuộc tính (Attributes) của FlowFile hoặc được ghi trực tiếp vào nội dung của FlowFile, tùy theo cấu hình "
+        + "của Processor. Các biểu thức XPath được nhập thông qua việc thêm các thuộc tính do người dùng định nghĩa; tên của thuộc tính "
+        + "sẽ ánh xạ tới tên Attribute mà kết quả sẽ được gán vào (nếu Destination là flowfile-attribute; nếu không, tên thuộc tính sẽ bị bỏ qua). "
+        + "Giá trị của thuộc tính phải là một biểu thức XPath hợp lệ. Nếu biểu thức XPath trả về nhiều hơn một node và kiểu trả về (Return Type) "
+        + "được đặt là 'nodeset' (trực tiếp hoặc thông qua 'auto-detect' với Destination là 'flowfile-content'), FlowFile sẽ không bị thay đổi "
+        + "và sẽ được định tuyến tới 'failure'. Nếu biểu thức XPath không trả về bất kỳ Node nào, FlowFile sẽ được định tuyến tới 'unmatched' "
+        + "mà không làm thay đổi nội dung của nó. Nếu Destination là flowfile-attribute và biểu thức không khớp với gì, các thuộc tính sẽ được "
+        + "tạo với giá trị là chuỗi rỗng, và FlowFile luôn được định tuyến tới 'matched'.")
+@WritesAttribute(attribute = "user-defined", description = "Processor này sẽ thêm các thuộc tính do người dùng định nghĩa nếu thuộc tính <Destination> được đặt thành flowfile-attribute.")
+@DynamicProperty(name = "Một thuộc tính FlowFile (nếu <Destination> được đặt là 'flowfile-attribute')",
+        value = "Một biểu thức XPath",
+        description = "Nếu <Destination>='flowfile-attribute' thì thuộc tính FlowFile sẽ được gán bằng kết quả của biểu thức XPath. "
+        + "Nếu <Destination>='flowfile-content' thì nội dung FlowFile sẽ được gán bằng kết quả của biểu thức XPath.")
 @SystemResourceConsiderations({
-        @SystemResourceConsideration(resource = SystemResource.MEMORY, description = "Processing requires reading the entire FlowFile into memory")
+        @SystemResourceConsideration(resource = SystemResource.MEMORY, description = "Việc xử lý yêu cầu đọc toàn bộ nội dung FlowFile vào bộ nhớ")
 })
+
 public class EvaluateXPath extends AbstractProcessor {
 
     public static final String DESTINATION_ATTRIBUTE = "flowfile-attribute";
@@ -111,49 +113,52 @@ public class EvaluateXPath extends AbstractProcessor {
 
     public static final PropertyDescriptor DESTINATION = new PropertyDescriptor.Builder()
             .name("Destination")
-            .description("Indicates whether the results of the XPath evaluation are written to the FlowFile content or a FlowFile attribute; "
-                    + "if using attribute, must specify the Attribute Name property. If set to flowfile-content, only one XPath may be specified, "
-                    + "and the property name is ignored.")
+            .description("Chỉ ra liệu kết quả của việc đánh giá XPath sẽ được ghi vào nội dung của FlowFile hay vào một thuộc tính (attribute) của FlowFile; "
+            + "nếu sử dụng thuộc tính (attribute), phải chỉ định thuộc tính 'Attribute Name'. Nếu được đặt là flowfile-content, "
+            + "chỉ được phép khai báo một biểu thức XPath duy nhất, và tên thuộc tính (property name) sẽ bị bỏ qua.")
+
             .required(true)
             .allowableValues(DESTINATION_CONTENT, DESTINATION_ATTRIBUTE)
             .defaultValue(DESTINATION_CONTENT)
             .build();
 
-    public static final PropertyDescriptor RETURN_TYPE = new PropertyDescriptor.Builder()
-            .name("Return Type")
-            .description("Indicates the desired return type of the Xpath expressions.  Selecting 'auto-detect' will set the return type to 'nodeset' "
-                    + "for a Destination of 'flowfile-content', and 'string' for a Destination of 'flowfile-attribute'.")
-            .required(true)
-            .allowableValues(RETURN_TYPE_AUTO, RETURN_TYPE_NODESET, RETURN_TYPE_STRING)
-            .defaultValue(RETURN_TYPE_AUTO)
-            .build();
+   public static final PropertyDescriptor RETURN_TYPE = new PropertyDescriptor.Builder()
+        .name("Return Type")
+        .description("Chỉ định kiểu dữ liệu trả về mong muốn của các biểu thức XPath. Việc chọn 'auto-detect' sẽ tự động đặt kiểu trả về là 'nodeset' "
+                + "khi Destination là 'flowfile-content', và 'string' khi Destination là 'flowfile-attribute'.")
+        .required(true)
+        .allowableValues(RETURN_TYPE_AUTO, RETURN_TYPE_NODESET, RETURN_TYPE_STRING)
+        .defaultValue(RETURN_TYPE_AUTO)
+        .build();
 
-    public static final PropertyDescriptor VALIDATE_DTD = new PropertyDescriptor.Builder()
-            .displayName("Allow DTD")
-            .name("Validate DTD")
-            .description("Allow embedded Document Type Declaration in XML. "
-                    + "This feature should be disabled to avoid XML entity expansion vulnerabilities.")
-            .required(true)
-            .allowableValues("true", "false")
-            .defaultValue("false")
-            .build();
+public static final PropertyDescriptor VALIDATE_DTD = new PropertyDescriptor.Builder()
+        .displayName("Allow DTD")
+        .name("Validate DTD")
+        .description("Cho phép sử dụng khai báo Document Type Declaration (DTD) nhúng trong XML. "
+                + "Tính năng này nên bị vô hiệu hóa để tránh các lỗ hổng bảo mật do mở rộng thực thể XML (XML entity expansion).")
+        .required(true)
+        .allowableValues("true", "false")
+        .defaultValue("false")
+        .build();
 
-    public static final Relationship REL_MATCH = new Relationship.Builder()
-            .name("matched")
-            .description("FlowFiles are routed to this relationship "
-                    + "when the XPath is successfully evaluated and the FlowFile is modified as a result")
-            .build();
-    public static final Relationship REL_NO_MATCH = new Relationship.Builder()
-            .name("unmatched")
-            .description("FlowFiles are routed to this relationship "
-                    + "when the XPath does not match the content of the FlowFile and the Destination is set to flowfile-content")
-            .build();
-    public static final Relationship REL_FAILURE = new Relationship.Builder()
-            .name("failure")
-            .description("FlowFiles are routed to this relationship "
-                    + "when the XPath cannot be evaluated against the content of the FlowFile; for instance, if the FlowFile is not valid XML, or if the Return "
-                    + "Type is 'nodeset' and the XPath evaluates to multiple nodes")
-            .build();
+public static final Relationship REL_MATCH = new Relationship.Builder()
+        .name("matched")
+        .description("FlowFile sẽ được chuyển đến mối quan hệ này "
+                + "khi biểu thức XPath được đánh giá thành công và FlowFile được sửa đổi dựa trên kết quả đó.")
+        .build();
+
+public static final Relationship REL_NO_MATCH = new Relationship.Builder()
+        .name("unmatched")
+        .description("FlowFile sẽ được chuyển đến mối quan hệ này "
+                + "khi biểu thức XPath không khớp với nội dung của FlowFile và Destination được đặt là flowfile-content.")
+        .build();
+
+public static final Relationship REL_FAILURE = new Relationship.Builder()
+        .name("failure")
+        .description("FlowFile sẽ được chuyển đến mối quan hệ này "
+                + "khi biểu thức XPath không thể được đánh giá với nội dung của FlowFile; ví dụ, nếu FlowFile không phải XML hợp lệ, "
+                + "hoặc khi kiểu trả về (Return Type) là 'nodeset' nhưng XPath trả về nhiều nút (multiple nodes).")
+        .build();
 
     private Set<Relationship> relationships;
     private List<PropertyDescriptor> properties;

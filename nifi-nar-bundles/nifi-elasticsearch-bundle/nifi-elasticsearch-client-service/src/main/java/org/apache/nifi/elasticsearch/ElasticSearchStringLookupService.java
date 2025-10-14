@@ -36,30 +36,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-@CapabilityDescription("Lookup a string value from Elasticsearch Server associated with the specified document ID. " +
-        "The coordinates that are passed to the lookup must contain the key 'id'.")
+@CapabilityDescription("Tìm kiếm một giá trị chuỗi từ Elasticsearch Server liên kết với ID tài liệu được chỉ định. " +
+        "Các tọa độ được truyền đến tìm kiếm phải chứa khóa 'id'.")
 @Tags({"lookup", "enrich", "value", "key", "elasticsearch"})
 public class ElasticSearchStringLookupService extends AbstractControllerService implements StringLookupService {
     public static final PropertyDescriptor CLIENT_SERVICE = new PropertyDescriptor.Builder()
             .name("el-rest-client-service")
-            .displayName("Client Service")
-            .description("An ElasticSearch client service to use for running queries.")
+            .displayName("Dịch vụ Máy khách")
+            .description("Một dịch vụ máy khách ElasticSearch sẽ được sử dụng để chạy các truy vấn.")
             .identifiesControllerService(ElasticSearchClientService.class)
             .required(true)
             .build();
     public static final PropertyDescriptor INDEX = new PropertyDescriptor.Builder()
             .name("el-lookup-index")
-            .displayName("Index")
-            .description("The name of the index to read from")
+            .displayName("Chỉ mục")
+            .description("Tên của chỉ mục để đọc từ")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
     public static final PropertyDescriptor TYPE = new PropertyDescriptor.Builder()
             .name("el-lookup-type")
-            .displayName("Type")
-            .description("The type of this document (used by Elasticsearch for indexing and searching)")
+            .displayName("Loại")
+            .description("Loại của tài liệu này (được Elasticsearch sử dụng để lập chỉ mục và tìm kiếm)")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)

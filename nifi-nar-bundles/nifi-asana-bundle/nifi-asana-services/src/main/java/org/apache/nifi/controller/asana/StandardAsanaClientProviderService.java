@@ -29,8 +29,7 @@ import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.controller.AbstractControllerService;
 import org.apache.nifi.controller.ConfigurationContext;
 import org.apache.nifi.processor.util.StandardValidators;
-
-@CapabilityDescription("Common service to authenticate with Asana, and to work on a specified workspace.")
+@CapabilityDescription("Dịch vụ chung để xác thực với Asana và làm việc trên không gian làm việc được chỉ định.")
 @Tags({"asana", "service", "authentication"})
 public class StandardAsanaClientProviderService extends AbstractControllerService implements AsanaClientProviderService {
 
@@ -40,9 +39,9 @@ public class StandardAsanaClientProviderService extends AbstractControllerServic
 
     protected static final PropertyDescriptor PROP_ASANA_API_BASE_URL = new PropertyDescriptor.Builder()
             .name(ASANA_API_URL)
-            .displayName("API URL")
-            .description("Base URL of Asana API. Leave it as default, unless you have your own Asana instance "
-                    + "serving on a different URL. (typical for on-premise installations)")
+            .displayName("URL API")
+            .description("URL cơ sở của API Asana. Để nguyên giá trị mặc định, trừ khi bạn có phiên bản Asana riêng của mình "
+                    + "chạy trên một URL khác. (điển hình cho các cài đặt tại chỗ)")
             .required(true)
             .defaultValue(Client.DEFAULTS.get(ASANA_CLIENT_OPTION_BASE_URL).toString())
             .addValidator(StandardValidators.URL_VALIDATOR)
@@ -50,12 +49,12 @@ public class StandardAsanaClientProviderService extends AbstractControllerServic
 
     protected static final PropertyDescriptor PROP_ASANA_PERSONAL_ACCESS_TOKEN = new PropertyDescriptor.Builder()
             .name(ASANA_PERSONAL_ACCESS_TOKEN)
-            .displayName("Personal Access Token")
-            .description("Similarly to entering your username/password into a website, when you access "
-                    + "your Asana data via the API you need to authenticate. Personal Access Token (PAT) "
-                    + "is an authentication mechanism for accessing the API. You can generate a PAT from "
-                    + "the Asana developer console. Refer to Asana Authentication Quick Start for detailed "
-                    + "instructions on getting started.")
+            .displayName("Mã thông báo Truy cập Cá nhân")
+            .description("Tương tự như nhập tên người dùng/mật khẩu của bạn vào trang web, khi bạn truy cập "
+                    + "dữ liệu Asana của mình qua API, bạn cần xác thực. Mã thông báo Truy cập Cá nhân (PAT) "
+                    + "là một cơ chế xác thực để truy cập API. Bạn có thể tạo một PAT từ "
+                    + "bảng điều khiển nhà phát triển Asana. Tham khảo Hướng dẫn Khởi động Nhanh Xác thực Asana để biết chi tiết "
+                    + "hướng dẫn bắt đầu.")
             .required(true)
             .sensitive(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -63,11 +62,11 @@ public class StandardAsanaClientProviderService extends AbstractControllerServic
 
     protected static final PropertyDescriptor PROP_ASANA_WORKSPACE_NAME = new PropertyDescriptor.Builder()
             .name(ASANA_WORKSPACE_NAME)
-            .displayName("Workspace")
-            .description("Specify which Asana workspace to use. Case sensitive. "
-                    + "A workspace is the highest-level organizational unit in Asana. All projects and tasks "
-                    + "have an associated workspace. An organization is a special kind of workspace that "
-                    + "represents a company. In an organization, you can group your projects into teams.")
+            .displayName("Không gian làm việc")
+            .description("Chỉ định không gian làm việc Asana sẽ sử dụng. Phân biệt chữ hoa chữ thường. "
+                    + "Không gian làm việc là đơn vị tổ chức cấp cao nhất trong Asana. Tất cả các dự án và tác vụ "
+                    + "có không gian làm việc được liên kết. Một tổ chức là một loại không gian làm việc đặc biệt đại diện cho "
+                    + "một công ty. Trong một tổ chức, bạn có thể nhóm các dự án của mình thành các nhóm.")
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .build();

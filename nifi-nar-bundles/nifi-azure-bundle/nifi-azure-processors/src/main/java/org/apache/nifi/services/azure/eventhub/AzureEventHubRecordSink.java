@@ -56,80 +56,80 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"azure", "record", "sink"})
-@CapabilityDescription("Format and send Records to Azure Event Hubs")
+@CapabilityDescription("Định dạng và gửi các bản ghi (Records) đến Azure Event Hubs")
 public class AzureEventHubRecordSink extends AbstractControllerService implements RecordSinkService, AzureEventHubComponent {
 
-    static final AllowableValue AZURE_ENDPOINT = new AllowableValue(".servicebus.windows.net","Azure", "Default Service Bus Endpoint");
+static final AllowableValue AZURE_ENDPOINT = new AllowableValue(".servicebus.windows.net","Azure", "Điểm cuối Service Bus mặc định");
 
-    static final AllowableValue AZURE_CHINA_ENDPOINT = new AllowableValue(".servicebus.chinacloudapi.cn", "Azure China", "China Service Bus Endpoint");
+ static final AllowableValue AZURE_CHINA_ENDPOINT = new AllowableValue(".servicebus.chinacloudapi.cn", "Azure China", "Điểm cuối Service Bus tại Trung Quốc");
 
-    static final AllowableValue AZURE_GERMANY_ENDPOINT = new AllowableValue(".servicebus.cloudapi.de", "Azure Germany", "Germany Service Bus Endpoint");
+ static final AllowableValue AZURE_GERMANY_ENDPOINT = new AllowableValue(".servicebus.cloudapi.de", "Azure Germany", "Điểm cuối Service Bus tại Đức");
 
-    static final AllowableValue AZURE_US_GOV_ENDPOINT = new AllowableValue(".servicebus.usgovcloudapi.net", "Azure US Government", "United States Government Endpoint");
+ static final AllowableValue AZURE_US_GOV_ENDPOINT = new AllowableValue(".servicebus.usgovcloudapi.net", "Azure US Government", "Điểm cuối Service Bus của Chính phủ Hoa Kỳ");
 
-    static final PropertyDescriptor SERVICE_BUS_ENDPOINT = new PropertyDescriptor.Builder()
-            .name("Service Bus Endpoint")
-            .description("Provides the domain for connecting to Azure Event Hubs")
-            .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.NONE)
-            .allowableValues(
-                    AZURE_ENDPOINT,
-                    AZURE_CHINA_ENDPOINT,
-                    AZURE_GERMANY_ENDPOINT,
-                    AZURE_US_GOV_ENDPOINT
-            )
-            .defaultValue(AZURE_ENDPOINT.getValue())
-            .required(true)
-            .build();
+ static final PropertyDescriptor SERVICE_BUS_ENDPOINT = new PropertyDescriptor.Builder()
+ .name("Service Bus Endpoint")
+ .description("Chỉ định tên miền để kết nối đến Azure Event Hubs")
+ .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
+ .expressionLanguageSupported(ExpressionLanguageScope.NONE)
+ .allowableValues(
+ AZURE_ENDPOINT,
+ AZURE_CHINA_ENDPOINT,
+ AZURE_GERMANY_ENDPOINT,
+ AZURE_US_GOV_ENDPOINT
+ )
+ .defaultValue(AZURE_ENDPOINT.getValue())
+ .required(true)
+ .build();
 
-    static final PropertyDescriptor EVENT_HUB_NAMESPACE = new PropertyDescriptor.Builder()
-            .name("Event Hub Namespace")
-            .description("Provides provides the host for connecting to Azure Event Hubs")
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .required(true)
-            .build();
+ static final PropertyDescriptor EVENT_HUB_NAMESPACE = new PropertyDescriptor.Builder()
+ .name("Event Hub Namespace")
+ .description("Chỉ định host để kết nối đến Azure Event Hubs")
+ .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+ .required(true)
+ .build();
 
-    static final PropertyDescriptor EVENT_HUB_NAME = new PropertyDescriptor.Builder()
-            .name("Event Hub Name")
-            .description("Provides the Event Hub Name for connections")
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .required(true)
-            .build();
+ static final PropertyDescriptor EVENT_HUB_NAME = new PropertyDescriptor.Builder()
+ .name("Event Hub Name")
+ .description("Chỉ định tên của Event Hub để kết nối")
+ .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+ .required(true)
+ .build();
 
-    static final PropertyDescriptor AUTHENTICATION_STRATEGY = new PropertyDescriptor.Builder()
-            .name("Authentication Strategy")
-            .description("Strategy for authenticating to Azure Event Hubs")
-            .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
-            .allowableValues(AzureAuthenticationStrategy.class)
-            .required(true)
-            .defaultValue(AzureAuthenticationStrategy.DEFAULT_AZURE_CREDENTIAL.getValue())
-            .build();
+ static final PropertyDescriptor AUTHENTICATION_STRATEGY = new PropertyDescriptor.Builder()
+ .name("Authentication Strategy")
+ .description("Chiến lược xác thực để kết nối đến Azure Event Hubs")
+ .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
+ .allowableValues(AzureAuthenticationStrategy.class)
+ .required(true)
+ .defaultValue(AzureAuthenticationStrategy.DEFAULT_AZURE_CREDENTIAL.getValue())
+ .build();
 
-    static final PropertyDescriptor SHARED_ACCESS_POLICY = new PropertyDescriptor.Builder()
-            .name("Shared Access Policy")
-            .description("The name of the shared access policy. This policy must have Send claims")
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .required(false)
-            .dependsOn(AUTHENTICATION_STRATEGY, AzureAuthenticationStrategy.SHARED_ACCESS_KEY.getValue())
-            .build();
+ static final PropertyDescriptor SHARED_ACCESS_POLICY = new PropertyDescriptor.Builder()
+ .name("Shared Access Policy")
+ .description("Tên của chính sách truy cập chia sẻ. Chính sách này phải có quyền 'Send'")
+ .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+ .required(false)
+ .dependsOn(AUTHENTICATION_STRATEGY, AzureAuthenticationStrategy.SHARED_ACCESS_KEY.getValue())
+ .build();
 
-    static final PropertyDescriptor SHARED_ACCESS_POLICY_KEY = new PropertyDescriptor.Builder()
-            .name("Shared Access Policy Key")
-            .description("The primary or secondary key of the shared access policy")
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .sensitive(true)
-            .required(false)
-            .dependsOn(AUTHENTICATION_STRATEGY, AzureAuthenticationStrategy.SHARED_ACCESS_KEY.getValue())
-            .build();
+ static final PropertyDescriptor SHARED_ACCESS_POLICY_KEY = new PropertyDescriptor.Builder()
+ .name("Shared Access Policy Key")
+ .description("Khóa chính hoặc phụ của chính sách truy cập chia sẻ")
+ .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+ .sensitive(true)
+ .required(false)
+ .dependsOn(AUTHENTICATION_STRATEGY, AzureAuthenticationStrategy.SHARED_ACCESS_KEY.getValue())
+ .build();
 
-    static final PropertyDescriptor PARTITION_KEY = new PropertyDescriptor.Builder()
-            .name("Partition Key")
-            .description("A hint for Azure Event Hub message broker how to distribute messages across one or more partitions")
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .required(false)
-            .build();
-
+ static final PropertyDescriptor PARTITION_KEY = new PropertyDescriptor.Builder()
+ .name("Partition Key")
+ .description("Gợi ý cho bộ điều phối Azure Event Hub về cách phân phối các thông điệp giữa các phân vùng")
+ .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+ .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+ .required(false)
+ .build();
+ 
     private static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS = Collections.unmodifiableList(
             Arrays.asList(
                     SERVICE_BUS_ENDPOINT,

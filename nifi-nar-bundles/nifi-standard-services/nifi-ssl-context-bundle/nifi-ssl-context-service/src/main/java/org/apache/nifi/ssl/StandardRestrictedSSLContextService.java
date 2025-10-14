@@ -32,21 +32,21 @@ import org.apache.nifi.security.util.TlsPlatform;
  * values that can be selected for TLS/SSL protocols.
  */
 @Tags({"tls", "ssl", "secure", "certificate", "keystore", "truststore", "jks", "p12", "pkcs12", "pkcs"})
-@CapabilityDescription("Restricted implementation of the SSLContextService. Provides the ability to configure "
-        + "keystore and/or truststore properties once and reuse that configuration throughout the application, "
-        + "but only allows a restricted set of TLS/SSL protocols to be chosen (no SSL protocols are supported). The set of protocols selectable will "
-        + "evolve over time as new protocols emerge and older protocols are deprecated. This service is recommended "
-        + "over StandardSSLContextService if a component doesn't expect to communicate with legacy systems since it is "
-        + "unlikely that legacy systems will support these protocols.")
+@CapabilityDescription("Triển khai Bị hạn chế của SSLContextService. Cung cấp khả năng cấu hình "
+        + "các thuộc tính keystore và/hoặc truststore một lần và tái sử dụng cấu hình đó trong suốt ứng dụng, "
+        + "nhưng chỉ cho phép chọn một bộ giao thức TLS/SSL bị hạn chế (không hỗ trợ các giao thức SSL). Bộ giao thức có thể chọn sẽ "
+        + "phát triển theo thời gian khi các giao thức mới xuất hiện và các giao thức cũ hơn bị loại bỏ. Dịch vụ này được khuyến nghị "
+        + "so với StandardSSLContextService nếu một thành phần không dự kiến giao tiếp với các hệ thống cũ vì nó là "
+        + "không có khả năng là các hệ thống cũ sẽ hỗ trợ các giao thức này.")
 public class StandardRestrictedSSLContextService extends StandardSSLContextService implements RestrictedSSLContextService {
 
     public static final PropertyDescriptor RESTRICTED_SSL_ALGORITHM = new PropertyDescriptor.Builder()
-            .name("SSL Protocol")
-            .displayName("TLS Protocol")
+            .name("Giao thức SSL")
+            .displayName("Giao thức TLS")
             .defaultValue(TlsConfiguration.TLS_PROTOCOL)
             .required(false)
             .allowableValues(getRestrictedProtocolAllowableValues())
-            .description("TLS Protocol Version for encrypted connections. Supported versions depend on the specific version of Java used.")
+            .description("Phiên bản Giao thức TLS cho các kết nối được mã hóa. Các phiên bản được hỗ trợ phụ thuộc vào phiên bản Java cụ thể được sử dụng.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(false)
             .build();

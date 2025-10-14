@@ -63,8 +63,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"schema", "registry", "aws", "avro", "glue"})
-@CapabilityDescription("Provides a Schema Registry that interacts with the AWS Glue Schema Registry so that those Schemas that are stored in the Glue Schema "
-        + "Registry can be used in NiFi. When a Schema is looked up by name by this registry, it will find a Schema in the Glue Schema Registry with their names.")
+@CapabilityDescription("Cung cấp Schema Registry tương tác với AWS Glue Schema Registry, cho phép sử dụng các Schema được lưu trữ trong Glue Schema Registry trong NiFi. " +
+"Khi một Schema được tra cứu theo tên trong registry này, nó sẽ tìm Schema tương ứng trong AWS Glue Schema Registry có cùng tên.")
 public class AmazonGlueSchemaRegistry extends AbstractControllerService implements SchemaRegistry {
 
     private static final Set<SchemaField> schemaFields = EnumSet.of(SchemaField.SCHEMA_NAME, SchemaField.SCHEMA_TEXT,

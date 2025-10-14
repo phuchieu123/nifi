@@ -336,7 +336,7 @@ public class StandardProcessorDAO extends ComponentDAO implements ProcessorDAO {
                 final Relationship relationship = new Relationship.Builder().name(relationshipName).build();
                 final Set<Connection> connections = processorNode.getConnections(relationship);
                 if (isNotNull(connections) && !connections.isEmpty()) {
-                    validationErrors.add("Cannot automatically terminate '" + relationshipName + "' relationship because a Connection already exists with this relationship");
+                    validationErrors.add("Không thể tự động chấm dứt '" + relationshipName + "' mối quan hệ vì một Kết nối đã tồn tại với mối quan hệ này");
                 }
             }
         }

@@ -41,8 +41,8 @@ import org.apache.nifi.util.StringUtils;
 
 @Tags({"azure", "cosmos", "document", "service"})
 @CapabilityDescription(
-        "Provides a controller service that configures a connection to Cosmos DB (Core SQL API) " +
-        " and provides access to that connection to other Cosmos DB-related components."
+"Cung cấp một dịch vụ điều khiển để cấu hình kết nối đến Cosmos DB (Core SQL API) " +
+"và cung cấp quyền truy cập kết nối này cho các thành phần khác liên quan đến Cosmos DB."
 )
 public class AzureCosmosDBClientService extends AbstractControllerService implements AzureCosmosDBConnectionService {
     private String uri;

@@ -61,13 +61,13 @@ import static org.apache.nifi.schema.inference.SchemaInferenceUtil.INFER_SCHEMA;
 import static org.apache.nifi.schema.inference.SchemaInferenceUtil.SCHEMA_CACHE;
 
 @Tags({"json", "tree", "record", "reader", "parser"})
-@CapabilityDescription("Parses JSON into individual Record objects. While the reader expects each record "
-        + "to be well-formed JSON, the content of a FlowFile may consist of many records, each as a well-formed "
-        + "JSON array or JSON object with optional whitespace between them, such as the common 'JSON-per-line' format. "
-        + "If an array is encountered, each element in that array will be treated as a separate record. "
-        + "If the schema that is configured contains a field that is not present in the JSON, a null value will be used. If the JSON contains "
-        + "a field that is not present in the schema, that field will be skipped. "
-        + "See the Usage of the Controller Service for more information and examples.")
+@CapabilityDescription("Phân tích JSON thành các đối tượng Record riêng lẻ. Reader mong đợi mỗi record là JSON hợp lệ, "
+        + "nhưng nội dung của FlowFile có thể bao gồm nhiều record, mỗi record là một mảng JSON hoặc đối tượng JSON hợp lệ "
+        + "với khoảng trắng tùy chọn giữa chúng, ví dụ định dạng 'JSON-per-line' phổ biến. "
+        + "Nếu gặp mảng, mỗi phần tử trong mảng sẽ được coi là một record riêng. "
+        + "Nếu schema được cấu hình có một trường không có trong JSON, giá trị null sẽ được sử dụng. Nếu JSON có một trường "
+        + "không có trong schema, trường đó sẽ bị bỏ qua. "
+        + "Xem phần Usage của Controller Service để biết thêm thông tin và ví dụ.")
 @SeeAlso(JsonPathReader.class)
 public class JsonTreeReader extends SchemaRegistryService implements RecordReaderFactory {
     protected volatile String dateFormat;
@@ -81,19 +81,18 @@ public class JsonTreeReader extends SchemaRegistryService implements RecordReade
 
     public static final PropertyDescriptor STARTING_FIELD_STRATEGY = new PropertyDescriptor.Builder()
             .name("starting-field-strategy")
-            .displayName("Starting Field Strategy")
-            .description("Start processing from the root node or from a specified nested node.")
+            .displayName("Chiến lược trường bắt đầu")
+            .description("Bắt đầu xử lý từ node gốc hoặc từ một node lồng nhau được chỉ định.")
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .defaultValue(StartingFieldStrategy.ROOT_NODE.getValue())
             .allowableValues(StartingFieldStrategy.class)
             .build();
 
-
     public static final PropertyDescriptor STARTING_FIELD_NAME = new PropertyDescriptor.Builder()
             .name("starting-field-name")
-            .displayName("Starting Field Name")
-            .description("Skips forward to the given nested JSON field (array or object) to begin processing.")
+            .displayName("Tên trường bắt đầu")
+            .description("Bỏ qua tới trường JSON lồng nhau (mảng hoặc đối tượng) được chỉ định để bắt đầu xử lý.")
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .defaultValue(null)
@@ -102,8 +101,8 @@ public class JsonTreeReader extends SchemaRegistryService implements RecordReade
 
     public static final PropertyDescriptor SCHEMA_APPLICATION_STRATEGY = new PropertyDescriptor.Builder()
             .name("schema-application-strategy")
-            .displayName("Schema Application Strategy")
-            .description("Specifies whether the schema is defined for the whole JSON or for the selected part starting from \"Starting Field Name\".")
+            .displayName("Chiến lược áp dụng schema")
+            .description("Xác định liệu schema được định nghĩa cho toàn bộ JSON hay chỉ cho phần được chọn bắt đầu từ \"Tên trường bắt đầu\".")
             .required(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .defaultValue(SchemaApplicationStrategy.SELECTED_PART.getValue())
@@ -111,6 +110,7 @@ public class JsonTreeReader extends SchemaRegistryService implements RecordReade
             .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY, SCHEMA_TEXT_PROPERTY, HWX_SCHEMA_REF_ATTRIBUTES, HWX_CONTENT_ENCODED_SCHEMA, CONFLUENT_ENCODED_SCHEMA)
             .allowableValues(SchemaApplicationStrategy.class)
             .build();
+
 
     @Override
     protected List<PropertyDescriptor> getSupportedPropertyDescriptors() {

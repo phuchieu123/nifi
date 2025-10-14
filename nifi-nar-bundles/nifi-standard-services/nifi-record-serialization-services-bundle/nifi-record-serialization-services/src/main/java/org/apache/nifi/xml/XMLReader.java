@@ -56,27 +56,27 @@ import java.util.function.Supplier;
 import static org.apache.nifi.schema.inference.SchemaInferenceUtil.INFER_SCHEMA;
 
 @Tags({"xml", "record", "reader", "parser"})
-@CapabilityDescription("Reads XML content and creates Record objects. Records are expected in the second level of " +
-        "XML data, embedded in an enclosing root tag.")
+@CapabilityDescription("Đọc nội dung XML và tạo các đối tượng Record. Các bản ghi được mong đợi ở cấp thứ hai của " +
+        "dữ liệu XML, được nhúng trong một thẻ gốc bao quanh.")
 public class XMLReader extends SchemaRegistryService implements RecordReaderFactory {
 
     public static final AllowableValue RECORD_SINGLE = new AllowableValue("false", "false",
-        "Each FlowFile will consist of a single record without any sort of \"wrapper\".");
+        "Mỗi FlowFile sẽ bao gồm một bản ghi duy nhất mà không có bất kỳ loại \"wrapper\" nào.");
     public static final AllowableValue RECORD_ARRAY = new AllowableValue("true", "true",
-        "Each FlowFile will consist of zero or more records. The outer-most XML element is expected to be a \"wrapper\" and will be ignored.");
-    public static final AllowableValue RECORD_EVALUATE = new AllowableValue("${xml.stream.is.array}", "Use attribute 'xml.stream.is.array'",
-        "Whether to treat a FlowFile as a single Record or an array of multiple Records is determined by the value of the 'xml.stream.is.array' attribute. "
-            + "If the value of the attribute is 'true' (case-insensitive), then the XML Reader will treat the FlowFile as a series of Records with the outer element being ignored. "
-            + "If the value of the attribute is 'false' (case-insensitive), then the FlowFile is treated as a single Record and no wrapper element is assumed. "
-            + "If the attribute is missing or its value is anything other than 'true' or 'false', then an Exception will be thrown and no records will be parsed.");
+        "Mỗi FlowFile sẽ bao gồm không hoặc nhiều bản ghi. Phần tử XML ngoài cùng nhất được mong đợi là một \"wrapper\" và sẽ bị bỏ qua.");
+    public static final AllowableValue RECORD_EVALUATE = new AllowableValue("${xml.stream.is.array}", "Sử dụng thuộc tính 'xml.stream.is.array'",
+        "Việc coi một FlowFile là một Bản ghi duy nhất hay một mảng gồm nhiều Bản ghi được xác định bởi giá trị của thuộc tính 'xml.stream.is.array'. "
+            + "Nếu giá trị của thuộc tính là 'true' (không phân biệt chữ hoa chữ thường), thì XML Reader sẽ coi FlowFile là một chuỗi các Bản ghi với phần tử bên ngoài bị bỏ qua. "
+            + "Nếu giá trị của thuộc tính là 'false' (không phân biệt chữ hoa chữ thường), thì FlowFile được coi là một Bản ghi duy nhất và không giả định có phần tử bao bọc. "
+            + "Nếu thuộc tính bị thiếu hoặc giá trị của nó là bất kỳ thứ gì khác ngoài 'true' hoặc 'false', thì một Exception sẽ được ném ra và không có bản ghi nào được phân tích cú pháp.");
 
     public static final PropertyDescriptor RECORD_FORMAT = new PropertyDescriptor.Builder()
             .name("record_format")
-            .displayName("Expect Records as Array")
-            .description("This property defines whether the reader expects a FlowFile to consist of a single Record or a series of Records with a \"wrapper element\". Because XML does not "
-                + "provide for a way to read a series of XML documents from a stream directly, it is common to combine many XML documents by concatenating them and then wrapping the entire "
-                + "XML blob  with a \"wrapper element\". This property dictates whether the reader expects a FlowFile to consist of a single Record or a series of Records with a \"wrapper element\" "
-                + "that will be ignored.")
+            .displayName("Mong đợi các bản ghi dưới dạng mảng")
+            .description("Thuộc tính này xác định xem trình đọc có mong đợi một FlowFile bao gồm một Bản ghi duy nhất hay một chuỗi các Bản ghi với một \"phần tử bao bọc\" hay không. Bởi vì XML không "
+                + "cung cấp cách đọc trực tiếp một chuỗi tài liệu XML từ một luồng, nên thông thường người ta kết hợp nhiều tài liệu XML bằng cách nối chúng lại với nhau và sau đó bao bọc toàn bộ "
+                + "khối XML bằng một \"phần tử bao bọc\". Thuộc tính này quy định liệu trình đọc có mong đợi một FlowFile bao gồm một Bản ghi duy nhất hay một chuỗi các Bản ghi với một \"phần tử bao bọc\" "
+                + "sẽ bị bỏ qua hay không.")
             .allowableValues(RECORD_SINGLE, RECORD_ARRAY, RECORD_EVALUATE)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .defaultValue(RECORD_SINGLE.getValue())
@@ -85,8 +85,8 @@ public class XMLReader extends SchemaRegistryService implements RecordReaderFact
 
     public static final PropertyDescriptor ATTRIBUTE_PREFIX = new PropertyDescriptor.Builder()
             .name("attribute_prefix")
-            .displayName("Attribute Prefix")
-            .description("If this property is set, the name of attributes will be prepended with a prefix when they are added to a record.")
+            .displayName("Tiền tố thuộc tính")
+            .description("Nếu thuộc tính này được đặt, tên của các thuộc tính sẽ được thêm một tiền tố vào trước khi chúng được thêm vào một bản ghi.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(false)
@@ -94,14 +94,14 @@ public class XMLReader extends SchemaRegistryService implements RecordReaderFact
 
     public static final PropertyDescriptor CONTENT_FIELD_NAME = new PropertyDescriptor.Builder()
             .name("content_field_name")
-            .displayName("Field Name for Content")
-            .description("If tags with content (e. g. <field>content</field>) are defined as nested records in the schema, " +
-                    "the name of the tag will be used as name for the record and the value of this property will be used as name for the field. " +
-                    "If tags with content shall be parsed together with attributes (e. g. <field attribute=\"123\">content</field>), " +
-                    "they have to be defined as records. In such a case, the name of the tag will be used as the name for the record and  " +
-                    "the value of this property will be used as the name for the field holding the original content. The name of the attribute " +
-                    "will be used to create a new record field, the content of which will be the value of the attribute. " +
-                    "For more information, see the 'Additional Details...' section of the XMLReader controller service's documentation.")
+            .displayName("Tên trường cho nội dung")
+            .description("Nếu các thẻ có nội dung (ví dụ: <field>content</field>) được định nghĩa là các bản ghi lồng nhau trong lược đồ, " +
+                    "tên của thẻ sẽ được sử dụng làm tên cho bản ghi và giá trị của thuộc tính này sẽ được sử dụng làm tên cho trường. " +
+                    "Nếu các thẻ có nội dung sẽ được phân tích cú pháp cùng với các thuộc tính (ví dụ: <field attribute=\"123\">content</field>), " +
+                    "chúng phải được định nghĩa là các bản ghi. Trong trường hợp như vậy, tên của thẻ sẽ được sử dụng làm tên cho bản ghi và " +
+                    "giá trị của thuộc tính này sẽ được sử dụng làm tên cho trường chứa nội dung gốc. Tên của thuộc tính " +
+                    "sẽ được sử dụng để tạo một trường bản ghi mới, nội dung của trường đó sẽ là giá trị của thuộc tính. " +
+                    "Để biết thêm thông tin, hãy xem phần 'Chi tiết bổ sung...' trong tài liệu về dịch vụ controller XMLReader.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(false)
@@ -109,10 +109,10 @@ public class XMLReader extends SchemaRegistryService implements RecordReaderFact
 
     public static final PropertyDescriptor PARSE_XML_ATTRIBUTES = new PropertyDescriptor.Builder()
             .name("parse_xml_attributes")
-            .displayName("Parse XML Attributes")
-            .description("When 'Schema Access Strategy' is 'Infer Schema' and this property is 'true' then XML attributes are parsed and " +
-                    "added to the record as new fields. When the schema is inferred but this property is 'false', " +
-                    "XML attributes and their values are ignored.")
+            .displayName("Phân tích cú pháp thuộc tính XML")
+            .description("Khi 'Chiến lược truy cập lược đồ' là 'Suy ra lược đồ' và thuộc tính này là 'true' thì các thuộc tính XML được phân tích cú pháp và " +
+                    "được thêm vào bản ghi dưới dạng các trường mới. Khi lược đồ được suy ra nhưng thuộc tính này là 'false', " +
+                    "các thuộc tính XML và giá trị của chúng sẽ bị bỏ qua.")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
             .defaultValue("true")

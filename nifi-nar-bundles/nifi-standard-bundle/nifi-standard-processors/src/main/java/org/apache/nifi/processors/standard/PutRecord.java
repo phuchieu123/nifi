@@ -52,49 +52,49 @@ import java.util.concurrent.TimeUnit;
 @EventDriven
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"record", "put", "sink"})
-@CapabilityDescription("The PutRecord processor uses a specified RecordReader to input (possibly multiple) records from an incoming flow file, and sends them "
-        + "to a destination specified by a Record Destination Service (i.e. record sink).")
+@CapabilityDescription("Bộ xử lý PutRecord sử dụng một RecordReader được chỉ định để đầu vào (có thể là nhiều) bản ghi từ một tệp luồng đến, và gửi chúng "
+        + "đến một đích được chỉ định bởi Dịch vụ Đích Bản ghi (tức là bộ chứa bản ghi).")
 public class PutRecord extends AbstractProcessor {
 
     static final PropertyDescriptor RECORD_READER = new PropertyDescriptor.Builder()
             .name("put-record-reader")
-            .displayName("Record Reader")
-            .description("Specifies the Controller Service to use for reading incoming data")
+            .displayName("Bộ đọc bản ghi")
+            .description("Chỉ định Dịch vụ Bộ điều khiển sẽ được sử dụng để đọc dữ liệu đến")
             .identifiesControllerService(RecordReaderFactory.class)
             .required(true)
             .build();
 
     public static final PropertyDescriptor RECORD_SINK = new PropertyDescriptor.Builder()
             .name("put-record-sink")
-            .displayName("Record Destination Service")
-            .description("Specifies the Controller Service to use for writing out the query result records to some destination.")
+            .displayName("Dịch vụ Đích Bản ghi")
+            .description("Chỉ định Dịch vụ Bộ điều khiển sẽ được sử dụng để viết các bản ghi kết quả truy vấn đến một số đích.")
             .identifiesControllerService(RecordSinkService.class)
             .required(true)
             .build();
 
     public static final PropertyDescriptor INCLUDE_ZERO_RECORD_RESULTS = new PropertyDescriptor.Builder()
             .name("put-record-include-zero-record-results")
-            .displayName("Include Zero Record Results")
-            .description("If no records are read from the incoming FlowFile, this property specifies whether or not an empty record set will be transmitted. The original "
-                    + "FlowFile will still be routed to success, but if no transmission occurs, no provenance SEND event will be generated.")
+            .displayName("Bao gồm Kết quả Không Bản ghi")
+            .description("Nếu không có bản ghi nào được đọc từ FlowFile đến, thuộc tính này chỉ định liệu có truyền tải một bộ bản ghi trống hay không. FlowFile ban đầu "
+                    + "sẽ vẫn được định tuyến đến thành công, nhưng nếu không có truyền tải nào xảy ra, sẽ không có sự kiện SEND provenance nào được tạo.")
             .allowableValues("true", "false")
             .defaultValue("false")
             .required(true)
             .build();
 
-    // Relationships
+    // Mối quan hệ
     static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("The original FlowFile will be routed to this relationship if the records were transmitted successfully")
+            .description("FlowFile ban đầu sẽ được định tuyến đến mối quan hệ này nếu các bản ghi được truyền tải thành công")
             .build();
 
     static final Relationship REL_RETRY = new Relationship.Builder()
             .name("retry")
-            .description("The original FlowFile is routed to this relationship if the records could not be transmitted but attempting the operation again may succeed")
+            .description("FlowFile ban đầu được định tuyến đến mối quan hệ này nếu các bản ghi không thể được truyền tải nhưng thử lại hoạt động có thể thành công")
             .build();
     static final Relationship REL_FAILURE = new Relationship.Builder()
             .name("failure")
-            .description("A FlowFile is routed to this relationship if the records could not be transmitted and retrying the operation will also fail")
+            .description("Một FlowFile được định tuyến đến mối quan hệ này nếu các bản ghi không thể được truyền tải và thử lại hoạt động cũng sẽ thất bại")
             .build();
 
     private static final List<PropertyDescriptor> properties;

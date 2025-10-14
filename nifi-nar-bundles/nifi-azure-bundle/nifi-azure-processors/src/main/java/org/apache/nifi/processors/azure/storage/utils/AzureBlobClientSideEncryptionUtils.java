@@ -36,34 +36,38 @@ public class AzureBlobClientSideEncryptionUtils {
 
     private static final String DEFAULT_KEY_ID = "nifi";
 
+    // 🔐 Loại khóa mã hóa phía máy khách
     public static final PropertyDescriptor CSE_KEY_TYPE = new PropertyDescriptor.Builder()
             .name("cse-key-type")
-            .displayName("Client-Side Encryption Key Type")
+            .displayName("Loại khóa mã hóa phía máy khách")
             .required(true)
-            .allowableValues(buildCseEncryptionMethodAllowableValues())
-            .defaultValue(AzureBlobClientSideEncryptionMethod.NONE.name())
-            .description("Specifies the key type to use for client-side encryption.")
+            .allowableValues(buildCseEncryptionMethodAllowableValues()) // Cho phép chọn trong danh sách các kiểu mã hóa
+            .defaultValue(AzureBlobClientSideEncryptionMethod.NONE.name()) // Mặc định là không mã hóa
+            .description("Chỉ định loại khóa sẽ được dùng cho mã hóa phía máy khách (client-side encryption).")
             .build();
 
+    // 🆔 ID của khóa mã hóa
     public static final PropertyDescriptor CSE_KEY_ID = new PropertyDescriptor.Builder()
             .name("cse-key-id")
-            .displayName("Client-Side Encryption Key ID")
-            .description("Specifies the ID of the key to use for client-side encryption.")
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+            .displayName("ID khóa mã hóa phía máy khách")
+            .description("Chỉ định ID của khóa được sử dụng cho mã hóa phía máy khách.")
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES) // Cho phép dùng Expression Language
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
-            .dependsOn(CSE_KEY_TYPE, AzureBlobClientSideEncryptionMethod.SYMMETRIC.name())
+            .dependsOn(CSE_KEY_TYPE, AzureBlobClientSideEncryptionMethod.SYMMETRIC.name()) // Chỉ hiển thị khi loại khóa là SYMMETRIC
             .build();
 
+    // 🔑 Khóa đối xứng ở dạng mã hex
     public static final PropertyDescriptor CSE_SYMMETRIC_KEY_HEX = new PropertyDescriptor.Builder()
             .name("cse-symmetric-key-hex")
-            .displayName("Symmetric Key")
-            .description("When using symmetric client-side encryption, this is the raw key, encoded in hexadecimal")
+            .displayName("Khóa đối xứng (Hex)")
+            .description("Khi sử dụng mã hóa phía máy khách dạng đối xứng, đây là khóa thô được mã hóa dưới dạng hexadecimal.")
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
-            .dependsOn(CSE_KEY_TYPE, AzureBlobClientSideEncryptionMethod.SYMMETRIC.name())
-            .sensitive(true)
+            .dependsOn(CSE_KEY_TYPE, AzureBlobClientSideEncryptionMethod.SYMMETRIC.name()) // Chỉ xuất hiện khi loại là SYMMETRIC
+            .sensitive(true) // Ẩn giá trị khi nhập (bảo mật)
             .build();
+
 
     private static AllowableValue[] buildCseEncryptionMethodAllowableValues() {
         return Arrays.stream(AzureBlobClientSideEncryptionMethod.values())

@@ -52,13 +52,13 @@ import org.apache.nifi.serialization.SchemaRegistryRecordSetWriter;
 import org.apache.nifi.serialization.record.RecordSchema;
 
 @Tags({"parquet", "result", "set", "writer", "serializer", "record", "recordset", "row"})
-@CapabilityDescription("Writes the contents of a RecordSet in Parquet format.")
+@CapabilityDescription("Ghi nội dung của RecordSet dưới định dạng Parquet.")
 public class ParquetRecordSetWriter extends SchemaRegistryRecordSetWriter implements RecordSetWriterFactory {
 
     public static final PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()
             .name("cache-size")
-            .displayName("Cache Size")
-            .description("Specifies how many Schemas should be cached")
+            .displayName("Kích thước bộ nhớ đệm")
+            .description("Xác định số lượng schema được lưu trong bộ nhớ đệm")
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
             .defaultValue("1000")
             .required(true)
@@ -66,11 +66,12 @@ public class ParquetRecordSetWriter extends SchemaRegistryRecordSetWriter implem
 
     public static final PropertyDescriptor INT96_FIELDS = new PropertyDescriptor.Builder()
             .name("int96-fields")
-            .displayName("INT96 Fields")
-            .description("List of fields with full path that should be treated as INT96 timestamps.")
+            .displayName("Trường INT96")
+            .description("Danh sách các trường có đường dẫn đầy đủ sẽ được xử lý như timestamp INT96.")
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .required(false)
             .build();
+
 
     private LoadingCache<String, Schema> compiledAvroSchemaCache;
     private String int96Fields;

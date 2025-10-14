@@ -47,15 +47,15 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Tags({"schema", "registry", "json"})
-@CapabilityDescription("Provides a service for registering and accessing JSON schemas. One can register a schema "
-        + "as a dynamic property where 'name' represents the schema name and 'value' represents the textual "
-        + "representation of the actual schema following the syntax and semantics of the JSON Schema format. "
-        + "Empty schemas and schemas only consisting of whitespace are not acceptable schemas."
-        + "The registry is heterogeneous registry as it can store schemas of different schema draft versions. "
-        + "By default the registry is configured to store schemas of Draft 2020-12. When a schema is added, the version "
-        + "which is currently is set, is what the schema is saved as.")
-@DynamicProperty(name = "Schema Name", value = "Schema Content",
-        description = "Adds a named schema using the JSON string representation of a JSON schema",
+@CapabilityDescription("Cung cấp một dịch vụ để đăng ký và truy cập các lược đồ JSON. Người ta có thể đăng ký một lược đồ "
+        + "dưới dạng thuộc tính động trong đó 'tên' đại diện cho tên lược đồ và 'giá trị' đại diện cho biểu diễn văn bản "
+        + "của lược đồ thực tế theo cú pháp và ngữ nghĩa của định dạng Lược đồ JSON. "
+        + "Các lược đồ trống và các lược đồ chỉ bao gồm khoảng trắng không phải là các lược đồ chấp nhận được."
+        + "Đăng ký là một đăng ký không đồng nhất vì nó có thể lưu trữ các lược đồ của các phiên bản nháp lược đồ khác nhau. "
+        + "Theo mặc định, đăng ký được cấu hình để lưu trữ các lược đồ của Nháp 2020-12. Khi một lược đồ được thêm vào, phiên bản "
+        + "hiện đang được đặt, là cách lược đồ được lưu.")
+@DynamicProperty(name = "Tên Lược đồ", value = "Nội dung Lược đồ",
+        description = "Thêm một lược đồ được đặt tên bằng biểu diễn chuỗi JSON của một lược đồ JSON",
         expressionLanguageScope = ExpressionLanguageScope.NONE)
 public class StandardJsonSchemaRegistry extends AbstractControllerService implements JsonSchemaRegistry, JsonSchemaRegistryComponent {
 

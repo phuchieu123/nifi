@@ -126,7 +126,7 @@ public class TestConnectableTask {
 
         final ConnectableTask task = createTask(funnel);
         assertTrue(task.invoke().isYield(),
-                "If there is no incoming connection, it should be yielded.");
+                "Nếu không có kết nối đến, nó sẽ được nhường lại.");
 
         // Test with only a single connection that is self-looping and empty.
         // Actually, this self-loop input can not be created for Funnels using NiFi API because an outer layer check condition does not allow it.
@@ -147,7 +147,7 @@ public class TestConnectableTask {
         when(funnel.getConnections()).thenReturn(outgoingConnections);
 
         assertTrue(task.invoke().isYield(),
-                "If there is no incoming connection from other components, it should be yielded.");
+                "Nếu không có kết nối đến từ các thành phần khác, nó sẽ được nhường lại.");
 
         // Add an incoming connection from another component.
         final ProcessorNode inputProcessor = Mockito.mock(ProcessorNode.class);
@@ -159,8 +159,8 @@ public class TestConnectableTask {
         when(funnel.hasIncomingConnection()).thenReturn(true);
         when(funnel.getIncomingConnections()).thenReturn(Arrays.asList(selfLoopingConnection, incomingFromAnotherComponent));
 
-        assertTrue(task.invoke().isYield(), "Even if there is an incoming connection from another component," +
-                " it should be yielded because there's no outgoing connections.");
+        assertTrue(task.invoke().isYield(), "Ngay cả khi có kết nối đến từ thành phần khác," +
+                " nó phải được cung cấp vì không có kết nối gửi đi.");
 
         // Add an outgoing connection to another component.
         final ProcessorNode outputProcessor = Mockito.mock(ProcessorNode.class);
@@ -169,15 +169,15 @@ public class TestConnectableTask {
         when(outgoingToAnotherComponent.getDestination()).thenReturn(outputProcessor);
         outgoingConnections.add(outgoingToAnotherComponent);
 
-        assertTrue(task.invoke().isYield(),"Even if there is an incoming connection from another component and an outgoing connection as well," +
-                " it should be yielded because there's no incoming FlowFiles to process.");
+        assertTrue(task.invoke().isYield(),"Ngay cả khi có kết nối đến từ thành phần khác và cả kết nối đi," +
+                " nó sẽ được trả về vì không có FlowFiles nào đến để xử lý.");
 
         // Adding input FlowFiles.
         final FlowFileQueue nonEmptyQueue = Mockito.mock(FlowFileQueue.class);
         when(nonEmptyQueue.getFlowFileAvailability()).thenReturn(FlowFileAvailability.FLOWFILE_AVAILABLE);
         when(incomingFromAnotherComponent.getFlowFileQueue()).thenReturn(nonEmptyQueue);
         assertFalse(task.invoke().isYield(),
-                "When a Funnel has both incoming and outgoing connections and FlowFiles to process," +
-                        " then it should be executed.");
+                "Khi Kênh có cả kết nối đến và đi và FlowFiles để xử lý," +
+                        " thì nó sẽ được thực thi.");
     }
 }

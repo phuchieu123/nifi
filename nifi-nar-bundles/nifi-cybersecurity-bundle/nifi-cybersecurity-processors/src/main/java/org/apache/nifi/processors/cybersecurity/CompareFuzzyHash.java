@@ -85,7 +85,7 @@ public class CompareFuzzyHash extends AbstractFuzzyHashProcessor {
     public static final PropertyDescriptor HASH_LIST_FILE = new PropertyDescriptor.Builder()
             .name("HASH_LIST_FILE")
             .displayName("Hash List Source File")
-            .description("Path to the file containing hashes to be validated against")
+            .description("Đường dẫn đến tệp chứa các mã băm (hash) cần được kiểm tra xác thực.")
             .required(true)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .build();

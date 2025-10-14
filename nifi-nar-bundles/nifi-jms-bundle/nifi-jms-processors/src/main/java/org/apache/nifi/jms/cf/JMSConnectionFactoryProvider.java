@@ -43,22 +43,24 @@ import java.util.List;
  * {@link #getConnectionFactory()} method.
  */
 @Tags({"jms", "messaging", "integration", "queue", "topic", "publish", "subscribe"})
-@CapabilityDescription("Provides a generic service to create vendor specific javax.jms.ConnectionFactory implementations. "
-        + "The Connection Factory can be served once this service is configured successfully.")
-@DynamicProperty(name = "The name of a Connection Factory configuration property.", value = "The value of a given Connection Factory configuration property.",
-        description = "The properties that are set following Java Beans convention where a property name is derived from the 'set*' method of the vendor "
-                + "specific ConnectionFactory's implementation. For example, 'com.ibm.mq.jms.MQConnectionFactory.setChannel(String)' would imply 'channel' "
-                + "property and 'com.ibm.mq.jms.MQConnectionFactory.setTransportType(int)' would imply 'transportType' property.",
-                expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY)
+@CapabilityDescription("Cung cấp một dịch vụ chung để tạo các triển khai javax.jms.ConnectionFactory theo nhà cung cấp cụ thể. "
+        + "Connection Factory có thể được sử dụng khi dịch vụ này được cấu hình thành công.")
+@DynamicProperty(name = "Tên của một thuộc tính cấu hình Connection Factory.", 
+        value = "Giá trị của thuộc tính Connection Factory tương ứng.",
+        description = "Các thuộc tính được đặt theo chuẩn Java Beans, trong đó tên thuộc tính được lấy từ phương thức 'set*' của triển khai ConnectionFactory "
+                + "theo nhà cung cấp. Ví dụ, 'com.ibm.mq.jms.MQConnectionFactory.setChannel(String)' tương ứng với thuộc tính 'channel', "
+                + "và 'com.ibm.mq.jms.MQConnectionFactory.setTransportType(int)' tương ứng với thuộc tính 'transportType'.",
+        expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY)
 @SeeAlso(classNames = {"org.apache.nifi.jms.processors.ConsumeJMS", "org.apache.nifi.jms.processors.PublishJMS"})
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.REFERENCE_REMOTE_RESOURCES,
-                        explanation = "Client Library Location can reference resources over HTTP"
+                        explanation = "Vị trí thư viện Client có thể tham chiếu đến tài nguyên qua HTTP"
                 )
         }
 )
+
 public class JMSConnectionFactoryProvider extends AbstractJMSConnectionFactoryProvider {
 
     @Override

@@ -47,7 +47,7 @@ import org.apache.nifi.serialization.record.RecordSchema;
 import org.apache.nifi.serialization.record.RecordSet;
 
 @Tags({ "db", "s2s", "site", "record"})
-@CapabilityDescription("Provides a service to write records using a configured RecordSetWriter over a Site-to-Site connection.")
+@CapabilityDescription("Cung cấp một dịch vụ để ghi các bản ghi sử dụng RecordSetWriter được cấu hình thông qua kết nối Site-to-Site.")
 public class SiteToSiteReportingRecordSink extends AbstractControllerService implements RecordSinkService {
 
     private List<PropertyDescriptor> properties;
@@ -99,7 +99,7 @@ public class SiteToSiteReportingRecordSink extends AbstractControllerService imp
             WriteResult writeResult = null;
             transaction = getClient().createTransaction(TransferDirection.SEND);
             if (transaction == null) {
-                getLogger().info("All destination nodes are penalized; will attempt to send data later");
+                getLogger().info("Tất cả các nút đích đều bị phạt; sẽ cố gắng gửi dữ liệu sau");
             } else {
                 final RecordSchema writeSchema = getWriterFactory().getSchema(null, recordSet.getSchema());
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();

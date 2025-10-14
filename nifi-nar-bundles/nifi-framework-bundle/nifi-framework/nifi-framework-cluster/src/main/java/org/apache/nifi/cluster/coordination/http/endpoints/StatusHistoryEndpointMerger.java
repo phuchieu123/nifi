@@ -105,86 +105,198 @@ public class StatusHistoryEndpointMerger implements EndpointResponseMerger {
         return descriptors != null && !descriptors.isEmpty();
     }
 
-    @Override
-    public NodeResponse merge(URI uri, String method, Set<NodeResponse> successfulResponses, Set<NodeResponse> problematicResponses, NodeResponse clientResponse) {
-        final Map<String, MetricDescriptor<?>> metricDescriptors = getStandardMetricDescriptors(uri);
+    //thêm mới trường sang tiếng việt
+    private void translateToVietnamese(Set<StatusDescriptorDTO> fieldDescriptors) {
+    Map<String, String[]> vnMap = new HashMap<>();
+    // Ví dụ dịch 1 số trường phổ biến – thêm các trường khác theo nhu cầu
+    vnMap.put("freeHeap", new String[]{"Bộ nhớ Heap trống",
+            "Dung lượng bộ nhớ trống trong heap mà JVM có thể sử dụng."});
+    vnMap.put("usedHeap", new String[]{"Bộ nhớ Heap đã dùng",
+            "Dung lượng bộ nhớ đã được JVM sử dụng."});
+    vnMap.put("heapUtilization", new String[]{"Mức sử dụng Heap",
+            "Tỷ lệ % heap hiện đang được JVM sử dụng."});
+    vnMap.put("freeNonHeap", new String[]{"Bộ nhớ Non-Heap trống",
+            "Dung lượng bộ nhớ non-heap hiện còn trống mà JVM có thể sử dụng."});
+    vnMap.put("usedNonHeap", new String[]{"Bộ nhớ Non-Heap đã dùng",
+            "Dung lượng bộ nhớ non-heap đã được JVM sử dụng."});
+    vnMap.put("openFileHandles", new String[]{"Số lượng File Handle mở",
+            "Số lượng handle tệp đang mở bởi JVM."});
+    vnMap.put("processorLoadAverage", new String[]{"Tải trung bình CPU",
+            "Mức tải trung bình của hệ thống trong phút gần nhất."});
+    vnMap.put("totalThreads", new String[]{"Tổng số luồng",
+            "Tổng số luồng đang hoạt động trong JVM (gồm cả daemon và non-daemon)."});
+    vnMap.put("eventDrivenThreads", new String[]{"Số luồng sự kiện",
+            "Số luồng đang hoạt động trong nhóm luồng điều khiển sự kiện."});
+    vnMap.put("timeDrivenThreads", new String[]{"Số luồng theo thời gian",
+            "Số luồng đang hoạt động trong nhóm luồng theo thời gian."});
+    vnMap.put("flowFileRepositoryFreeSpace", new String[]{"Dung lượng trống kho FlowFile",
+            "Dung lượng còn trống trong kho FlowFile."});
+    vnMap.put("flowFileRepositoryUsedSpace", new String[]{"Dung lượng đã dùng kho FlowFile",
+            "Dung lượng đã sử dụng trong kho FlowFile."});
+    vnMap.put("contentRepositoryFreeSpace", new String[]{"Dung lượng trống kho Nội dung",
+            "Dung lượng còn trống trong kho lưu trữ nội dung."});
+    vnMap.put("contentRepositoryUsedSpace", new String[]{"Dung lượng đã dùng kho Nội dung",
+            "Dung lượng đã sử dụng trong kho lưu trữ nội dung."});
+    vnMap.put("provenanceRepositoryFreeSpace", new String[]{"Dung lượng trống kho Provenance",
+            "Dung lượng còn trống trong kho Provenance."});
+    vnMap.put("provenanceRepositoryUsedSpace", new String[]{"Dung lượng đã dùng kho Provenance",
+            "Dung lượng đã sử dụng trong kho Provenance."});
+    // 👉 Có thể bổ sung tiếp các field khác nếu cần
 
-        final StatusHistoryEntity responseEntity = clientResponse.getClientResponse().readEntity(StatusHistoryEntity.class);
-
-        final Set<StatusDescriptorDTO> fieldDescriptors = new LinkedHashSet<>();
-
-        boolean includeCounters = true;
-        StatusHistoryDTO lastStatusHistory = null;
-        final List<NodeStatusSnapshotsDTO> nodeStatusSnapshots = new ArrayList<>(successfulResponses.size());
-        LinkedHashMap<String, String> noReadPermissionsComponentDetails = null;
-        for (final NodeResponse nodeResponse : successfulResponses) {
-            final StatusHistoryEntity nodeResponseEntity = nodeResponse == clientResponse ? responseEntity : nodeResponse.getClientResponse().readEntity(StatusHistoryEntity.class);
-            final StatusHistoryDTO nodeStatus = nodeResponseEntity.getStatusHistory();
-            lastStatusHistory = nodeStatus;
-            if (noReadPermissionsComponentDetails == null && !nodeResponseEntity.getCanRead()) {
-                // If component details from a history with no read permissions is encountered for the first time, hold on to them to be used in the merged response
-                noReadPermissionsComponentDetails = nodeStatus.getComponentDetails();
-            }
-
-            if (!Boolean.TRUE.equals(nodeResponseEntity.getCanRead())) {
-                includeCounters = false;
-            }
-
-            final NodeIdentifier nodeId = nodeResponse.getNodeId();
-            final NodeStatusSnapshotsDTO nodeStatusSnapshot = new NodeStatusSnapshotsDTO();
-            nodeStatusSnapshot.setNodeId(nodeId.getId());
-            nodeStatusSnapshot.setAddress(nodeId.getApiAddress());
-            nodeStatusSnapshot.setApiPort(nodeId.getApiPort());
-            nodeStatusSnapshot.setStatusSnapshots(nodeStatus.getAggregateSnapshots());
-            nodeStatusSnapshots.add(nodeStatusSnapshot);
-
-            final List<StatusDescriptorDTO> descriptors = nodeStatus.getFieldDescriptors();
-            if (descriptors != null) {
-                fieldDescriptors.addAll(descriptors);
-            }
+    for (StatusDescriptorDTO d : fieldDescriptors) {
+        String[] trans = vnMap.get(d.getField());
+        if (trans != null) {
+            d.setLabel(trans[0]);
+            d.setDescription(trans[1]);
         }
-
-        // If there's a status descriptor that is in the fieldDescriptors, but is not in the standard metric descriptors that we find,
-        // then it is a counter metric and should be included only if all StatusHistoryDTO's include counter metrics. This is done because
-        // we include counters in the status history only if the user is authorized to read the Processor. Since it's possible for the nodes
-        // to disagree about who is authorized (if, for example, the authorizer is asynchronously updated), then if any node indicates that
-        // the user is not authorized, we want to assume that the user is, in fact, not authorized.
-        if (includeCounters) {
-            for (final StatusDescriptorDTO descriptorDto : fieldDescriptors) {
-                final String fieldName = descriptorDto.getField();
-
-                if (!metricDescriptors.containsKey(fieldName)) {
-                    final ValueMapper<ProcessorStatus> valueMapper = s -> {
-                        final Map<String, Long> counters = s.getCounters();
-                        if (counters == null) {
-                            return 0L;
-                        }
-
-                        return counters.getOrDefault(descriptorDto.getField(), 0L);
-                    };
-
-                    final MetricDescriptor<ProcessorStatus> metricDescriptor = new CounterMetricDescriptor<>(descriptorDto.getField(), descriptorDto.getLabel(),
-                        descriptorDto.getDescription(), Formatter.COUNT, valueMapper);
-                    metricDescriptors.put(fieldName, metricDescriptor);
-                }
-            }
-        }
-
-        final StatusHistoryDTO clusterStatusHistory = new StatusHistoryDTO();
-        clusterStatusHistory.setAggregateSnapshots(mergeStatusHistories(nodeStatusSnapshots, metricDescriptors));
-        clusterStatusHistory.setGenerated(new Date());
-        clusterStatusHistory.setNodeSnapshots(nodeStatusSnapshots);
-        if (lastStatusHistory != null) {
-            clusterStatusHistory.setComponentDetails(noReadPermissionsComponentDetails == null ? lastStatusHistory.getComponentDetails() : noReadPermissionsComponentDetails);
-        }
-        clusterStatusHistory.setFieldDescriptors(new ArrayList<>(fieldDescriptors));
-
-        final StatusHistoryEntity clusterEntity = new StatusHistoryEntity();
-        clusterEntity.setStatusHistory(clusterStatusHistory);
-        clusterEntity.setCanRead(noReadPermissionsComponentDetails == null);
-
-        return new NodeResponse(clientResponse, clusterEntity);
     }
+}
+
+    // @Override
+    // public NodeResponse merge(URI uri, String method, Set<NodeResponse> successfulResponses, Set<NodeResponse> problematicResponses, NodeResponse clientResponse) {
+    //     final Map<String, MetricDescriptor<?>> metricDescriptors = getStandardMetricDescriptors(uri);
+
+    //     final StatusHistoryEntity responseEntity = clientResponse.getClientResponse().readEntity(StatusHistoryEntity.class);
+
+    //     final Set<StatusDescriptorDTO> fieldDescriptors = new LinkedHashSet<>();
+
+    //     boolean includeCounters = true;
+    //     StatusHistoryDTO lastStatusHistory = null;
+    //     final List<NodeStatusSnapshotsDTO> nodeStatusSnapshots = new ArrayList<>(successfulResponses.size());
+    //     LinkedHashMap<String, String> noReadPermissionsComponentDetails = null;
+    //     for (final NodeResponse nodeResponse : successfulResponses) {
+    //         final StatusHistoryEntity nodeResponseEntity = nodeResponse == clientResponse ? responseEntity : nodeResponse.getClientResponse().readEntity(StatusHistoryEntity.class);
+    //         final StatusHistoryDTO nodeStatus = nodeResponseEntity.getStatusHistory();
+    //         lastStatusHistory = nodeStatus;
+    //         if (noReadPermissionsComponentDetails == null && !nodeResponseEntity.getCanRead()) {
+    //             // If component details from a history with no read permissions is encountered for the first time, hold on to them to be used in the merged response
+    //             noReadPermissionsComponentDetails = nodeStatus.getComponentDetails();
+    //         }
+
+    //         if (!Boolean.TRUE.equals(nodeResponseEntity.getCanRead())) {
+    //             includeCounters = false;
+    //         }
+
+    //         final NodeIdentifier nodeId = nodeResponse.getNodeId();
+    //         final NodeStatusSnapshotsDTO nodeStatusSnapshot = new NodeStatusSnapshotsDTO();
+    //         nodeStatusSnapshot.setNodeId(nodeId.getId());
+    //         nodeStatusSnapshot.setAddress(nodeId.getApiAddress());
+    //         nodeStatusSnapshot.setApiPort(nodeId.getApiPort());
+    //         nodeStatusSnapshot.setStatusSnapshots(nodeStatus.getAggregateSnapshots());
+    //         nodeStatusSnapshots.add(nodeStatusSnapshot);
+
+    //         final List<StatusDescriptorDTO> descriptors = nodeStatus.getFieldDescriptors();
+    //         if (descriptors != null) {
+    //             fieldDescriptors.addAll(descriptors);
+    //         }
+    //     }
+
+    //     // If there's a status descriptor that is in the fieldDescriptors, but is not in the standard metric descriptors that we find,
+    //     // then it is a counter metric and should be included only if all StatusHistoryDTO's include counter metrics. This is done because
+    //     // we include counters in the status history only if the user is authorized to read the Processor. Since it's possible for the nodes
+    //     // to disagree about who is authorized (if, for example, the authorizer is asynchronously updated), then if any node indicates that
+    //     // the user is not authorized, we want to assume that the user is, in fact, not authorized.
+    //     if (includeCounters) {
+    //         for (final StatusDescriptorDTO descriptorDto : fieldDescriptors) {
+    //             final String fieldName = descriptorDto.getField();
+
+    //             if (!metricDescriptors.containsKey(fieldName)) {
+    //                 final ValueMapper<ProcessorStatus> valueMapper = s -> {
+    //                     final Map<String, Long> counters = s.getCounters();
+    //                     if (counters == null) {
+    //                         return 0L;
+    //                     }
+
+    //                     return counters.getOrDefault(descriptorDto.getField(), 0L);
+    //                 };
+
+    //                 final MetricDescriptor<ProcessorStatus> metricDescriptor = new CounterMetricDescriptor<>(descriptorDto.getField(), descriptorDto.getLabel(),
+    //                     descriptorDto.getDescription(), Formatter.COUNT, valueMapper);
+    //                 metricDescriptors.put(fieldName, metricDescriptor);
+    //             }
+    //         }
+    //     }
+
+    //     final StatusHistoryDTO clusterStatusHistory = new StatusHistoryDTO();
+    //     clusterStatusHistory.setAggregateSnapshots(mergeStatusHistories(nodeStatusSnapshots, metricDescriptors));
+    //     clusterStatusHistory.setGenerated(new Date());
+    //     clusterStatusHistory.setNodeSnapshots(nodeStatusSnapshots);
+    //     if (lastStatusHistory != null) {
+    //         clusterStatusHistory.setComponentDetails(noReadPermissionsComponentDetails == null ? lastStatusHistory.getComponentDetails() : noReadPermissionsComponentDetails);
+    //     }
+    //     clusterStatusHistory.setFieldDescriptors(new ArrayList<>(fieldDescriptors));
+
+    //     final StatusHistoryEntity clusterEntity = new StatusHistoryEntity();
+    //     clusterEntity.setStatusHistory(clusterStatusHistory);
+    //     clusterEntity.setCanRead(noReadPermissionsComponentDetails == null);
+
+    //     return new NodeResponse(clientResponse, clusterEntity);
+    // }
+
+    @Override
+public NodeResponse merge(URI uri, String method, Set<NodeResponse> successfulResponses,
+        Set<NodeResponse> problematicResponses, NodeResponse clientResponse) {
+
+    final Map<String, MetricDescriptor<?>> metricDescriptors = getStandardMetricDescriptors(uri);
+
+    final StatusHistoryEntity responseEntity = clientResponse.getClientResponse().readEntity(StatusHistoryEntity.class);
+
+    final Set<StatusDescriptorDTO> fieldDescriptors = new LinkedHashSet<>();
+
+    boolean includeCounters = true;
+    StatusHistoryDTO lastStatusHistory = null;
+    final List<NodeStatusSnapshotsDTO> nodeStatusSnapshots = new ArrayList<>(successfulResponses.size());
+    LinkedHashMap<String, String> noReadPermissionsComponentDetails = null;
+
+    for (final NodeResponse nodeResponse : successfulResponses) {
+        final StatusHistoryEntity nodeResponseEntity =
+                nodeResponse == clientResponse ? responseEntity : nodeResponse.getClientResponse().readEntity(StatusHistoryEntity.class);
+        final StatusHistoryDTO nodeStatus = nodeResponseEntity.getStatusHistory();
+        lastStatusHistory = nodeStatus;
+        if (noReadPermissionsComponentDetails == null && !nodeResponseEntity.getCanRead()) {
+            noReadPermissionsComponentDetails = nodeStatus.getComponentDetails();
+        }
+
+        if (!Boolean.TRUE.equals(nodeResponseEntity.getCanRead())) {
+            includeCounters = false;
+        }
+
+        final NodeIdentifier nodeId = nodeResponse.getNodeId();
+        final NodeStatusSnapshotsDTO nodeStatusSnapshot = new NodeStatusSnapshotsDTO();
+        nodeStatusSnapshot.setNodeId(nodeId.getId());
+        nodeStatusSnapshot.setAddress(nodeId.getApiAddress());
+        nodeStatusSnapshot.setApiPort(nodeId.getApiPort());
+        nodeStatusSnapshot.setStatusSnapshots(nodeStatus.getAggregateSnapshots());
+        nodeStatusSnapshots.add(nodeStatusSnapshot);
+
+        final List<StatusDescriptorDTO> descriptors = nodeStatus.getFieldDescriptors();
+        if (descriptors != null) {
+            fieldDescriptors.addAll(descriptors);
+        }
+    }
+
+    // ========= 🟢 BẮT ĐẦU CHÈN CODE DỊCH NGAY TẠI ĐÂY =========
+    translateToVietnamese(fieldDescriptors);
+    // ========= 🟢 KẾT THÚC CHÈN CODE DỊCH =========
+
+    final StatusHistoryDTO clusterStatusHistory = new StatusHistoryDTO();
+    clusterStatusHistory.setAggregateSnapshots(mergeStatusHistories(nodeStatusSnapshots, metricDescriptors));
+    clusterStatusHistory.setGenerated(new Date());
+    clusterStatusHistory.setNodeSnapshots(nodeStatusSnapshots);
+    if (lastStatusHistory != null) {
+        clusterStatusHistory.setComponentDetails(noReadPermissionsComponentDetails == null ?
+                lastStatusHistory.getComponentDetails() : noReadPermissionsComponentDetails);
+    }
+
+    // 🟢 Dòng này giữ nguyên, nhưng fieldDescriptors đã được dịch
+    clusterStatusHistory.setFieldDescriptors(new ArrayList<>(fieldDescriptors));
+
+    final StatusHistoryEntity clusterEntity = new StatusHistoryEntity();
+    clusterEntity.setStatusHistory(clusterStatusHistory);
+    clusterEntity.setCanRead(noReadPermissionsComponentDetails == null);
+
+    return new NodeResponse(clientResponse, clusterEntity);
+}
 
     private List<StatusSnapshotDTO> mergeStatusHistories(final List<NodeStatusSnapshotsDTO> nodeStatusSnapshots, final Map<String, MetricDescriptor<?>> metricDescriptors) {
         // We want a Map<Date, List<StatusSnapshot>>, which is a Map of "normalized Date" (i.e., a time range, essentially)

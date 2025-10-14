@@ -45,14 +45,14 @@ import java.util.Map;
 
 
 @Tags({"hashicorp", "vault", "client"})
-@CapabilityDescription("A controller service for interacting with HashiCorp Vault.")
+@CapabilityDescription("Một dịch vụ bộ điều khiển để tương tác với HashiCorp Vault.")
 @SupportsSensitiveDynamicProperties
 @DynamicProperties(
-        @DynamicProperty(name = "A Spring Vault configuration property name",
-                value = "The property value",
-                description = "Allows any Spring Vault property keys to be specified, as described in " +
+        @DynamicProperty(name = "Tên thuộc tính cấu hình Spring Vault",
+                value = "Giá trị thuộc tính",
+                description = "Cho phép bất kỳ khóa thuộc tính Spring Vault nào được chỉ định, như được mô tả trong " +
                         "(https://docs.spring.io/spring-vault/docs/2.3.x/reference/html/#vault.core.environment-vault-configuration). " +
-                        "See Additional Details for more information.",
+                        "Xem Thông tin Bổ sung để biết thêm chi tiết.",
                 expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY
         )
 )

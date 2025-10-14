@@ -1085,7 +1085,7 @@ public class ProcessorResource extends ApplicationResource {
 
         final VerifyConfigRequestDTO requestDto = processorConfigRequest.getRequest();
         final String processorId = requestDto.getComponentId();
-        final List<UpdateStep> updateSteps = Collections.singletonList(new StandardUpdateStep("Verify Processor Configuration"));
+        final List<UpdateStep> updateSteps = Collections.singletonList(new StandardUpdateStep("Xác minh cấu hình bộ xử lý"));
 
         final AsynchronousWebRequest<VerifyConfigRequestEntity, List<ConfigVerificationResultDTO>> request =
             new StandardAsynchronousWebRequest<>(requestId, processorConfigRequest, processorId, user, updateSteps);

@@ -58,7 +58,7 @@ import static java.util.Objects.requireNonNull;
 public abstract class AbstractPort implements Port {
 
     public static final Relationship PORT_RELATIONSHIP = new Relationship.Builder()
-            .description("The relationship through which all Flow Files are transferred")
+            .description("Mối quan hệ thông qua đó tất cả các luồng dữ liệu đều được chuyển")
             .name("")
             .build();
 
@@ -139,11 +139,11 @@ public abstract class AbstractPort implements Port {
         final ProcessGroup parentGroup = this.processGroup.get();
         if (getConnectableType() == ConnectableType.INPUT_PORT) {
             if (parentGroup.getInputPortByName(name) != null) {
-                throw new IllegalStateException("A port with the same name already exists.");
+                throw new IllegalStateException("Một cổng với cùng tên đã tồn tại.");
             }
         } else if (getConnectableType() == ConnectableType.OUTPUT_PORT) {
             if (parentGroup.getOutputPortByName(name) != null) {
-                throw new IllegalStateException("A port with the same name already exists.");
+                throw new IllegalStateException("Một cổng với cùng tên đã tồn tại.");
             }
         }
 
@@ -217,13 +217,13 @@ public abstract class AbstractPort implements Port {
 
                     return;
                 } else {
-                    throw new IllegalArgumentException("Cannot add a connection to a LocalPort for which the LocalPort is neither the Source nor the Destination");
+                    throw new IllegalArgumentException("Không thể thêm một kết nối vào một cổng cục bộ cho biết cổng cục bộ không phải là nguồn hoặc đích");
                 }
             }
 
             for (final Relationship relationship : connection.getRelationships()) {
                 if (!relationship.equals(PORT_RELATIONSHIP)) {
-                    throw new IllegalArgumentException("No relationship with name " + relationship + " exists for Local Ports");
+                    throw new IllegalArgumentException("Không có mối quan hệ nào có tên " + relationship + " tồn tại cho cổng cục bộ");
                 }
             }
 
@@ -269,7 +269,7 @@ public abstract class AbstractPort implements Port {
             writeLock.lock();
             try {
                 if (!outgoingConnections.remove(connection)) {
-                    throw new IllegalStateException("No Connection with ID " + connection.getIdentifier() + " is currently registered with this Port");
+                    throw new IllegalStateException("Conection " + connection.getIdentifier() + " không được đăng ký với cổng này");
                 }
                 outgoingConnections.add(connection);
             } finally {
@@ -279,14 +279,14 @@ public abstract class AbstractPort implements Port {
             writeLock.lock();
             try {
                 if (!incomingConnections.remove(connection)) {
-                    throw new IllegalStateException("No Connection with ID " + connection.getIdentifier() + " is currently registered with this Port");
+                    throw new IllegalStateException("Conection " + connection.getIdentifier() + " không được đăng ký với cổng này");
                 }
                 incomingConnections.add(connection);
             } finally {
                 writeLock.unlock();
             }
         } else {
-            throw new IllegalStateException("The given connection is not currently registered for this Port");
+            throw new IllegalStateException("Conection " + connection.getIdentifier() + " không được đăng ký với cổng này");
         }
     }
 
@@ -363,7 +363,7 @@ public abstract class AbstractPort implements Port {
                 return Collections.unmodifiableSet(outgoingConnections);
             }
 
-            throw new IllegalArgumentException("No relationship with name " + relationship.getName() + " exists for Local Ports");
+            throw new IllegalArgumentException("Không có mối quan hệ nào có tên " + relationship.getName() + " tồn tại cho cổng cục bộ");
         } finally {
             readLock.unlock();
         }
@@ -439,14 +439,14 @@ public abstract class AbstractPort implements Port {
     public void disable() {
         final boolean updated = scheduledState.compareAndSet(ScheduledState.STOPPED, ScheduledState.DISABLED);
         if (!updated) {
-            throw new IllegalStateException("Port cannot be disabled because it is not stopped");
+            throw new IllegalStateException("Port không thể vô hiệu hóa vì nó không dừng lại");
         }
     }
 
     public void enable() {
         final boolean updated = scheduledState.compareAndSet(ScheduledState.DISABLED, ScheduledState.STOPPED);
         if (!updated) {
-            throw new IllegalStateException("Port cannot be enabled because it is not disabled");
+            throw new IllegalStateException("Port không thể kích hoạt vì nó không bị vô hiệu hóa");
         }
     }
 
@@ -559,7 +559,7 @@ public abstract class AbstractPort implements Port {
                     if (connection.getSource().equals(this)) {
                         connection.verifyCanDelete();
                     } else {
-                        throw new IllegalStateException(this.getIdentifier() + " is the destination of another component");
+                        throw new IllegalStateException(this.getIdentifier() + " là đích đến của một thành phần khác");
                     }
                 }
             }
@@ -574,9 +574,9 @@ public abstract class AbstractPort implements Port {
         try {
             switch (scheduledState.get()) {
                 case DISABLED:
-                    throw new IllegalStateException(this.getIdentifier() + " cannot be started because it is disabled");
+                    throw new IllegalStateException(this.getIdentifier() + " không thể khởi động vì nó đã bị vô hiệu hóa");
                 case RUNNING:
-                    throw new IllegalStateException(this.getIdentifier() + " cannot be started because it is already running");
+                    throw new IllegalStateException(this.getIdentifier() + " không thể khởi động vì nó đã chạy");
                 case STOPPED:
                     break;
             }
@@ -584,7 +584,7 @@ public abstract class AbstractPort implements Port {
 
             final Collection<ValidationResult> validationResults = getValidationErrors();
             if (!validationResults.isEmpty()) {
-                throw new IllegalStateException(this.getIdentifier() + " is not in a valid state: " + validationResults.iterator().next().getExplanation());
+                throw new IllegalStateException(this.getIdentifier() + " không ở trạng thái hợp lệ: " + validationResults.iterator().next().getExplanation());
             }
         } finally {
             readLock.unlock();
@@ -594,7 +594,7 @@ public abstract class AbstractPort implements Port {
     @Override
     public void verifyCanStop() {
         if (getScheduledState() != ScheduledState.RUNNING) {
-            throw new IllegalStateException(this.getIdentifier() + " is not scheduled to run");
+            throw new IllegalStateException(this.getIdentifier() + " không được lên lịch chạy");
         }
     }
 
@@ -603,7 +603,7 @@ public abstract class AbstractPort implements Port {
         readLock.lock();
         try {
             if (isRunning()) {
-                throw new IllegalStateException(this.getIdentifier() + " is not stopped");
+                throw new IllegalStateException(this.getIdentifier() + " không dừng lại");
             }
         } finally {
             readLock.unlock();
@@ -615,7 +615,7 @@ public abstract class AbstractPort implements Port {
         readLock.lock();
         try {
             if (getScheduledState() != ScheduledState.DISABLED) {
-                throw new IllegalStateException(this.getIdentifier() + " is not disabled");
+                throw new IllegalStateException(this.getIdentifier() + " không bị vô hiệu hóa");
             }
 
             verifyNoActiveThreads();
@@ -629,7 +629,7 @@ public abstract class AbstractPort implements Port {
         readLock.lock();
         try {
             if (getScheduledState() != ScheduledState.STOPPED) {
-                throw new IllegalStateException(this.getIdentifier() + " is not stopped");
+                throw new IllegalStateException(this.getIdentifier() + " không dừng lại");
             }
             verifyNoActiveThreads();
         } finally {
@@ -640,7 +640,7 @@ public abstract class AbstractPort implements Port {
     private void verifyNoActiveThreads() throws IllegalStateException {
         final int threadCount = processScheduler.getActiveThreadCount(this);
         if (threadCount > 0) {
-            throw new IllegalStateException(this.getIdentifier() + " has " + threadCount + " threads still active");
+            throw new IllegalStateException(this.getIdentifier() + " có " + threadCount + " luồng đang hoạt động");
         }
     }
 
@@ -666,7 +666,7 @@ public abstract class AbstractPort implements Port {
             } else if (versionedComponentId == null) {
                 updated = this.versionedComponentId.compareAndSet(currentId, null);
             } else {
-                throw new IllegalStateException(this + " is already under version control");
+                throw new IllegalStateException(this + " đã được kiểm soát phiên bản");
             }
         }
     }

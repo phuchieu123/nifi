@@ -32,24 +32,25 @@ import org.apache.nifi.security.krb.KerberosUser;
 import java.util.Collections;
 import java.util.List;
 
-@CapabilityDescription("Provides a mechanism for creating a KerberosUser from a principal and ticket cache that other components " +
-        "are able to use in order to perform authentication using Kerberos. By encapsulating this information into a Controller Service " +
-        "and allowing other components to make use of it an administrator is able to choose which users are allowed to use which ticket " +
-        "caches and principals. This provides a more robust security model for multi-tenant use cases.")
+@CapabilityDescription("Cung cấp cơ chế tạo KerberosUser từ principal và ticket cache để các component khác "
+        + "có thể sử dụng cho việc xác thực Kerberos. Bằng cách đóng gói thông tin này vào Controller Service "
+        + "và cho phép các component khác sử dụng, quản trị viên có thể kiểm soát người dùng nào được phép "
+        + "sử dụng ticket cache và principal nào. Điều này cung cấp mô hình bảo mật mạnh mẽ hơn cho môi trường đa tenant.")
 @Tags({"Kerberos", "Ticket", "Cache", "Principal", "Credentials", "Authentication", "Security"})
 @Restricted(restrictions = {
         @Restriction(requiredPermission = RequiredPermission.ACCESS_TICKET_CACHE,
-                explanation = "Allows user to define a ticket cache and principal that can then be used by other components.")
+                explanation = "Cho phép người dùng định nghĩa ticket cache và principal, sau đó có thể được các component khác sử dụng.")
 })
 public class KerberosTicketCacheUserService extends AbstractKerberosUserService implements SelfContainedKerberosUserService {
 
     static final PropertyDescriptor TICKET_CACHE_FILE = new PropertyDescriptor.Builder()
             .name("Kerberos Ticket Cache File")
-            .description("Kerberos ticket cache associated with the principal.")
+            .description("Ticket cache Kerberos liên kết với principal.")
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .required(true)
             .build();
+
 
     private volatile String ticketCacheFile;
 

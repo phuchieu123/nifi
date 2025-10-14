@@ -55,22 +55,21 @@ import static org.apache.nifi.util.db.JdbcProperties.DEFAULT_PRECISION;
 import static org.apache.nifi.util.db.JdbcProperties.DEFAULT_SCALE;
 
 @Tags({"lookup", "cache", "enrich", "join", "rdbms", "database", "reloadable", "key", "value", "record"})
-@CapabilityDescription("A relational-database-based lookup service. When the lookup key is found in the database, "
-        + "the specified columns (or all if Lookup Value Columns are not specified) are returned as a Record. Only one row "
-        + "will be returned for each lookup, duplicate database entries are ignored.")
+@CapabilityDescription("Một dịch vụ tìm kiếm dựa trên cơ sở dữ liệu quan hệ. Khi khóa tìm kiếm được tìm thấy trong cơ sở dữ liệu, "
+        + "các cột được chỉ định (hoặc tất cả nếu Cột Giá trị Tìm kiếm không được chỉ định) sẽ được trả về dưới dạng Bản ghi. Chỉ một hàng "
+        + "sẽ được trả về cho mỗi lần tìm kiếm, các mục nhập cơ sở dữ liệu trùng lặp sẽ bị bỏ qua.")
 public class DatabaseRecordLookupService extends AbstractDatabaseLookupService implements RecordLookupService {
 
     private volatile Cache<Tuple<String, Object>, Record> cache;
 
     static final PropertyDescriptor LOOKUP_VALUE_COLUMNS = new PropertyDescriptor.Builder()
             .name("dbrecord-lookup-value-columns")
-            .displayName("Lookup Value Columns")
-            .description("A comma-delimited list of columns in the table that will be returned when the lookup key matches. Note that this may be case-sensitive depending on the database.")
+            .displayName("Cột Giá trị Tìm kiếm")
+            .description("Một danh sách các cột được phân tách bằng dấu phẩy trong bảng sẽ được trả về khi khóa tìm kiếm khớp. Lưu ý rằng điều này có thể phân biệt chữ hoa chữ thường tùy thuộc vào cơ sở dữ liệu.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .build();
-
     @Override
     protected void init(final ControllerServiceInitializationContext context) {
         final List<PropertyDescriptor> properties = new ArrayList<>();

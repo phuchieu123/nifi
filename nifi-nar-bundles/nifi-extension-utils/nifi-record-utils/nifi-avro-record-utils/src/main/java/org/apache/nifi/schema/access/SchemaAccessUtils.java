@@ -33,86 +33,111 @@ import java.util.List;
 
 public class SchemaAccessUtils {
 
-    public static final AllowableValue SCHEMA_NAME_PROPERTY = new AllowableValue("schema-name", "Use 'Schema Name' Property",
-            "The name of the Schema to use is specified by the 'Schema Name' Property. The value of this property is used to lookup the Schema in the configured Schema Registry service.");
-    public static final AllowableValue SCHEMA_TEXT_PROPERTY = new AllowableValue("schema-text-property", "Use 'Schema Text' Property",
-            "The text of the Schema itself is specified by the 'Schema Text' Property. The value of this property must be a valid Avro Schema. "
-                    + "If Expression Language is used, the value of the 'Schema Text' property must be valid after substituting the expressions.");
-    public static final AllowableValue HWX_CONTENT_ENCODED_SCHEMA = new AllowableValue("hwx-content-encoded-schema", "HWX Content-Encoded Schema Reference",
-            "The content of the FlowFile contains a reference to a schema in the Schema Registry service. The reference is encoded as a single byte indicating the 'protocol version', "
-                    + "followed by 8 bytes indicating the schema identifier, and finally 4 bytes indicating the schema version, as per the Hortonworks Schema Registry serializers and deserializers, "
-                    + "found at https://github.com/hortonworks/registry");
-    public static final AllowableValue HWX_SCHEMA_REF_ATTRIBUTES = new AllowableValue("hwx-schema-ref-attributes", "HWX Schema Reference Attributes",
-            "The FlowFile contains 3 Attributes that will be used to lookup a Schema from the configured Schema Registry: 'schema.identifier', 'schema.version', and 'schema.protocol.version'");
-    public static final AllowableValue INHERIT_RECORD_SCHEMA = new AllowableValue("inherit-record-schema", "Inherit Record Schema",
-        "The schema used to write records will be the same schema that was given to the Record when the Record was created.");
-    public static final AllowableValue CONFLUENT_ENCODED_SCHEMA = new AllowableValue("confluent-encoded", "Confluent Content-Encoded Schema Reference",
-        "The content of the FlowFile contains a reference to a schema in the Schema Registry service. The reference is encoded as a single "
-            + "'Magic Byte' followed by 4 bytes representing the identifier of the schema, as outlined at http://docs.confluent.io/current/schema-registry/docs/serializer-formatter.html. "
-            + "This is based on version 3.2.x of the Confluent Schema Registry.");
-    public static final AllowableValue INFER_SCHEMA = new AllowableValue("infer", "Infer from Result");
+  public static final AllowableValue SCHEMA_NAME_PROPERTY = new AllowableValue(
+        "schema-name", 
+        "Sử dụng thuộc tính 'Schema Name'",
+        "Tên của Schema được chỉ định bởi thuộc tính 'Schema Name'. Giá trị này được dùng để tra cứu Schema trong dịch vụ Schema Registry đã cấu hình."
+);
 
-    public static final PropertyDescriptor SCHEMA_ACCESS_STRATEGY = new PropertyDescriptor.Builder()
-            .name("schema-access-strategy")
-            .displayName("Schema Access Strategy")
-            .description("Specifies how to obtain the schema that is to be used for interpreting the data.")
-            .allowableValues(SCHEMA_NAME_PROPERTY, SCHEMA_TEXT_PROPERTY, HWX_SCHEMA_REF_ATTRIBUTES, HWX_CONTENT_ENCODED_SCHEMA, CONFLUENT_ENCODED_SCHEMA)
-            .defaultValue(SCHEMA_NAME_PROPERTY.getValue())
-            .required(true)
-            .build();
+public static final AllowableValue SCHEMA_TEXT_PROPERTY = new AllowableValue(
+        "schema-text-property", 
+        "Sử dụng thuộc tính 'Schema Text'",
+        "Nội dung của Schema được chỉ định bởi thuộc tính 'Schema Text'. Giá trị này phải là một Avro Schema hợp lệ. "
+        + "Nếu sử dụng Expression Language, giá trị phải hợp lệ sau khi thay thế các biểu thức."
+);
 
-    public static final PropertyDescriptor SCHEMA_REGISTRY = new PropertyDescriptor.Builder()
-            .name("schema-registry")
-            .displayName("Schema Registry")
-            .description("Specifies the Controller Service to use for the Schema Registry")
-            .identifiesControllerService(SchemaRegistry.class)
-            .required(false)
-            .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY, HWX_SCHEMA_REF_ATTRIBUTES, HWX_CONTENT_ENCODED_SCHEMA, CONFLUENT_ENCODED_SCHEMA)
-            .build();
+public static final AllowableValue HWX_CONTENT_ENCODED_SCHEMA = new AllowableValue(
+        "hwx-content-encoded-schema", 
+        "HWX Content-Encoded Schema Reference",
+        "Nội dung của FlowFile chứa tham chiếu đến một schema trong Schema Registry. Tham chiếu được mã hóa bằng một byte duy nhất thể hiện 'phiên bản giao thức', "
+        + "sau đó 8 byte chỉ định ID schema và 4 byte cuối chỉ định phiên bản schema, theo chuẩn serializer/deserializer của Hortonworks Schema Registry, "
+        + "xem chi tiết tại https://github.com/hortonworks/registry"
+);
 
-    public static final PropertyDescriptor SCHEMA_NAME = new PropertyDescriptor.Builder()
-            .name("schema-name")
-            .displayName("Schema Name")
-            .description("Specifies the name of the schema to lookup in the Schema Registry property")
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .defaultValue("${schema.name}")
-            .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY)
-            .required(false)
-            .build();
+public static final AllowableValue HWX_SCHEMA_REF_ATTRIBUTES = new AllowableValue(
+        "hwx-schema-ref-attributes", 
+        "Thuộc tính tham chiếu Schema HWX",
+        "FlowFile chứa 3 thuộc tính dùng để tra cứu Schema từ Schema Registry đã cấu hình: 'schema.identifier', 'schema.version', và 'schema.protocol.version'"
+);
 
-    public static final PropertyDescriptor SCHEMA_BRANCH_NAME = new PropertyDescriptor.Builder()
-            .name("schema-branch")
-            .displayName("Schema Branch")
-            .description("Specifies the name of the branch to use when looking up the schema in the Schema Registry property. " +
-                    "If the chosen Schema Registry does not support branching, this value will be ignored.")
-            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY)
-            .required(false)
-            .build();
+public static final AllowableValue INHERIT_RECORD_SCHEMA = new AllowableValue(
+        "inherit-record-schema", 
+        "Kế thừa Record Schema",
+        "Schema dùng để ghi các record sẽ giống với schema được cung cấp khi Record được tạo."
+);
 
-    public static final PropertyDescriptor SCHEMA_VERSION = new PropertyDescriptor.Builder()
-            .name("schema-version")
-            .displayName("Schema Version")
-            .description("Specifies the version of the schema to lookup in the Schema Registry. " +
-                    "If not specified then the latest version of the schema will be retrieved.")
-            .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY)
-            .required(false)
-            .build();
+public static final AllowableValue CONFLUENT_ENCODED_SCHEMA = new AllowableValue(
+        "confluent-encoded", 
+        "Confluent Content-Encoded Schema Reference",
+        "Nội dung FlowFile chứa tham chiếu đến schema trong Schema Registry. Tham chiếu được mã hóa bằng 'Magic Byte' theo sau là 4 byte đại diện ID schema, "
+        + "theo hướng dẫn tại http://docs.confluent.io/current/schema-registry/docs/serializer-formatter.html (Confluent Schema Registry v3.2.x)."
+);
 
-    public static final PropertyDescriptor SCHEMA_TEXT = new PropertyDescriptor.Builder()
-            .name("schema-text")
-            .displayName("Schema Text")
-            .description("The text of an Avro-formatted Schema")
-            .addValidator(new AvroSchemaValidator())
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .defaultValue("${avro.schema}")
-            .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_TEXT_PROPERTY)
-            .required(false)
-            .build();
+public static final AllowableValue INFER_SCHEMA = new AllowableValue(
+        "infer", 
+        "Suy đoán từ kết quả"
+);
+
+public static final PropertyDescriptor SCHEMA_ACCESS_STRATEGY = new PropertyDescriptor.Builder()
+        .name("schema-access-strategy")
+        .displayName("Chiến lược truy cập Schema")
+        .description("Xác định cách lấy schema để sử dụng khi giải thích dữ liệu.")
+        .allowableValues(SCHEMA_NAME_PROPERTY, SCHEMA_TEXT_PROPERTY, HWX_SCHEMA_REF_ATTRIBUTES, HWX_CONTENT_ENCODED_SCHEMA, CONFLUENT_ENCODED_SCHEMA)
+        .defaultValue(SCHEMA_NAME_PROPERTY.getValue())
+        .required(true)
+        .build();
+
+public static final PropertyDescriptor SCHEMA_REGISTRY = new PropertyDescriptor.Builder()
+        .name("schema-registry")
+        .displayName("Schema Registry")
+        .description("Xác định Controller Service dùng làm Schema Registry")
+        .identifiesControllerService(SchemaRegistry.class)
+        .required(false)
+        .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY, HWX_SCHEMA_REF_ATTRIBUTES, HWX_CONTENT_ENCODED_SCHEMA, CONFLUENT_ENCODED_SCHEMA)
+        .build();
+
+public static final PropertyDescriptor SCHEMA_NAME = new PropertyDescriptor.Builder()
+        .name("schema-name")
+        .displayName("Schema Name")
+        .description("Xác định tên schema để tra cứu trong Schema Registry")
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+        .defaultValue("${schema.name}")
+        .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY)
+        .required(false)
+        .build();
+
+public static final PropertyDescriptor SCHEMA_BRANCH_NAME = new PropertyDescriptor.Builder()
+        .name("schema-branch")
+        .displayName("Chi nhánh Schema")
+        .description("Xác định tên chi nhánh khi tra cứu schema trong Schema Registry. Nếu Schema Registry không hỗ trợ branching, giá trị này sẽ bị bỏ qua.")
+        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+        .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY)
+        .required(false)
+        .build();
+
+public static final PropertyDescriptor SCHEMA_VERSION = new PropertyDescriptor.Builder()
+        .name("schema-version")
+        .displayName("Phiên bản Schema")
+        .description("Xác định phiên bản schema để tra cứu trong Schema Registry. Nếu không xác định, phiên bản mới nhất sẽ được sử dụng.")
+        .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
+        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+        .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_NAME_PROPERTY)
+        .required(false)
+        .build();
+
+public static final PropertyDescriptor SCHEMA_TEXT = new PropertyDescriptor.Builder()
+        .name("schema-text")
+        .displayName("Schema Text")
+        .description("Nội dung Schema theo định dạng Avro")
+        .addValidator(new AvroSchemaValidator())
+        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+        .defaultValue("${avro.schema}")
+        .dependsOn(SCHEMA_ACCESS_STRATEGY, SCHEMA_TEXT_PROPERTY)
+        .required(false)
+        .build();
+
 
     public static Collection<ValidationResult> validateSchemaAccessStrategy(final ValidationContext validationContext, final String schemaAccessStrategyValue,
                                                                             final List<AllowableValue> schemaAccessStrategyValues) {

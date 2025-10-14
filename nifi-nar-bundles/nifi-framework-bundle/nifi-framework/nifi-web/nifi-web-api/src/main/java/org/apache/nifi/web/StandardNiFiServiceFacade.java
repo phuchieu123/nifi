@@ -462,7 +462,7 @@ public class StandardNiFiServiceFacade implements NiFiServiceFacade {
             return;
         }
 
-        throw new InvalidRevisionException(revision + " is not the most up-to-date revision. This component appears to have been modified");
+        throw new InvalidRevisionException(revision + " không phải là bản sửa đổi mới nhất. Thành phần này dường như đã được sửa đổi");
     }
 
     @Override

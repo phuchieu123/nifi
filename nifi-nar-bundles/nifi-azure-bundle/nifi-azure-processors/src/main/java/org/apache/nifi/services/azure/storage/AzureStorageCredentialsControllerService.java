@@ -42,8 +42,8 @@ import org.apache.nifi.processors.azure.storage.utils.AzureStorageUtils;
  * @see AbstractControllerService
  */
 @Tags({ "azure", "microsoft", "cloud", "storage", "blob", "queue", "credentials" })
-@CapabilityDescription("Defines credentials for Azure Storage processors. " +
-        "Uses Account Name with Account Key or Account Name with SAS Token.")
+@CapabilityDescription("Xác định thông tin xác thực cho các bộ xử lý Azure Storage. " +
+"Sử dụng Tên tài khoản cùng với Khóa tài khoản hoặc Tên tài khoản cùng với Mã thông báo SAS.")
 public class AzureStorageCredentialsControllerService extends AbstractControllerService implements AzureStorageCredentialsService {
 
     public static final PropertyDescriptor ACCOUNT_NAME = new PropertyDescriptor.Builder()

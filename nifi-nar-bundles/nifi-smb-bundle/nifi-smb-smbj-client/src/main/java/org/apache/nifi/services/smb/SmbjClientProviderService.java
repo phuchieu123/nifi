@@ -46,59 +46,59 @@ import static org.apache.nifi.smb.common.SmbProperties.USE_ENCRYPTION;
 import static org.apache.nifi.smb.common.SmbUtils.buildSmbClient;
 
 @Tags({"samba, smb, cifs, files"})
-@CapabilityDescription("Provides access to SMB Sessions with shared authentication credentials.")
+@CapabilityDescription("Cung cấp quyền truy cập vào các Phiên SMB có thông tin xác thực được chia sẻ.")
 public class SmbjClientProviderService extends AbstractControllerService implements SmbClientProviderService {
 
     public static final PropertyDescriptor HOSTNAME = new PropertyDescriptor.Builder()
-            .displayName("Hostname")
+            .displayName("Tên máy chủ")
             .name("hostname")
-            .description("The network host of the SMB file server.")
+            .description("Máy chủ mạng của máy chủ tệp SMB.")
             .required(true)
             .addValidator(NON_BLANK_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor DOMAIN = new PropertyDescriptor.Builder()
-            .displayName("Domain")
+            .displayName("Miền")
             .name("domain")
             .description(
-                    "The domain used for authentication. Optional, in most cases username and password is sufficient.")
+                    "Miền được sử dụng để xác thực. Tùy chọn, trong hầu hết các trường hợp tên người dùng và mật khẩu là đủ.")
             .required(false)
             .addValidator(NON_EMPTY_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor USERNAME = new PropertyDescriptor.Builder()
-            .displayName("Username")
+            .displayName("Tên người dùng")
             .name("username")
             .description(
-                    "The username used for authentication.")
+                    "Tên người dùng được sử dụng để xác thực.")
             .required(false)
             .defaultValue("Guest")
             .addValidator(NON_EMPTY_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor PASSWORD = new PropertyDescriptor.Builder()
-            .displayName("Password")
+            .displayName("Mật khẩu")
             .name("password")
-            .description("The password used for authentication.")
+            .description("Mật khẩu được sử dụng để xác thực.")
             .required(false)
             .addValidator(NON_EMPTY_VALIDATOR)
             .sensitive(true)
             .build();
 
     public static final PropertyDescriptor PORT = new PropertyDescriptor.Builder()
-            .displayName("Port")
+            .displayName("Cổng")
             .name("port")
-            .description("Port to use for connection.")
+            .description("Cổng sẽ được sử dụng để kết nối.")
             .required(true)
             .addValidator(PORT_VALIDATOR)
             .defaultValue("445")
             .build();
 
     public static final PropertyDescriptor SHARE = new PropertyDescriptor.Builder()
-            .displayName("Share")
+            .displayName("Chia sẻ")
             .name("share")
-            .description("The network share to which files should be listed from. This is the \"first folder\"" +
-                    "after the hostname: smb://hostname:port/[share]/dir1/dir2")
+            .description("Chia sẻ mạng mà từ đó các tệp sẽ được liệt kê. Đây là \"thư mục đầu tiên\"" +
+                    "sau tên máy chủ: smb://hostname:port/[share]/dir1/dir2")
             .required(true)
             .addValidator(NON_BLANK_VALIDATOR)
             .build();

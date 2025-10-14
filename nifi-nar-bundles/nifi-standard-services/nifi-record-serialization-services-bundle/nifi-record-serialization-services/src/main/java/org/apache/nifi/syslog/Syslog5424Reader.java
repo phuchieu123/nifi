@@ -56,32 +56,31 @@ import java.util.Map;
 import java.util.Set;
 
 @Tags({"syslog 5424", "syslog", "logs", "logfiles", "parse", "text", "record", "reader"})
-@CapabilityDescription("Provides a mechanism for reading RFC 5424 compliant Syslog data, such as log files, and structuring the data" +
-        " so that it can be processed.")
+@CapabilityDescription("Cung cấp một cơ chế để đọc dữ liệu Syslog tuân thủ RFC 5424, chẳng hạn như các tệp nhật ký và cấu trúc dữ liệu" +
+        " để nó có thể được xử lý.")
 public class Syslog5424Reader extends SchemaRegistryService implements RecordReaderFactory {
 
     public static final String RFC_5424_SCHEMA_NAME = "default-5424-schema";
-    static final AllowableValue RFC_5424_SCHEMA = new AllowableValue(RFC_5424_SCHEMA_NAME, "Use RFC 5424 Schema",
-            "The schema will be the default schema per RFC 5424.");
+    static final AllowableValue RFC_5424_SCHEMA = new AllowableValue(RFC_5424_SCHEMA_NAME, "Sử dụng Lược đồ RFC 5424",
+            "Lược đồ sẽ là lược đồ mặc định theo RFC 5424.");
 
     static final String RAW_MESSAGE_NAME = "_raw";
 
     public static final PropertyDescriptor CHARSET = new PropertyDescriptor.Builder()
-            .name("Character Set")
-            .description("Specifies which character set of the Syslog messages")
+            .name("Bộ ký tự")
+            .description("Chỉ định bộ ký tự nào của tin nhắn Syslog")
             .required(true)
             .defaultValue("UTF-8")
             .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
             .build();
     public static final PropertyDescriptor ADD_RAW = new PropertyDescriptor.Builder()
-            .displayName("Raw message")
+            .displayName("Tin nhắn thô")
             .name("syslog-5424-reader-raw-message")
-            .description("If true, the record will have a " + RAW_MESSAGE_NAME + " field containing the raw message")
+            .description("Nếu đúng, bản ghi sẽ có một trường " + RAW_MESSAGE_NAME + " chứa tin nhắn thô")
             .required(true)
             .defaultValue("false")
             .allowableValues("true", "false")
             .build();
-
     private volatile Charset charset;
     private volatile StrictSyslog5424Parser parser;
     private volatile boolean includeRaw;

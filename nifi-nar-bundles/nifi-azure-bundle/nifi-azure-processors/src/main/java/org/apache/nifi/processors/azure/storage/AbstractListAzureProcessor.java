@@ -28,35 +28,36 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.nifi.processor.util.StandardValidators.TIME_PERIOD_VALIDATOR;
 
 public abstract class AbstractListAzureProcessor<T extends ListableEntity> extends AbstractListProcessor<T> {
-    public static final PropertyDescriptor MIN_AGE = new PropertyDescriptor.Builder()
-            .name("Minimum File Age")
-            .description("The minimum age that a file must be in order to be pulled; any file younger than this amount of time (according to last modification date) will be ignored")
-            .required(true)
-            .addValidator(TIME_PERIOD_VALIDATOR)
-            .defaultValue("0 sec")
-            .build();
+public static final PropertyDescriptor MIN_AGE = new PropertyDescriptor.Builder()
+        .name("Minimum File Age")
+        .description("Độ tuổi tối thiểu mà tệp phải đạt để được lấy; bất kỳ tệp nào có thời gian sửa đổi gần hơn mức này sẽ bị bỏ qua.")
+        .required(true)
+        .addValidator(TIME_PERIOD_VALIDATOR)
+        .defaultValue("0 giây")
+        .build();
 
-    public static final PropertyDescriptor MAX_AGE = new PropertyDescriptor.Builder()
-            .name("Maximum File Age")
-            .description("The maximum age that a file must be in order to be pulled; any file older than this amount of time (according to last modification date) will be ignored")
-            .required(false)
-            .addValidator(StandardValidators.createTimePeriodValidator(100, TimeUnit.MILLISECONDS, Long.MAX_VALUE, TimeUnit.NANOSECONDS))
-            .build();
+public static final PropertyDescriptor MAX_AGE = new PropertyDescriptor.Builder()
+        .name("Maximum File Age")
+        .description("Độ tuổi tối đa mà tệp được phép có để được lấy; bất kỳ tệp nào cũ hơn mức này (dựa theo thời gian sửa đổi lần cuối) sẽ bị bỏ qua.")
+        .required(false)
+        .addValidator(StandardValidators.createTimePeriodValidator(100, TimeUnit.MILLISECONDS, Long.MAX_VALUE, TimeUnit.NANOSECONDS))
+        .build();
 
-    public static final PropertyDescriptor MIN_SIZE = new PropertyDescriptor.Builder()
-            .name("Minimum File Size")
-            .description("The minimum size that a file must be in order to be pulled")
-            .required(true)
-            .addValidator(StandardValidators.DATA_SIZE_VALIDATOR)
-            .defaultValue("0 B")
-            .build();
+public static final PropertyDescriptor MIN_SIZE = new PropertyDescriptor.Builder()
+        .name("Minimum File Size")
+        .description("Kích thước tối thiểu mà tệp phải đạt để được lấy.")
+        .required(true)
+        .addValidator(StandardValidators.DATA_SIZE_VALIDATOR)
+        .defaultValue("0 B")
+        .build();
 
-    public static final PropertyDescriptor MAX_SIZE = new PropertyDescriptor.Builder()
-            .name("Maximum File Size")
-            .description("The maximum size that a file can be in order to be pulled")
-            .required(false)
-            .addValidator(StandardValidators.DATA_SIZE_VALIDATOR)
-            .build();
+public static final PropertyDescriptor MAX_SIZE = new PropertyDescriptor.Builder()
+        .name("Maximum File Size")
+        .description("Kích thước tối đa mà tệp được phép có để được lấy.")
+        .required(false)
+        .addValidator(StandardValidators.DATA_SIZE_VALIDATOR)
+        .build();
+
 
     protected boolean isFileInfoMatchesWithAgeAndSize(final ProcessContext context, final long minimumTimestamp, final long lastModified, final long size) {
         final long minSize = context.getProperty(MIN_SIZE).asDataSize(DataUnit.B).longValue();

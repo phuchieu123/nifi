@@ -3913,7 +3913,7 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
             template = templateElement.getValue();
         } catch (JAXBException jaxbe) {
             logger.warn("An error occurred while parsing a template.", jaxbe);
-            String responseXml = String.format("<errorResponse status=\"%s\" statusText=\"The specified template is not in a valid format.\"/>", Response.Status.BAD_REQUEST.getStatusCode());
+            String responseXml = String.format("<errorResponse status=\"%s\" statusText=\"Mẫu được chỉ định không có định dạng hợp lệ.\"/>", Response.Status.BAD_REQUEST.getStatusCode());
             return Response.status(Response.Status.OK).entity(responseXml).type("application/xml").build();
         } catch (IllegalArgumentException iae) {
             logger.warn("Unable to import template.", iae);
@@ -3921,7 +3921,7 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
             return Response.status(Response.Status.OK).entity(responseXml).type("application/xml").build();
         } catch (Exception e) {
             logger.warn("An error occurred while importing a template.", e);
-            String responseXml = String.format("<errorResponse status=\"%s\" statusText=\"Unable to import the specified template: %s\"/>",
+            String responseXml = String.format("<errorResponse status=\"%s\" statusText=\"Không thể nhập mẫu đã chỉ định: %s\"/>",
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), sanitizeErrorResponse(e.getMessage()));
             return Response.status(Response.Status.OK).entity(responseXml).type("application/xml").build();
         }
@@ -4009,7 +4009,7 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
 
         // verify the template was specified
         if (requestTemplateEntity == null || requestTemplateEntity.getTemplate() == null || requestTemplateEntity.getTemplate().getSnippet() == null) {
-            throw new IllegalArgumentException("Template details must be specified.");
+            throw new IllegalArgumentException("Chi tiết mẫu phải được chỉ định.");
         }
 
         if (isReplicateRequest()) {

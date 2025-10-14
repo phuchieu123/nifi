@@ -48,18 +48,23 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Tags({"rules", "rules engine", "action", "action handler", "script", "invoke", "groovy", "python", "jython", "jruby", "ruby", "javascript", "js", "lua", "luaj"})
-@CapabilityDescription("Allows the user to provide a scripted ActionHandler for custom firing of rules depending on the supplied facts. The script must set a variable 'actionHandler' to an "
-        + "implementation of ActionHandler.")
-@DynamicProperty(name = "Script Engine Binding property", value = "Binding property value passed to Script Runner",
+@CapabilityDescription("Cho phép người dùng cung cấp một ActionHandler được viết bằng script để thực thi tùy chỉnh các rule dựa trên các fact được cung cấp. Script phải thiết lập một biến 'actionHandler' " +
+        "thành một triển khai của ActionHandler.")
+@DynamicProperty(
+        name = "Thuộc tính binding của Script Engine", 
+        value = "Giá trị thuộc tính binding được truyền vào Script Runner",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Updates a script engine property specified by the Dynamic Property's key with the value specified by the Dynamic Property's value")
+        description = "Cập nhật một thuộc tính của script engine được chỉ định bởi key của Dynamic Property với giá trị được chỉ định bởi value của Dynamic Property"
+)
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXECUTE_CODE,
-                        explanation = "Provides operator the ability to execute arbitrary code assuming all permissions that NiFi has.")
+                        explanation = "Cho phép người điều hành thực thi mã tùy ý với tất cả quyền mà NiFi có."
+                )
         }
 )
+
 public class ScriptedActionHandler extends AbstractScriptedControllerService implements PropertyContextActionHandler {
 
     protected final AtomicReference<ActionHandler> actionHandler = new AtomicReference<>();

@@ -85,22 +85,22 @@ import static org.apache.nifi.expression.ExpressionLanguageScope.VARIABLE_REGIST
 @RequiresInstanceClassLoading // Because of calls to UserGroupInformation.setConfiguration
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"put", "database", "NoSQL", "kudu", "HDFS", "record"})
-@CapabilityDescription("Reads records from an incoming FlowFile using the provided Record Reader, and writes those records " +
-        "to the specified Kudu's table. The schema for the Kudu table is inferred from the schema of the Record Reader." +
-        " If any error occurs while reading records from the input, or writing records to Kudu, the FlowFile will be routed to failure")
-@WritesAttribute(attribute = "record.count", description = "Number of records written to Kudu")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Đọc các bản ghi từ FlowFile đến sử dụng Record Reader được cung cấp, và ghi các bản ghi đó "
+        + "vào bảng Kudu được chỉ định. Sơ đồ cho bảng Kudu được suy ra từ sơ đồ của Record Reader. "
+        + "Nếu có lỗi xảy ra trong quá trình đọc bản ghi từ đầu vào hoặc ghi bản ghi vào Kudu, FlowFile sẽ được chuyển đến failure.")
+@WritesAttribute(attribute = "record.count", description = "Số lượng bản ghi đã ghi vào Kudu")
+@DeprecationNotice(reason = "Component này đã bị đánh dấu ngừng sử dụng và sẽ bị loại bỏ trong NiFi 2.x.")
 public class PutKudu extends AbstractKuduProcessor {
 
-    static final AllowableValue FAILURE_STRATEGY_ROUTE = new AllowableValue("route-to-failure", "Route to Failure",
-        "The FlowFile containing the Records that failed to insert will be routed to the 'failure' relationship");
+    static final AllowableValue FAILURE_STRATEGY_ROUTE = new AllowableValue("route-to-failure", "Chuyển tới Failure",
+        "FlowFile chứa các bản ghi không thể chèn sẽ được chuyển đến quan hệ 'failure'");
     static final AllowableValue FAILURE_STRATEGY_ROLLBACK = new AllowableValue("rollback", "Rollback Session",
-        "If any Record cannot be inserted, all FlowFiles in the session will be rolled back to their input queue. This means that if data cannot be pushed, " +
-            "it will block any subsequent data from be pushed to Kudu as well until the issue is resolved. However, this may be advantageous if a strict ordering is required.");
+        "Nếu bất kỳ bản ghi nào không thể chèn, tất cả FlowFile trong session sẽ được rollback về hàng đợi đầu vào. "
+        + "Điều này sẽ chặn dữ liệu tiếp theo được gửi đến Kudu cho đến khi vấn đề được giải quyết, nhưng hữu ích nếu cần thứ tự nghiêm ngặt.");
 
     protected static final PropertyDescriptor TABLE_NAME = new Builder()
         .name("Table Name")
-        .description("The name of the Kudu Table to put data into")
+        .description("Tên bảng Kudu để ghi dữ liệu")
         .required(true)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
@@ -109,7 +109,7 @@ public class PutKudu extends AbstractKuduProcessor {
     public static final PropertyDescriptor RECORD_READER = new Builder()
         .name("record-reader")
         .displayName("Record Reader")
-        .description("The service for reading records from incoming flow files.")
+        .description("Dịch vụ dùng để đọc bản ghi từ FlowFile đến.")
         .identifiesControllerService(RecordReaderFactory.class)
         .required(true)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -117,8 +117,8 @@ public class PutKudu extends AbstractKuduProcessor {
 
     static final PropertyDescriptor FAILURE_STRATEGY = new Builder()
         .name("Failure Strategy")
-        .displayName("Failure Strategy")
-        .description("If one or more Records in a batch cannot be transferred to Kudu, specifies how to handle the failure")
+        .displayName("Chiến lược xử lý lỗi")
+        .description("Nếu một hoặc nhiều bản ghi trong batch không thể gửi đến Kudu, chỉ định cách xử lý lỗi")
         .required(true)
         .allowableValues(FAILURE_STRATEGY_ROUTE, FAILURE_STRATEGY_ROLLBACK)
         .defaultValue(FAILURE_STRATEGY_ROUTE.getValue())
@@ -126,8 +126,8 @@ public class PutKudu extends AbstractKuduProcessor {
 
     protected static final PropertyDescriptor SKIP_HEAD_LINE = new Builder()
         .name("Skip head line")
-        .description("Deprecated. Used to ignore header lines, but this should be handled by a RecordReader " +
-            "(e.g. \"Treat First Line as Header\" property of CSVReader)")
+        .description("Đã deprecated. Dùng để bỏ qua dòng header, nhưng nên xử lý bằng RecordReader "
+            + "(ví dụ: thuộc tính \"Treat First Line as Header\" của CSVReader)")
         .allowableValues("true", "false")
         .defaultValue("false")
         .required(true)
@@ -135,29 +135,30 @@ public class PutKudu extends AbstractKuduProcessor {
         .build();
 
     protected static final PropertyDescriptor LOWERCASE_FIELD_NAMES = new Builder()
-            .name("Lowercase Field Names")
-            .description("Convert column names to lowercase when finding index of Kudu table columns")
-            .defaultValue("false")
-            .required(true)
-            .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
-            .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
-            .build();
+        .name("Lowercase Field Names")
+        .description("Chuyển tên cột thành chữ thường khi xác định chỉ số cột Kudu")
+        .defaultValue("false")
+        .required(true)
+        .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
+        .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
+        .build();
 
     protected static final PropertyDescriptor HANDLE_SCHEMA_DRIFT = new Builder()
-            .name("Handle Schema Drift")
-            .description("If set to true, when fields with names that are not in the target Kudu table " +
-                    "are encountered, the Kudu table will be altered to include new columns for those fields.")
-            .defaultValue("false")
-            .required(true)
-            .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
-            .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
-            .build();
+        .name("Handle Schema Drift")
+        .description("Nếu đặt true, khi gặp các trường không có trong bảng Kudu đích, bảng Kudu sẽ được sửa đổi "
+            + "để thêm các cột mới cho những trường này.")
+        .defaultValue("false")
+        .required(true)
+        .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
+        .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
+        .build();
 
     static final PropertyDescriptor DATA_RECORD_PATH = new Builder()
         .name("Data RecordPath")
         .displayName("Data RecordPath")
-        .description("If specified, this property denotes a RecordPath that will be evaluated against each incoming Record and the Record that results from evaluating the RecordPath will be sent to" +
-            " Kudu instead of sending the entire incoming Record. If not specified, the entire incoming Record will be published to Kudu.")
+        .description("Nếu được chỉ định, thuộc tính này biểu thị RecordPath đánh giá từng Record đến. "
+            + "Record kết quả từ RecordPath sẽ được gửi đến Kudu thay vì gửi toàn bộ Record. "
+            + "Nếu không chỉ định, toàn bộ Record sẽ được gửi.")
         .required(false)
         .addValidator(new RecordPathValidator())
         .expressionLanguageSupported(NONE)
@@ -166,9 +167,9 @@ public class PutKudu extends AbstractKuduProcessor {
     static final PropertyDescriptor OPERATION_RECORD_PATH = new Builder()
         .name("Operation RecordPath")
         .displayName("Operation RecordPath")
-        .description("If specified, this property denotes a RecordPath that will be evaluated against each incoming Record in order to determine the Kudu Operation Type. When evaluated, the " +
-            "RecordPath must evaluate to one of the valid Kudu Operation Types (Debezium style operation types are also supported: \"r\" and \"c\" for INSERT, \"u\" for UPDATE, and \"d\" for "
-            + "DELETE), or the incoming FlowFile will be routed to failure. If this property is specified, the <Kudu Operation Type> property will be ignored.")
+        .description("Nếu chỉ định, thuộc tính này biểu thị RecordPath đánh giá từng Record để xác định loại thao tác Kudu. "
+            + "RecordPath phải trả về một trong các loại thao tác Kudu hợp lệ (hỗ trợ kiểu Debezium: \"r\", \"c\" cho INSERT, \"u\" cho UPDATE, và \"d\" cho DELETE), "
+            + "nếu không FlowFile sẽ được chuyển tới failure. Nếu chỉ định, thuộc tính <Kudu Operation Type> sẽ bị bỏ qua.")
         .required(false)
         .addValidator(new RecordPathValidator())
         .expressionLanguageSupported(NONE)
@@ -191,7 +192,7 @@ public class PutKudu extends AbstractKuduProcessor {
             }
 
             final String explanation = valid ? null :
-                    "Value must be one of: " +
+                    "Giá trị phải là một trong: " +
                     Arrays.stream(OperationType.values()).map(Enum::toString).collect(Collectors.joining(", "));
             return new ValidationResult.Builder().subject(subject).input(value).valid(valid)
                     .explanation(explanation).build();
@@ -201,10 +202,10 @@ public class PutKudu extends AbstractKuduProcessor {
     protected static final PropertyDescriptor INSERT_OPERATION = new Builder()
         .name("Insert Operation")
         .displayName("Kudu Operation Type")
-        .description("Specify operationType for this processor.\n" +
-                "Valid values are: " +
-                Arrays.stream(OperationType.values()).map(Enum::toString).collect(Collectors.joining(", ")) +
-                ". This Property will be ignored if the <Operation RecordPath> property is set.")
+        .description("Chỉ định loại thao tác cho processor này. "
+            + "Các giá trị hợp lệ: " +
+            Arrays.stream(OperationType.values()).map(Enum::toString).collect(Collectors.joining(", ")) +
+            ". Thuộc tính này sẽ bị bỏ qua nếu <Operation RecordPath> được thiết lập.")
         .defaultValue(OperationType.INSERT.toString())
         .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
         .addValidator(OperationTypeValidator)
@@ -212,11 +213,10 @@ public class PutKudu extends AbstractKuduProcessor {
 
     protected static final PropertyDescriptor FLUSH_MODE = new Builder()
         .name("Flush Mode")
-        .description("Set the new flush mode for a kudu session.\n" +
-            "AUTO_FLUSH_SYNC: the call returns when the operation is persisted, else it throws an exception.\n" +
-            "AUTO_FLUSH_BACKGROUND: the call returns when the operation has been added to the buffer. This call should normally perform only fast in-memory" +
-            " operations but it may have to wait when the buffer is full and there's another buffer being flushed.\n" +
-            "MANUAL_FLUSH: the call returns when the operation has been added to the buffer, else it throws a KuduException if the buffer is full.")
+        .description("Thiết lập flush mode cho session Kudu.\n"
+            + "AUTO_FLUSH_SYNC: gọi hàm chỉ trả về khi thao tác được lưu, nếu không ném ngoại lệ.\n"
+            + "AUTO_FLUSH_BACKGROUND: gọi hàm trả về khi thao tác được thêm vào bộ đệm. Có thể chờ khi bộ đệm đầy.\n"
+            + "MANUAL_FLUSH: gọi hàm trả về khi thao tác được thêm vào bộ đệm, ném KuduException nếu đầy.")
         .allowableValues(SessionConfiguration.FlushMode.values())
         .defaultValue(SessionConfiguration.FlushMode.AUTO_FLUSH_BACKGROUND.toString())
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -225,10 +225,9 @@ public class PutKudu extends AbstractKuduProcessor {
 
     protected static final PropertyDescriptor FLOWFILE_BATCH_SIZE = new Builder()
         .name("FlowFiles per Batch")
-        .description("The maximum number of FlowFiles to process in a single execution, between 1 - 100000. " +
-            "Depending on your memory size, and data size per row set an appropriate batch size " +
-            "for the number of FlowFiles to process per client connection setup." +
-            "Gradually increase this number, only if your FlowFiles typically contain a few records.")
+        .description("Số FlowFile tối đa xử lý trong một lần thực thi, từ 1 - 100000. "
+            + "Điều chỉnh dựa vào bộ nhớ và kích thước dữ liệu để tối ưu batch per client connection. "
+            + "Tăng dần số lượng nếu FlowFile thường chứa ít bản ghi.")
         .defaultValue("1")
         .required(true)
         .addValidator(StandardValidators.createLongValidator(1, 100000, true))
@@ -238,9 +237,8 @@ public class PutKudu extends AbstractKuduProcessor {
     protected static final PropertyDescriptor BATCH_SIZE = new Builder()
         .name("Batch Size")
         .displayName("Max Records per Batch")
-        .description("The maximum number of Records to process in a single Kudu-client batch, between 1 - 100000. " +
-            "Depending on your memory size, and data size per row set an appropriate batch size. " +
-            "Gradually increase this number to find out the best one for best performances.")
+        .description("Số bản ghi tối đa xử lý trong một batch Kudu, từ 1 - 100000. "
+            + "Điều chỉnh dựa vào bộ nhớ và kích thước dữ liệu để tối ưu hiệu năng.")
         .defaultValue("100")
         .required(true)
         .addValidator(StandardValidators.createLongValidator(1, 100000, true))
@@ -249,7 +247,7 @@ public class PutKudu extends AbstractKuduProcessor {
 
     protected static final PropertyDescriptor IGNORE_NULL = new Builder()
         .name("Ignore NULL")
-        .description("Ignore NULL on Kudu Put Operation, Update only non-Null columns if set true")
+        .description("Bỏ qua NULL trong thao tác Put Kudu, chỉ cập nhật các cột không NULL nếu đặt true")
         .defaultValue("false")
         .required(true)
         .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
@@ -258,11 +256,11 @@ public class PutKudu extends AbstractKuduProcessor {
 
     protected static final Relationship REL_SUCCESS = new Relationship.Builder()
         .name("success")
-        .description("A FlowFile is routed to this relationship after it has been successfully stored in Kudu")
+        .description("FlowFile được chuyển đến nếu đã lưu thành công vào Kudu")
         .build();
     protected static final Relationship REL_FAILURE = new Relationship.Builder()
         .name("failure")
-        .description("A FlowFile is routed to this relationship if it cannot be sent to Kudu")
+        .description("FlowFile được chuyển đến nếu không thể gửi đến Kudu")
         .build();
 
     public static final String RECORD_COUNT_ATTR = "record.count";

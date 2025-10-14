@@ -26,8 +26,8 @@ import org.apache.nifi.controller.ControllerService;
 public interface BoxClientService extends ControllerService {
     PropertyDescriptor BOX_CLIENT_SERVICE = new PropertyDescriptor.Builder()
         .name("box-client-service")
-        .displayName("Box Client Service")
-        .description("Controller Service used to obtain a Box API connection.")
+        .displayName("Dịch vụ Box Client")
+        .description("Controller Service được sử dụng để lấy kết nối Box API.")
         .identifiesControllerService(BoxClientService.class)
         .required(true)
         .build();

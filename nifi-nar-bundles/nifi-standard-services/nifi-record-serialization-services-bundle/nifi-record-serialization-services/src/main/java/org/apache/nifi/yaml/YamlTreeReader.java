@@ -35,14 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Tags({"yaml", "tree", "record", "reader", "parser"})
-@CapabilityDescription("Parses YAML into individual Record objects. While the reader expects each record "
-        + "to be well-formed YAML, the content of a FlowFile may consist of many records, each as a well-formed "
-        + "YAML array or YAML object. "
-        + "If an array is encountered, each element in that array will be treated as a separate record. "
-        + "If the schema that is configured contains a field that is not present in the YAML, a null value will be used. If the YAML contains "
-        + "a field that is not present in the schema, that field will be skipped. "
-        + "Please note this controller service does not support resolving the use of YAML aliases. Any alias present will be treated as a string. "
-        + "See the Usage of the Controller Service for more information and examples.")
+@CapabilityDescription("Phân tích YAML thành các đối tượng Record riêng lẻ. Trong khi reader yêu cầu mỗi record phải là YAML hợp lệ, "
+        + "nội dung của một FlowFile có thể gồm nhiều record, mỗi record là một mảng hoặc đối tượng YAML hợp lệ. "
+        + "Nếu gặp một mảng, mỗi phần tử trong mảng sẽ được coi là một record riêng. "
+        + "Nếu schema được cấu hình chứa một trường không có trong YAML, giá trị null sẽ được sử dụng. Nếu YAML chứa "
+        + "một trường không có trong schema, trường đó sẽ bị bỏ qua. "
+        + "Xin lưu ý, controller service này không hỗ trợ giải quyết các alias trong YAML. Bất kỳ alias nào xuất hiện sẽ được xử lý như một chuỗi. "
+        + "Xem phần Hướng dẫn sử dụng Controller Service để biết thêm thông tin và ví dụ.")
+
 public class YamlTreeReader extends JsonTreeReader {
 
     private static final boolean ALLOW_COMMENTS_DISABLED = false;

@@ -46,14 +46,13 @@ import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.proxy.ProxyConfiguration;
 import org.apache.nifi.proxy.ProxySpec;
 
-
-@CapabilityDescription("Provides Box client objects through which Box API calls can be used.")
+@CapabilityDescription("Cung cấp các đối tượng Box client thông qua đó các cuộc gọi Box API có thể được sử dụng.")
 @Tags({"box", "client", "provider"})
 public class JsonConfigBasedBoxClientService extends AbstractControllerService implements BoxClientService {
     public static final PropertyDescriptor ACCOUNT_ID = new PropertyDescriptor.Builder()
         .name("box-account-id")
-        .displayName("Account ID")
-        .description("The ID of the Box account who owns the accessed resource. Same as 'User Id' under 'App Info' in the App 'General Settings'.")
+        .displayName("ID Tài khoản")
+        .description("ID của tài khoản Box sở hữu tài nguyên được truy cập. Tương tự như 'User Id' trong 'App Info' ở phần 'General Settings' của App.")
         .required(true)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -61,8 +60,8 @@ public class JsonConfigBasedBoxClientService extends AbstractControllerService i
 
     public static final PropertyDescriptor APP_CONFIG_FILE = new PropertyDescriptor.Builder()
         .name("app-config-file")
-        .displayName("App Config File")
-        .description("Full path of an App config JSON file. See Additional Details for more information.")
+        .displayName("Tệp cấu hình App")
+        .description("Đường dẫn đầy đủ tới tệp cấu hình App JSON. Xem phần Chi tiết bổ sung để biết thêm thông tin.")
         .required(false)
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -70,8 +69,8 @@ public class JsonConfigBasedBoxClientService extends AbstractControllerService i
 
     public static final PropertyDescriptor APP_CONFIG_JSON = new PropertyDescriptor.Builder()
         .name("app-config-json")
-        .displayName("App Config JSON")
-        .description("The raw JSON containing an App config. See Additional Details for more information.")
+        .displayName("JSON Cấu hình App")
+        .description("Chuỗi JSON thô chứa cấu hình App. Xem phần Chi tiết bổ sung để biết thêm thông tin.")
         .required(false)
         .sensitive(true)
         .addValidator(JsonValidator.INSTANCE)

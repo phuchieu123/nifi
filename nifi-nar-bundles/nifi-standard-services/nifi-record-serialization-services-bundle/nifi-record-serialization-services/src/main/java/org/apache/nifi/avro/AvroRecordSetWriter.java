@@ -56,7 +56,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Tags({"avro", "result", "set", "writer", "serializer", "record", "recordset", "row"})
-@CapabilityDescription("Writes the contents of a RecordSet in Binary Avro format.")
+@CapabilityDescription("Ghi nội dung của RecordSet ở định dạng Avro nhị phân.")
 public class AvroRecordSetWriter extends SchemaRegistryRecordSetWriter implements RecordSetWriterFactory {
     private static final Set<SchemaField> requiredSchemaFields = EnumSet.of(SchemaField.SCHEMA_TEXT, SchemaField.SCHEMA_TEXT_FORMAT);
 
@@ -67,40 +67,39 @@ public class AvroRecordSetWriter extends SchemaRegistryRecordSetWriter implement
         SNAPPY,
         LZO
     }
+private static final PropertyDescriptor COMPRESSION_FORMAT = new Builder()
+    .name("compression-format")
+    .displayName("Định dạng nén")
+    .description("Loại nén được sử dụng khi ghi tệp Avro. Mặc định là Không nén (None).")
+    .allowableValues(CodecType.values())
+    .defaultValue(CodecType.NONE.toString())
+    .required(true)
+    .build();
 
-    private static final PropertyDescriptor COMPRESSION_FORMAT = new Builder()
-        .name("compression-format")
-        .displayName("Compression Format")
-        .description("Compression type to use when writing Avro files. Default is None.")
-        .allowableValues(CodecType.values())
-        .defaultValue(CodecType.NONE.toString())
-        .required(true)
-        .build();
+static final PropertyDescriptor ENCODER_POOL_SIZE = new Builder()
+    .name("encoder-pool-size")
+    .displayName("Kích thước nhóm Encoder")
+    .description("Avro Writer yêu cầu sử dụng Encoder. Việc tạo mới Encoder tốn tài nguyên, nhưng sau khi được tạo, chúng có thể được tái sử dụng. "
+        + "Thuộc tính này kiểm soát số lượng Encoder tối đa có thể được lưu trữ và tái sử dụng. "
+        + "Thiết lập giá trị quá nhỏ có thể làm giảm hiệu năng, trong khi giá trị quá lớn có thể làm tăng mức sử dụng bộ nhớ heap. "
+        + "Thuộc tính này sẽ bị bỏ qua nếu Avro Writer được cấu hình với chiến lược ghi Schema là 'Nhúng Schema Avro (Embed Avro Schema)'.")
+    .required(true)
+    .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
+    .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
+    .defaultValue("32")
+    .build();
 
-    static final PropertyDescriptor ENCODER_POOL_SIZE = new Builder()
-        .name("encoder-pool-size")
-        .displayName("Encoder Pool Size")
-        .description("Avro Writers require the use of an Encoder. Creation of Encoders is expensive, but once created, they can be reused. This property controls the maximum number of Encoders that" +
-            " can be pooled and reused. Setting this value too small can result in degraded performance, but setting it higher can result in more heap being used. This property is ignored if the" +
-            " Avro Writer is configured with a Schema Write Strategy of 'Embed Avro Schema'.")
-        .required(true)
-        .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
-        .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-        .defaultValue("32")
-        .build();
+static final AllowableValue AVRO_EMBEDDED = new AllowableValue("avro-embedded", "Nhúng Schema Avro",
+    "FlowFile sẽ có Schema Avro được nhúng trực tiếp trong nội dung, như cách sử dụng thông thường của Avro.");
 
-    static final AllowableValue AVRO_EMBEDDED = new AllowableValue("avro-embedded", "Embed Avro Schema",
-        "The FlowFile will have the Avro schema embedded into the content, as is typical with Avro");
-
-    static final PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()
-        .name("cache-size")
-        .displayName("Cache Size")
-        .description("Specifies how many Schemas should be cached")
-        .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
-        .defaultValue("1000")
-        .required(true)
-        .build();
-
+static final PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()
+    .name("cache-size")
+    .displayName("Kích thước bộ nhớ đệm")
+    .description("Xác định số lượng Schema sẽ được lưu trữ trong bộ nhớ đệm.")
+    .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
+    .defaultValue("1000")
+    .required(true)
+    .build();
     private LoadingCache<String, Schema> compiledAvroSchemaCache;
     private volatile BlockingQueue<BinaryEncoder> encoderPool;
 

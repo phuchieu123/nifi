@@ -42,29 +42,29 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"xml", "resultset", "writer", "serialize", "record", "recordset", "row"})
-@CapabilityDescription("Writes a RecordSet to XML. The records are wrapped by a root tag.")
+@CapabilityDescription("Ghi một RecordSet sang XML. Các bản ghi được bao bọc bởi một thẻ gốc.")
 public class XMLRecordSetWriter extends DateTimeTextRecordSetWriter implements RecordSetWriterFactory {
 
-    public static final AllowableValue ALWAYS_SUPPRESS = new AllowableValue("always-suppress", "Always Suppress",
-            "Fields that are missing (present in the schema but not in the record), or that have a value of null, will not be written out");
-    public static final AllowableValue NEVER_SUPPRESS = new AllowableValue("never-suppress", "Never Suppress",
-            "Fields that are missing (present in the schema but not in the record), or that have a value of null, will be written out as a null value");
-    public static final AllowableValue SUPPRESS_MISSING = new AllowableValue("suppress-missing", "Suppress Missing Values",
-            "When a field has a value of null, it will be written out. However, if a field is defined in the schema and not present in the record, the field will not be written out.");
+    public static final AllowableValue ALWAYS_SUPPRESS = new AllowableValue("always-suppress", "Luôn ẩn",
+            "Các trường bị thiếu (có trong lược đồ nhưng không có trong bản ghi), hoặc có giá trị null, sẽ không được ghi ra");
+    public static final AllowableValue NEVER_SUPPRESS = new AllowableValue("never-suppress", "Không bao giờ ẩn",
+            "Các trường bị thiếu (có trong lược đồ nhưng không có trong bản ghi), hoặc có giá trị null, sẽ được ghi ra dưới dạng giá trị null");
+    public static final AllowableValue SUPPRESS_MISSING = new AllowableValue("suppress-missing", "Ẩn các giá trị bị thiếu",
+            "Khi một trường có giá trị null, nó sẽ được ghi ra. Tuy nhiên, nếu một trường được định nghĩa trong lược đồ và không có trong bản ghi, trường đó sẽ không được ghi ra.");
 
-    public static final AllowableValue USE_PROPERTY_AS_WRAPPER = new AllowableValue("use-property-as-wrapper", "Use Property as Wrapper",
-            "The value of the property \"Array Tag Name\" will be used as the tag name to wrap elements of an array. The field name of the array field will be used for the tag name " +
-                    "of the elements.");
-    public static final AllowableValue USE_PROPERTY_FOR_ELEMENTS = new AllowableValue("use-property-for-elements", "Use Property for Elements",
-            "The value of the property \"Array Tag Name\" will be used for the tag name of the elements of an array. The field name of the array field will be used as the tag name " +
-                    "to wrap elements.");
-    public static final AllowableValue NO_WRAPPING = new AllowableValue("no-wrapping", "No Wrapping",
-            "The elements of an array will not be wrapped");
+    public static final AllowableValue USE_PROPERTY_AS_WRAPPER = new AllowableValue("use-property-as-wrapper", "Sử dụng thuộc tính làm trình bao bọc",
+            "Giá trị của thuộc tính \"Tên thẻ mảng\" sẽ được sử dụng làm tên thẻ để bao bọc các phần tử của một mảng. Tên trường của trường mảng sẽ được sử dụng cho tên thẻ " +
+                    "của các phần tử.");
+    public static final AllowableValue USE_PROPERTY_FOR_ELEMENTS = new AllowableValue("use-property-for-elements", "Sử dụng thuộc tính cho các phần tử",
+            "Giá trị của thuộc tính \"Tên thẻ mảng\" sẽ được sử dụng cho tên thẻ của các phần tử của một mảng. Tên trường của trường mảng sẽ được sử dụng làm tên thẻ " +
+                    "để bao bọc các phần tử.");
+    public static final AllowableValue NO_WRAPPING = new AllowableValue("no-wrapping", "Không bao bọc",
+            "Các phần tử của một mảng sẽ không được bao bọc");
 
     public static final PropertyDescriptor SUPPRESS_NULLS = new PropertyDescriptor.Builder()
             .name("suppress_nulls")
-            .displayName("Suppress Null Values")
-            .description("Specifies how the writer should handle a null field")
+            .displayName("Ẩn các giá trị Null")
+            .description("Chỉ định cách trình ghi xử lý một trường null")
             .allowableValues(NEVER_SUPPRESS, ALWAYS_SUPPRESS, SUPPRESS_MISSING)
             .defaultValue(NEVER_SUPPRESS.getValue())
             .required(true)
@@ -72,8 +72,8 @@ public class XMLRecordSetWriter extends DateTimeTextRecordSetWriter implements R
 
     public static final PropertyDescriptor PRETTY_PRINT_XML = new PropertyDescriptor.Builder()
             .name("pretty_print_xml")
-            .displayName("Pretty Print XML")
-            .description("Specifies whether or not the XML should be pretty printed")
+            .displayName("In đẹp XML")
+            .description("Chỉ định liệu XML có nên được in đẹp hay không")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
             .defaultValue("false")
@@ -82,8 +82,8 @@ public class XMLRecordSetWriter extends DateTimeTextRecordSetWriter implements R
 
     public static final PropertyDescriptor OMIT_XML_DECLARATION = new PropertyDescriptor.Builder()
             .name("omit_xml_declaration")
-            .displayName("Omit XML Declaration")
-            .description("Specifies whether or not to include XML declaration")
+            .displayName("Bỏ qua khai báo XML")
+            .description("Chỉ định có bao gồm khai báo XML hay không")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
             .defaultValue("false")
@@ -92,9 +92,9 @@ public class XMLRecordSetWriter extends DateTimeTextRecordSetWriter implements R
 
     public static final PropertyDescriptor ROOT_TAG_NAME = new PropertyDescriptor.Builder()
             .name("root_tag_name")
-            .displayName("Name of Root Tag")
-            .description("Specifies the name of the XML root tag wrapping the record set. This property has to be defined if " +
-                    "the writer is supposed to write multiple records in a single FlowFile.")
+            .displayName("Tên của thẻ gốc")
+            .description("Chỉ định tên của thẻ gốc XML bao bọc tập hợp bản ghi. Thuộc tính này phải được xác định nếu " +
+                    "trình ghi được cho là sẽ ghi nhiều bản ghi trong một FlowFile duy nhất.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .required(false)
@@ -102,9 +102,9 @@ public class XMLRecordSetWriter extends DateTimeTextRecordSetWriter implements R
 
     public static final PropertyDescriptor RECORD_TAG_NAME = new PropertyDescriptor.Builder()
             .name("record_tag_name")
-            .displayName("Name of Record Tag")
-            .description("Specifies the name of the XML record tag wrapping the record fields. If this is not set, the writer " +
-                    "will use the record name in the schema.")
+            .displayName("Tên của thẻ bản ghi")
+            .description("Chỉ định tên của thẻ bản ghi XML bao bọc các trường bản ghi. Nếu điều này không được đặt, trình ghi " +
+                    "sẽ sử dụng tên bản ghi trong lược đồ.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .required(false)
@@ -112,8 +112,8 @@ public class XMLRecordSetWriter extends DateTimeTextRecordSetWriter implements R
 
     public static final PropertyDescriptor ARRAY_WRAPPING = new PropertyDescriptor.Builder()
             .name("array_wrapping")
-            .displayName("Wrap Elements of Arrays")
-            .description("Specifies how the writer wraps elements of fields of type array")
+            .displayName("Bao bọc các phần tử của mảng")
+            .description("Chỉ định cách trình ghi bao bọc các phần tử của các trường thuộc loại mảng")
             .allowableValues(USE_PROPERTY_AS_WRAPPER, USE_PROPERTY_FOR_ELEMENTS, NO_WRAPPING)
             .defaultValue(NO_WRAPPING.getValue())
             .required(true)
@@ -121,16 +121,16 @@ public class XMLRecordSetWriter extends DateTimeTextRecordSetWriter implements R
 
     public static final PropertyDescriptor ARRAY_TAG_NAME = new PropertyDescriptor.Builder()
             .name("array_tag_name")
-            .displayName("Array Tag Name")
-            .description("Name of the tag used by property \"Wrap Elements of Arrays\" to write arrays")
+            .displayName("Tên thẻ mảng")
+            .description("Tên của thẻ được sử dụng bởi thuộc tính \"Bao bọc các phần tử của mảng\" để ghi các mảng")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .required(false)
             .build();
 
     public static final PropertyDescriptor CHARACTER_SET = new PropertyDescriptor.Builder()
-            .name("Character Set")
-            .description("The Character set to use when writing the data to the FlowFile")
+            .name("Bộ ký tự")
+            .description("Bộ ký tự được sử dụng khi ghi dữ liệu vào FlowFile")
             .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
             .defaultValue("UTF-8")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)

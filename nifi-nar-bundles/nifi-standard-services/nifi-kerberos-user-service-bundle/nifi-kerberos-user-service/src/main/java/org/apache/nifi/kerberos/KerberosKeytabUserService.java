@@ -32,23 +32,24 @@ import org.apache.nifi.security.krb.KerberosUser;
 import java.util.Collections;
 import java.util.List;
 
-@CapabilityDescription("Provides a mechanism for creating a KerberosUser from a principal and keytab that other components are able to use in order to "
-        + "perform authentication using Kerberos. By encapsulating this information into a Controller Service and allowing other components to make use of it "
-        + "(as opposed to specifying the principal and keytab directly in the processor) an administrator is able to choose which users are allowed to "
-        + "use which keytabs and principals. This provides a more robust security model for multi-tenant use cases.")
+@CapabilityDescription("Cung cấp cơ chế tạo KerberosUser từ principal và keytab để các component khác có thể sử dụng cho việc "
+        + "xác thực Kerberos. Bằng cách đóng gói thông tin này vào Controller Service và cho phép các component khác sử dụng "
+        + "(thay vì chỉ định trực tiếp principal và keytab trong processor), quản trị viên có thể kiểm soát người dùng nào "
+        + "được phép sử dụng keytab và principal nào. Điều này cung cấp mô hình bảo mật mạnh mẽ hơn cho môi trường đa tenant.")
 @Tags({"Kerberos", "Keytab", "Principal", "Credentials", "Authentication", "Security"})
 @Restricted(restrictions = {
-        @Restriction(requiredPermission = RequiredPermission.ACCESS_KEYTAB, explanation = "Allows user to define a Keytab and principal that can then be used by other components.")
+        @Restriction(requiredPermission = RequiredPermission.ACCESS_KEYTAB, explanation = "Cho phép người dùng định nghĩa Keytab và principal, sau đó có thể được các component khác sử dụng.")
 })
 public class KerberosKeytabUserService extends AbstractKerberosUserService implements SelfContainedKerberosUserService {
 
     static final PropertyDescriptor KEYTAB = new PropertyDescriptor.Builder()
             .name("Kerberos Keytab")
-            .description("Kerberos keytab associated with the principal.")
+            .description("Keytab Kerberos liên kết với principal.")
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .required(true)
             .build();
+
 
     private volatile String keytab;
 

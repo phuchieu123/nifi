@@ -1338,15 +1338,15 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
         readLock.lock();
         try {
             if (isTransmitting()) {
-                throw new IllegalStateException(this.getIdentifier() + " is transmitting");
+                throw new IllegalStateException(this.getIdentifier() + " đang truyền tải");
             }
 
             for (final Port port : inputPorts.values()) {
                 if (!ignoreConnections && port.hasIncomingConnection()) {
-                    throw new IllegalStateException(this.getIdentifier() + " is the destination of another component");
+                    throw new IllegalStateException(this.getIdentifier() + " là đích đến của một thành phần khác");
                 }
                 if (port.isRunning()) {
-                    throw new IllegalStateException(this.getIdentifier() + " has running Port: " + port.getIdentifier());
+                    throw new IllegalStateException(this.getIdentifier() + " có Port đang chạy: " + port.getIdentifier());
                 }
             }
 
@@ -1358,7 +1358,7 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
                 }
 
                 if (port.isRunning()) {
-                    throw new IllegalStateException(this.getIdentifier() + " has running Port: " + port.getIdentifier());
+                    throw new IllegalStateException(this.getIdentifier() + " có Port đang chạy: " + port.getIdentifier());
                 }
             }
         } finally {
@@ -1371,16 +1371,16 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
         readLock.lock();
         try {
             if (isTransmitting()) {
-                throw new IllegalStateException(this.getIdentifier() + " is already transmitting");
+                throw new IllegalStateException(this.getIdentifier() + " đang truyền tải");
             }
 
             for (final StandardRemoteGroupPort port : inputPorts.values()) {
                 if (port.isRunning()) {
-                    throw new IllegalStateException(this.getIdentifier() + " has running Port: " + port.getIdentifier());
+                    throw new IllegalStateException(this.getIdentifier() + " có Port đang chạy: " + port.getIdentifier());
                 }
 
                 if (port.hasIncomingConnection() && !port.getTargetExists()) {
-                    throw new IllegalStateException(this.getIdentifier() + " has a Connection to Port " + port.getIdentifier() + ", but that Port no longer exists on the remote system");
+                    throw new IllegalStateException(this.getIdentifier() + " có kết nối tới cổng " + port.getIdentifier() + ", nhưng Cổng đó không còn tồn tại trên hệ thống từ xa");
                 }
 
                 if (port.hasIncomingConnection()) {
@@ -1390,11 +1390,11 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
 
             for (final StandardRemoteGroupPort port : outputPorts.values()) {
                 if (port.isRunning()) {
-                    throw new IllegalStateException(this.getIdentifier() + " has running Port: " + port.getIdentifier());
+                    throw new IllegalStateException(this.getIdentifier() + " có Port đang chạy: " + port.getIdentifier());
                 }
 
                 if (!port.getConnections().isEmpty() && !port.getTargetExists()) {
-                    throw new IllegalStateException(this.getIdentifier() + " has a Connection to Port " + port.getIdentifier() + ", but that Port no longer exists on the remote system");
+                    throw new IllegalStateException(this.getIdentifier() + " có kết nối tới cổng " + port.getIdentifier() + ", nhưng Cổng đó không còn tồn tại trên hệ thống từ xa");
                 }
 
                 if (!port.getConnections().isEmpty()) {
@@ -1409,7 +1409,7 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
     @Override
     public void verifyCanStopTransmitting() {
         if (!isTransmitting()) {
-            throw new IllegalStateException(this.getIdentifier() + " is not transmitting");
+            throw new IllegalStateException(this.getIdentifier() + " không truyền tải");
         }
     }
 

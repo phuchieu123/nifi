@@ -45,15 +45,15 @@ import static org.apache.nifi.processors.azure.storage.utils.BlobAttributes.ATTR
 
 @Tags({"azure", "microsoft", "cloud", "storage", "blob"})
 @SeeAlso({ListAzureBlobStorage_v12.class, FetchAzureBlobStorage_v12.class, PutAzureBlobStorage_v12.class})
-@CapabilityDescription("Deletes the specified blob from Azure Blob Storage. The processor uses Azure Blob Storage client library v12.")
+@CapabilityDescription("Xóa blob được chỉ định khỏi Bộ lưu trữ Azure Blob. Bộ xử lý sử dụng thư viện máy khách Azure Blob Storage v12.")
 @InputRequirement(Requirement.INPUT_REQUIRED)
 public class DeleteAzureBlobStorage_v12 extends AbstractAzureBlobProcessor_v12 {
 
-    public static final AllowableValue DELETE_SNAPSHOTS_NONE = new AllowableValue("NONE", "None", "Delete the blob only.");
+    public static final AllowableValue DELETE_SNAPSHOTS_NONE = new AllowableValue("NONE", "None", "Chỉ xóa blob");
 
-    public static final AllowableValue DELETE_SNAPSHOTS_ALSO = new AllowableValue(DeleteSnapshotsOptionType.INCLUDE.name(), "Include Snapshots", "Delete the blob and its snapshots.");
+    public static final AllowableValue DELETE_SNAPSHOTS_ALSO = new AllowableValue(DeleteSnapshotsOptionType.INCLUDE.name(), "Include Snapshots", "Xóa blob và các bản snapshot của nó.");
 
-    public static final AllowableValue DELETE_SNAPSHOTS_ONLY = new AllowableValue(DeleteSnapshotsOptionType.ONLY.name(), "Delete Snapshots Only", "Delete only the blob's snapshots.");
+    public static final AllowableValue DELETE_SNAPSHOTS_ONLY = new AllowableValue(DeleteSnapshotsOptionType.ONLY.name(), "Delete Snapshots Only", "Chỉ xóa các bản snapshot của blob.");
 
     public static final PropertyDescriptor CONTAINER = new PropertyDescriptor.Builder()
             .fromPropertyDescriptor(AzureStorageUtils.CONTAINER)
@@ -68,7 +68,7 @@ public class DeleteAzureBlobStorage_v12 extends AbstractAzureBlobProcessor_v12 {
     public static final PropertyDescriptor DELETE_SNAPSHOTS_OPTION = new PropertyDescriptor.Builder()
             .name("delete-snapshots-option")
             .displayName("Delete Snapshots Option")
-            .description("Specifies the snapshot deletion options to be used when deleting a blob.")
+            .description("Chỉ định các tùy chọn xóa ảnh chụp nhanh sẽ được sử dụng khi xóa blob.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .allowableValues(DELETE_SNAPSHOTS_NONE, DELETE_SNAPSHOTS_ALSO, DELETE_SNAPSHOTS_ONLY)
             .defaultValue(DELETE_SNAPSHOTS_NONE.getValue())
@@ -111,7 +111,7 @@ public class DeleteAzureBlobStorage_v12 extends AbstractAzureBlobProcessor_v12 {
                 blobClient.deleteWithResponse(deleteSnapshotsOptionType, null, null, null);
                 provenanceMesage = getProvenanceMessage(deleteSnapshotsOptionType);
             } else {
-                provenanceMesage = "Blob does not exist, nothing to delete";
+                provenanceMesage = "Blob không tồn tại, không có gì để xóa";
             }
 
             session.transfer(flowFile, REL_SUCCESS);
@@ -119,7 +119,7 @@ public class DeleteAzureBlobStorage_v12 extends AbstractAzureBlobProcessor_v12 {
             long transferMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
             session.getProvenanceReporter().invokeRemoteProcess(flowFile, blobClient.getBlobUrl(), String.format("%s (%d ms)", provenanceMesage, transferMillis));
         } catch (Exception e) {
-            getLogger().error("Failed to delete the specified blob ({}) from Azure Blob Storage. Routing to failure", blobName, e);
+            getLogger().error("Xóa blob ({}) khỏi Azure Blob Storage thất bại — chuyển hướng FlowFile sang nhánh failure", blobName, e);
             flowFile = session.penalize(flowFile);
             session.transfer(flowFile, REL_FAILURE);
         }
@@ -139,9 +139,9 @@ public class DeleteAzureBlobStorage_v12 extends AbstractAzureBlobProcessor_v12 {
         }
         switch (deleteSnapshotsOptionType) {
             case INCLUDE:
-                return "Blob deleted along with its snapshots";
+                return "Blob đã được xóa cùng với các ảnh chụp nhanh (snapshots) của nó.";
             case ONLY:
-                return "Blob's snapshots deleted";
+                return "Các ảnh chụp nhanh (snapshots) của blob đã được xóa";
             default:
                 throw new IllegalArgumentException("Unhandled DeleteSnapshotsOptionType: " + deleteSnapshotsOptionType);
         }

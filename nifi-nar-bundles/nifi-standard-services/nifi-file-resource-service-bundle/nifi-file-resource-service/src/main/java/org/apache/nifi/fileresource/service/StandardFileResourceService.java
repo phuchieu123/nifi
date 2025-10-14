@@ -44,13 +44,13 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"file", "resource"})
-@CapabilityDescription("Provides a file resource for other components. The file needs to be available locally by Nifi (e.g. local disk or mounted storage). " +
-        "NiFi needs to have read permission to the file.")
+@CapabilityDescription("Cung cấp tài nguyên tệp cho các thành phần khác. Tệp cần phải có sẵn cục bộ bởi Life (ví dụ: đĩa cục bộ hoặc bộ nhớ được gắn kết). " +
+        "Life cần có quyền đọc tệp.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.READ_FILESYSTEM,
-                        explanation = "Provides operator the ability to read from any file that NiFi has access to.")
+                        explanation = "Cung cấp cho nhà điều hành khả năng đọc từ bất kỳ tệp nào mà NiFi có quyền truy cập.")
         }
 )
 public class StandardFileResourceService extends AbstractControllerService implements FileResourceService {

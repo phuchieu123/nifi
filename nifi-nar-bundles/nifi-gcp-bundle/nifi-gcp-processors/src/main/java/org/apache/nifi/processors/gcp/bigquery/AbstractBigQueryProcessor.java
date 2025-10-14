@@ -56,11 +56,11 @@ public abstract class AbstractBigQueryProcessor extends AbstractGCPProcessor<Big
 
     private static final List<String> REQUIRED_PERMISSIONS = Collections.singletonList("bigquery.tables.updateData");
 
-    public static final Relationship REL_SUCCESS = new Relationship.Builder().name("success")
-            .description("FlowFiles are routed to this relationship after a successful Google BigQuery operation.")
+     public static final Relationship REL_SUCCESS = new Relationship.Builder().name("success")
+            .description("FlowFiles sẽ được chuyển đến quan hệ này sau khi thao tác Google BigQuery thành công.")
             .build();
     public static final Relationship REL_FAILURE = new Relationship.Builder().name("failure")
-            .description("FlowFiles are routed to this relationship if the Google BigQuery operation fails.")
+            .description("FlowFiles sẽ được chuyển đến quan hệ này nếu thao tác Google BigQuery thất bại.")
             .build();
 
     public static final Set<Relationship> relationships = Collections.unmodifiableSet(
@@ -138,25 +138,26 @@ public abstract class AbstractBigQueryProcessor extends AbstractGCPProcessor<Big
                 final TableId tableId = getTableId(context, attributes);
                 if (bigQuery.testIamPermissions(tableId, REQUIRED_PERMISSIONS).size() >= REQUIRED_PERMISSIONS.size()) {
                     results.add(new ConfigVerificationResult.Builder()
-                            .verificationStepName("Test IAM Permissions")
+                            .verificationStepName("Kiểm tra Quyền IAM")
                             .outcome(ConfigVerificationResult.Outcome.SUCCESSFUL)
-                            .explanation(String.format("Verified BigQuery Table [%s] exists and the configured user has the correct permissions.", tableId))
+                            .explanation(String.format("Xác nhận Bảng BigQuery [%s] tồn tại và người dùng được cấu hình có các quyền chính xác.", tableId))
                             .build());
                 } else {
                     results.add(new ConfigVerificationResult.Builder()
-                            .verificationStepName("Test IAM Permissions")
+                            .verificationStepName("Kiểm tra Quyền IAM")
                             .outcome(ConfigVerificationResult.Outcome.FAILED)
-                            .explanation(String.format("The configured user does not have the correct permissions on BigQuery Table [%s].", tableId))
+                            .explanation(String.format("Người dùng được cấu hình không có các quyền chính xác trên Bảng BigQuery [%s].", tableId))
                             .build());
                 }
             } catch (final BaseServiceException e) {
-                verificationLogger.error("The configured user appears to have the correct permissions, but the following error was encountered", e);
+                verificationLogger.error("Người dùng được cấu hình có vẻ đã có quyền chính xác, nhưng gặp lỗi sau", e);
                 results.add(new ConfigVerificationResult.Builder()
-                        .verificationStepName("Test IAM Permissions")
+                        .verificationStepName("Kiểm tra Quyền IAM")
                         .outcome(ConfigVerificationResult.Outcome.FAILED)
-                        .explanation(String.format("The configured user appears to have the correct permissions, but the following error was encountered: " + e.getMessage()))
+                        .explanation(String.format("Người dùng được cấu hình có vẻ đã có quyền chính xác, nhưng gặp lỗi sau: " + e.getMessage()))
                         .build());
             }
+
         }
 
         return results;

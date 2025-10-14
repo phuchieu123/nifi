@@ -25,7 +25,7 @@ import org.apache.nifi.annotation.documentation.Tags;
  *
  */
 @Tags({"hive", "dbcp", "jdbc", "database", "connection", "pooling", "store"})
-@CapabilityDescription("Provides Database Connection Pooling Service for Apache Hive 1.1.x. Connections can be asked from pool and returned after usage.")
+@CapabilityDescription("Cung cấp Dịch vụ Pooling Kết nối Cơ sở dữ liệu cho Apache Hive 1.1.x. Các kết nối có thể được lấy từ pool và trả về sau khi sử dụng.")
 public interface Hive_1_1DBCPService extends HiveDBCPService {
     public String getConnectionURL();
 }

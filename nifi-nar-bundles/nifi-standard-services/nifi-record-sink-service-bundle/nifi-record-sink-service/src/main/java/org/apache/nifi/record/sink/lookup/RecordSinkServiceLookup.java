@@ -31,16 +31,19 @@ import java.util.Map;
 
 
 @Tags({"record", "sink", "lookup"})
-@CapabilityDescription("Provides a RecordSinkService that can be used to dynamically select another RecordSinkService. This service " +
-        "requires an attribute named 'record.sink.name' to be passed in when asking for a connection, and will throw an exception " +
-        "if the attribute is missing. The value of 'record.sink.name' will be used to select the RecordSinkService that has been " +
-        "registered with that name. This will allow multiple RecordSinkServices to be defined and registered, and then selected " +
-        "dynamically at runtime by tagging flow files with the appropriate 'record.sink.name' attribute. Note that this controller service " +
-        "is not intended for use in reporting tasks that employ RecordSinkService instances, such as QueryNiFiReportingTask.")
-@DynamicProperty(name = "The name to register the specified RecordSinkService", value = "The RecordSinkService",
-        description = "If '" + RecordSinkServiceLookup.RECORD_SINK_NAME_ATTRIBUTE + "' attribute contains " +
-                "the name of the dynamic property, then the RecordSinkService (registered in the value) will be selected.",
-        expressionLanguageScope = ExpressionLanguageScope.NONE)
+@CapabilityDescription("Cung cấp một RecordSinkService có thể được sử dụng để chọn động một RecordSinkService khác. Dịch vụ này " +
+        "yêu cầu một thuộc tính tên là 'record.sink.name' được truyền vào khi yêu cầu kết nối, và sẽ ném ngoại lệ " +
+        "nếu thuộc tính này không có. Giá trị của 'record.sink.name' sẽ được sử dụng để chọn RecordSinkService đã được " +
+        "đăng ký với tên đó. Điều này cho phép nhiều RecordSinkService được định nghĩa và đăng ký, sau đó được chọn " +
+        "động tại thời điểm chạy bằng cách gán thuộc tính 'record.sink.name' thích hợp cho FlowFiles. Lưu ý rằng controller service " +
+        "này không được thiết kế để sử dụng trong các reporting task sử dụng các instance của RecordSinkService, chẳng hạn như QueryNiFiReportingTask.")
+@DynamicProperty(
+        name = "Tên để đăng ký RecordSinkService được chỉ định",
+        value = "RecordSinkService",
+        description = "Nếu thuộc tính '" + RecordSinkServiceLookup.RECORD_SINK_NAME_ATTRIBUTE + "' chứa " +
+                      "tên của dynamic property, thì RecordSinkService (đăng ký trong giá trị) sẽ được chọn.",
+        expressionLanguageScope = ExpressionLanguageScope.NONE
+)
 public class RecordSinkServiceLookup
         extends AbstractSingleAttributeBasedControllerServiceLookup<RecordSinkService> implements RecordSinkService {
 

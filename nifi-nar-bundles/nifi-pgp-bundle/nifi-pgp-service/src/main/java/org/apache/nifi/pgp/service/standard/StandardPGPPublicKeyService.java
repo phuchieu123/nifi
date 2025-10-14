@@ -61,12 +61,12 @@ import java.util.stream.StreamSupport;
  * Standard Pretty Good Privacy Public Key Service reads Public Keys from configured Keyring files
  */
 @Tags({"PGP", "GPG", "OpenPGP", "Encryption", "Private", "Key", "RFC 4880"})
-@CapabilityDescription("PGP Public Key Service providing Public Keys loaded from files")
+@CapabilityDescription("Dịch vụ Khóa Công khai PGP cung cấp các Khóa Công khai được tải từ các tệp")
 public class StandardPGPPublicKeyService extends AbstractControllerService implements PGPPublicKeyService {
     public static final PropertyDescriptor KEYRING_FILE = new PropertyDescriptor.Builder()
             .name("keyring-file")
-            .displayName("Keyring File")
-            .description("File path to PGP Keyring or Public Key encoded in binary or ASCII Armor")
+            .displayName("Tệp Vòng Khóa")
+            .description("Đường dẫn tệp đến Vòng Khóa PGP hoặc Khóa Công khai được mã hóa ở định dạng nhị phân hoặc ASCII Armor")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.FILE_EXISTS_VALIDATOR)
@@ -74,12 +74,11 @@ public class StandardPGPPublicKeyService extends AbstractControllerService imple
 
     public static final PropertyDescriptor KEYRING = new PropertyDescriptor.Builder()
             .name("keyring")
-            .displayName("Keyring")
-            .description("PGP Keyring or Public Key encoded in ASCII Armor")
+            .displayName("Vòng Khóa")
+            .description("Vòng Khóa PGP hoặc Khóa Công khai được mã hóa ở định dạng ASCII Armor")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
-
     private static final Charset KEY_CHARSET = StandardCharsets.US_ASCII;
 
     private static final boolean PARALLEL_DISABLED = false;

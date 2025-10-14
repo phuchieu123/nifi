@@ -54,59 +54,82 @@ import static org.apache.nifi.schema.access.SchemaAccessUtils.SCHEMA_TEXT_PROPER
 
 public abstract class SchemaRegistryRecordSetWriter extends SchemaRegistryService {
 
-    public static final AllowableValue SCHEMA_NAME_ATTRIBUTE = new AllowableValue("schema-name", "Set 'schema.name' Attribute",
-        "The FlowFile will be given an attribute named 'schema.name' and this attribute will indicate the name of the schema in the Schema Registry. Note that if"
-            + "the schema for a record is not obtained from a Schema Registry, then no attribute will be added.");
-    public static final AllowableValue AVRO_SCHEMA_ATTRIBUTE = new AllowableValue("full-schema-attribute", "Set 'avro.schema' Attribute",
-        "The FlowFile will be given an attribute named 'avro.schema' and this attribute will contain the Avro Schema that describes the records in the FlowFile. "
-            + "The contents of the FlowFile need not be Avro, but the text of the schema will be used.");
-    public static final AllowableValue HWX_CONTENT_ENCODED_SCHEMA = new AllowableValue("hwx-content-encoded-schema", "HWX Content-Encoded Schema Reference",
-        "The content of the FlowFile will contain a reference to a schema in the Schema Registry service. The reference is encoded as a single byte indicating the 'protocol version', "
-            + "followed by 8 bytes indicating the schema identifier, and finally 4 bytes indicating the schema version, as per the Hortonworks Schema Registry serializers and deserializers, "
-            + "as found at https://github.com/hortonworks/registry. "
-            + "This will be prepended to each FlowFile. Note that "
-            + "if the schema for a record does not contain the necessary identifier and version, an Exception will be thrown when attempting to write the data.");
-    public static final AllowableValue HWX_SCHEMA_REF_ATTRIBUTES = new AllowableValue("hwx-schema-ref-attributes", "HWX Schema Reference Attributes",
-        "The FlowFile will be given a set of 3 attributes to describe the schema: 'schema.identifier', 'schema.version', and 'schema.protocol.version'. Note that if "
-            + "the schema for a record does not contain the necessary identifier and version, an Exception will be thrown when attempting to write the data.");
-    public static final AllowableValue CONFLUENT_ENCODED_SCHEMA = new AllowableValue("confluent-encoded", "Confluent Schema Registry Reference",
-        "The content of the FlowFile will contain a reference to a schema in the Schema Registry service. The reference is encoded as a single "
-            + "'Magic Byte' followed by 4 bytes representing the identifier of the schema, as outlined at http://docs.confluent.io/current/schema-registry/docs/serializer-formatter.html. "
-            + "This will be prepended to each FlowFile. Note that if the schema for a record does not contain the necessary identifier and version, "
-            + "an Exception will be thrown when attempting to write the data. This is based on the encoding used by version 3.2.x of the Confluent Schema Registry.");
-    public static final AllowableValue NO_SCHEMA = new AllowableValue("no-schema", "Do Not Write Schema", "Do not add any schema-related information to the FlowFile.");
+  public static final AllowableValue SCHEMA_NAME_ATTRIBUTE = new AllowableValue(
+        "schema-name", 
+        "Đặt thuộc tính 'schema.name'",
+        "FlowFile sẽ được gán một thuộc tính tên là 'schema.name', biểu thị tên của schema trong Schema Registry. "
+        + "Nếu schema của record không lấy từ Schema Registry, thuộc tính này sẽ không được thêm."
+);
 
-    public static final PropertyDescriptor SCHEMA_CACHE = new Builder()
+public static final AllowableValue AVRO_SCHEMA_ATTRIBUTE = new AllowableValue(
+        "full-schema-attribute", 
+        "Đặt thuộc tính 'avro.schema'",
+        "FlowFile sẽ được gán một thuộc tính 'avro.schema' chứa Avro Schema mô tả các record trong FlowFile. "
+        + "Nội dung của FlowFile không nhất thiết phải là Avro, nhưng văn bản của schema sẽ được sử dụng."
+);
+
+public static final AllowableValue HWX_CONTENT_ENCODED_SCHEMA = new AllowableValue(
+        "hwx-content-encoded-schema", 
+        "HWX Content-Encoded Schema Reference",
+        "Nội dung của FlowFile sẽ chứa tham chiếu đến schema trong Schema Registry. Tham chiếu được mã hóa bằng một byte thể hiện 'phiên bản giao thức', "
+        + "sau đó 8 byte cho ID schema và 4 byte cho phiên bản schema, theo chuẩn serializer/deserializer của Hortonworks Schema Registry "
+        + "(https://github.com/hortonworks/registry). Tham chiếu này sẽ được thêm vào đầu mỗi FlowFile. "
+        + "Nếu schema của record không có ID hoặc phiên bản cần thiết, một Exception sẽ được ném ra khi ghi dữ liệu."
+);
+
+public static final AllowableValue HWX_SCHEMA_REF_ATTRIBUTES = new AllowableValue(
+        "hwx-schema-ref-attributes", 
+        "Thuộc tính tham chiếu Schema HWX",
+        "FlowFile sẽ được gán 3 thuộc tính mô tả schema: 'schema.identifier', 'schema.version', và 'schema.protocol.version'. "
+        + "Nếu schema của record không có ID hoặc phiên bản cần thiết, một Exception sẽ được ném ra khi ghi dữ liệu."
+);
+
+public static final AllowableValue CONFLUENT_ENCODED_SCHEMA = new AllowableValue(
+        "confluent-encoded", 
+        "Tham chiếu Schema Registry Confluent",
+        "Nội dung FlowFile sẽ chứa tham chiếu đến schema trong Schema Registry. Tham chiếu được mã hóa bằng 'Magic Byte' theo sau là 4 byte đại diện ID schema, "
+        + "theo hướng dẫn tại http://docs.confluent.io/current/schema-registry/docs/serializer-formatter.html. "
+        + "Tham chiếu này sẽ được thêm vào đầu mỗi FlowFile. Nếu schema không có ID hoặc phiên bản cần thiết, Exception sẽ được ném ra. "
+        + "Đây là cách mã hóa của Confluent Schema Registry v3.2.x."
+);
+
+public static final AllowableValue NO_SCHEMA = new AllowableValue(
+        "no-schema", 
+        "Không ghi Schema",
+        "Không thêm bất kỳ thông tin nào liên quan đến schema vào FlowFile."
+);
+
+public static final PropertyDescriptor SCHEMA_CACHE = new Builder()
         .name("schema-cache")
-        .displayName("Schema Cache")
-        .description("Specifies a Schema Cache to add the Record Schema to so that Record Readers can quickly lookup the schema.")
+        .displayName("Bộ nhớ đệm Schema")
+        .description("Xác định một Schema Cache để thêm Record Schema, giúp Record Readers có thể tra cứu schema nhanh hơn.")
         .required(false)
         .identifiesControllerService(RecordSchemaCacheService.class)
         .build();
 
-
-    /**
-     * This constant is just a base spec for the actual PropertyDescriptor.
-     * As it can be overridden by subclasses with different AllowableValues and default value,
-     * {@link #getSchemaWriteStrategyDescriptor()} should be used to get the actual descriptor, instead of using this constant directly.
-     */
-    private static final PropertyDescriptor SCHEMA_WRITE_STRATEGY = new Builder()
-        .name("Schema Write Strategy")
-        .description("Specifies how the schema for a Record should be added to the data.")
+/**
+ * Đây là một thuộc tính cơ bản dùng làm mẫu cho PropertyDescriptor thực tế.
+ * Các lớp con có thể ghi đè với AllowableValues và giá trị mặc định khác nhau.
+ * Sử dụng {@link #getSchemaWriteStrategyDescriptor()} để lấy descriptor thực tế.
+ */
+private static final PropertyDescriptor SCHEMA_WRITE_STRATEGY = new Builder()
+        .name("schema-write-strategy")
+        .description("Xác định cách thêm schema của Record vào dữ liệu.")
         .required(true)
         .build();
 
-    static final PropertyDescriptor SCHEMA_PROTOCOL_VERSION = new Builder()
+static final PropertyDescriptor SCHEMA_PROTOCOL_VERSION = new Builder()
         .name("schema-protocol-version")
-        .displayName("Schema Protocol Version")
-        .description("The protocol version to be used for Schema Write Strategies that require a protocol version, such as Hortonworks Schema Registry strategies. " +
-            "Valid protocol versions for Hortonworks Schema Registry are integer values 1, 2, or 3.")
+        .displayName("Phiên bản giao thức Schema")
+        .description("Phiên bản giao thức dùng cho các chiến lược ghi Schema yêu cầu phiên bản, ví dụ Hortonworks Schema Registry. "
+                + "Các phiên bản hợp lệ là 1, 2 hoặc 3.")
         .required(false)
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
         .dependsOn(SCHEMA_WRITE_STRATEGY, HWX_CONTENT_ENCODED_SCHEMA, HWX_SCHEMA_REF_ATTRIBUTES)
         .defaultValue("1")
         .build();
+
 
 
     private volatile ConfigurationContext configurationContext;

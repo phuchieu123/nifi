@@ -57,39 +57,38 @@ import java.util.Set;
 @SupportsBatching
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @Tags({"logs", "syslog", "attributes", "system", "event", "message"})
-@CapabilityDescription("Attempts to parses the contents of a Syslog message in accordance to RFC5424 and RFC3164 " +
-        "formats and adds attributes to the FlowFile for each of the parts of the Syslog message." +
-        "Note: Be mindfull that RFC3164 is informational and a wide range of different implementations are present in" +
-        " the wild. If messages fail parsing, considering using RFC5424 or using a generic parsing processors such as " +
+@CapabilityDescription("Cố gắng phân tích cú pháp nội dung của một tin nhắn Syslog theo các định dạng RFC5424 và RFC3164 " +
+        "và thêm các thuộc tính vào FlowFile cho từng phần của tin nhắn Syslog." +
+        "Lưu ý: Hãy nhớ rằng RFC3164 chỉ mang tính thông tin và có rất nhiều cách triển khai khác nhau trong" +
+        " thực tế. Nếu việc phân tích cú pháp tin nhắn không thành công, hãy cân nhắc sử dụng RFC5424 hoặc sử dụng một bộ xử lý phân tích cú pháp chung như " +
         "ExtractGrok.")
-@WritesAttributes({@WritesAttribute(attribute = "syslog.priority", description = "The priority of the Syslog message."),
-    @WritesAttribute(attribute = "syslog.severity", description = "The severity of the Syslog message derived from the priority."),
-    @WritesAttribute(attribute = "syslog.facility", description = "The facility of the Syslog message derived from the priority."),
-    @WritesAttribute(attribute = "syslog.version", description = "The optional version from the Syslog message."),
-    @WritesAttribute(attribute = "syslog.timestamp", description = "The timestamp of the Syslog message."),
-    @WritesAttribute(attribute = "syslog.hostname", description = "The hostname or IP address of the Syslog message."),
-    @WritesAttribute(attribute = "syslog.sender", description = "The hostname of the Syslog server that sent the message."),
-    @WritesAttribute(attribute = "syslog.body", description = "The body of the Syslog message, everything after the hostname.")})
+@WritesAttributes({@WritesAttribute(attribute = "syslog.priority", description = "Mức độ ưu tiên của tin nhắn Syslog."),
+    @WritesAttribute(attribute = "syslog.severity", description = "Mức độ nghiêm trọng của tin nhắn Syslog được suy ra từ mức độ ưu tiên."),
+    @WritesAttribute(attribute = "syslog.facility", description = "Cơ sở của tin nhắn Syslog được suy ra từ mức độ ưu tiên."),
+    @WritesAttribute(attribute = "syslog.version", description = "Phiên bản tùy chọn từ tin nhắn Syslog."),
+    @WritesAttribute(attribute = "syslog.timestamp", description = "Dấu thời gian của tin nhắn Syslog."),
+    @WritesAttribute(attribute = "syslog.hostname", description = "Tên máy chủ hoặc địa chỉ IP của tin nhắn Syslog."),
+    @WritesAttribute(attribute = "syslog.sender", description = "Tên máy chủ của máy chủ Syslog đã gửi tin nhắn."),
+    @WritesAttribute(attribute = "syslog.body", description = "Nội dung của tin nhắn Syslog, mọi thứ sau tên máy chủ.")})
 @SeeAlso({ListenSyslog.class, PutSyslog.class})
 public class ParseSyslog extends AbstractProcessor {
 
     public static final PropertyDescriptor CHARSET = new PropertyDescriptor.Builder()
-        .name("Character Set")
-        .description("Specifies which character set of the Syslog messages")
+        .name("Bộ ký tự")
+        .description("Chỉ định bộ ký tự của các tin nhắn Syslog")
         .required(true)
         .defaultValue("UTF-8")
         .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
         .build();
 
     static final Relationship REL_FAILURE = new Relationship.Builder()
-        .name("failure")
-        .description("Any FlowFile that could not be parsed as a Syslog message will be transferred to this Relationship without any attributes being added")
+        .name("thất bại")
+        .description("Bất kỳ FlowFile nào không thể phân tích cú pháp dưới dạng tin nhắn Syslog sẽ được chuyển đến Relationship này mà không cần thêm bất kỳ thuộc tính nào")
         .build();
     static final Relationship REL_SUCCESS = new Relationship.Builder()
-        .name("success")
-        .description("Any FlowFile that is successfully parsed as a Syslog message will be to this Relationship.")
+        .name("thành công")
+        .description("Bất kỳ FlowFile nào được phân tích cú pháp thành công dưới dạng tin nhắn Syslog sẽ được chuyển đến Relationship này.")
         .build();
-
     private SyslogParser parser;
 
 

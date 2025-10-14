@@ -47,14 +47,14 @@ import java.util.concurrent.TimeUnit;
 
 import static org.apache.nifi.proxy.ProxyConfigurationService.PROXY_CONFIGURATION_SERVICE;
 
-@CapabilityDescription("Web Client Service Provider with support for configuring standard HTTP connection properties")
+@CapabilityDescription("Nhà cung cấp Dịch vụ Máy khách Web với hỗ trợ cấu hình các thuộc tính kết nối HTTP tiêu chuẩn")
 @Tags({ "HTTP", "Web", "Client" })
 public class StandardWebClientServiceProvider extends AbstractControllerService implements WebClientServiceProvider {
 
     static final PropertyDescriptor CONNECT_TIMEOUT = new PropertyDescriptor.Builder()
             .name("connect-timeout")
-            .displayName("Connect Timeout")
-            .description("Maximum amount of time to wait before failing during initial socket connection")
+            .displayName("Hết hạn Kết nối")
+            .description("Khoảng thời gian tối đa để chờ trước khi không kết nối được trong quá trình kết nối ổ cắm ban đầu")
             .required(true)
             .defaultValue("10 secs")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -62,8 +62,8 @@ public class StandardWebClientServiceProvider extends AbstractControllerService 
 
     static final PropertyDescriptor READ_TIMEOUT = new PropertyDescriptor.Builder()
             .name("read-timeout")
-            .displayName("Read Timeout")
-            .description("Maximum amount of time to wait before failing while reading socket responses")
+            .displayName("Hết hạn Đọc")
+            .description("Khoảng thời gian tối đa để chờ trước khi không đọc được trong khi đọc phản hồi ổ cắm")
             .required(true)
             .defaultValue("10 secs")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -71,8 +71,8 @@ public class StandardWebClientServiceProvider extends AbstractControllerService 
 
     static final PropertyDescriptor WRITE_TIMEOUT = new PropertyDescriptor.Builder()
             .name("write-timeout")
-            .displayName("Write Timeout")
-            .description("Maximum amount of time to wait before failing while writing socket requests")
+            .displayName("Hết hạn Ghi")
+            .description("Khoảng thời gian tối đa để chờ trước khi không ghi được trong khi ghi yêu cầu ổ cắm")
             .required(true)
             .defaultValue("10 secs")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -80,8 +80,8 @@ public class StandardWebClientServiceProvider extends AbstractControllerService 
 
     static final PropertyDescriptor REDIRECT_HANDLING_STRATEGY = new PropertyDescriptor.Builder()
             .name("redirect-handling-strategy")
-            .displayName("Redirect Handling Strategy")
-            .description("Handling strategy for responding to HTTP 301 or 302 redirects received with a Location header")
+            .displayName("Chiến lược Xử lý Chuyển hướng")
+            .description("Chiến lược xử lý để phản hồi các chuyển hướng HTTP 301 hoặc 302 được nhận với tiêu đề Location")
             .required(true)
             .defaultValue(RedirectHandling.FOLLOWED.name())
             .allowableValues(RedirectHandling.values())
@@ -89,12 +89,11 @@ public class StandardWebClientServiceProvider extends AbstractControllerService 
 
     static final PropertyDescriptor SSL_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
             .name("ssl-context-service")
-            .displayName("SSL Context Service")
-            .description("SSL Context Service overrides system default TLS settings for HTTPS communication")
+            .displayName("Dịch vụ Bối cảnh SSL")
+            .description("Dịch vụ Bối cảnh SSL ghi đè các cài đặt TLS mặc định của hệ thống cho liên lạc HTTPS")
             .required(false)
             .identifiesControllerService(SSLContextService.class)
             .build();
-
     static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS = Arrays.asList(
             CONNECT_TIMEOUT,
             READ_TIMEOUT,

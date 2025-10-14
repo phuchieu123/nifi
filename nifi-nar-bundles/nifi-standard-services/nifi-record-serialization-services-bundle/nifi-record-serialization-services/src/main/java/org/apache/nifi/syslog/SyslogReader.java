@@ -52,34 +52,33 @@ import java.util.Map;
 import java.util.Set;
 
 @Tags({"syslog", "logs", "logfiles", "parse", "text", "record", "reader"})
-@CapabilityDescription("Attempts to parses the contents of a Syslog message in accordance to RFC5424 and RFC3164. In the " +
-        "case of RFC5424 formatted messages, structured data is not supported, and will be returned as part of the message." +
-        "Note: Be mindfull that RFC3164 is informational and a wide range of different implementations are present in" +
-        " the wild.")
+@CapabilityDescription("Cố gắng phân tích cú pháp nội dung của một tin nhắn Syslog theo RFC5424 và RFC3164. Trong " +
+        "trường hợp các tin nhắn được định dạng RFC5424, dữ liệu có cấu trúc không được hỗ trợ và sẽ được trả về như một phần của tin nhắn." +
+        "Lưu ý: Hãy nhớ rằng RFC3164 chỉ mang tính thông tin và có rất nhiều cách triển khai khác nhau trong" +
+        " thực tế.")
 public class SyslogReader extends SchemaRegistryService implements RecordReaderFactory {
 
     public static final String GENERIC_SYSLOG_SCHEMA_NAME = "default-syslog-schema";
-    static final AllowableValue GENERIC_SYSLOG_SCHEMA = new AllowableValue(GENERIC_SYSLOG_SCHEMA_NAME, "Use Generic Syslog Schema",
-            "The schema will be the default Syslog schema.");
+    static final AllowableValue GENERIC_SYSLOG_SCHEMA = new AllowableValue(GENERIC_SYSLOG_SCHEMA_NAME, "Sử dụng Lược đồ Syslog Chung",
+            "Lược đồ sẽ là lược đồ Syslog mặc định.");
 
     static final String RAW_MESSAGE_NAME = "_raw";
 
     public static final PropertyDescriptor CHARSET = new PropertyDescriptor.Builder()
-            .name("Character Set")
-            .description("Specifies which character set of the Syslog messages")
+            .name("Bộ ký tự")
+            .description("Chỉ định bộ ký tự của các tin nhắn Syslog")
             .required(true)
             .defaultValue("UTF-8")
             .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
             .build();
     public static final PropertyDescriptor ADD_RAW = new PropertyDescriptor.Builder()
-            .displayName("Raw message")
+            .displayName("Tin nhắn thô")
             .name("syslog-5424-reader-raw-message")
-            .description("If true, the record will have a " + RAW_MESSAGE_NAME + " field containing the raw message")
+            .description("Nếu đúng, bản ghi sẽ có một trường " + RAW_MESSAGE_NAME + " chứa tin nhắn thô")
             .required(true)
             .defaultValue("false")
             .allowableValues("true", "false")
             .build();
-
     private volatile SyslogParser parser;
     private volatile static boolean includeRaw;
     private volatile RecordSchema recordSchema;
