@@ -70,28 +70,28 @@ import org.apache.nifi.reporting.s2s.SiteToSiteUtils;
 import org.apache.nifi.reporting.util.provenance.ProvenanceEventConsumer;
 
 @Tags({"provenance", "lineage", "tracking", "site", "site to site"})
-@CapabilityDescription("Publishes Provenance events using the Site To Site protocol.")
-@Stateful(scopes = Scope.LOCAL, description = "Stores the Reporting Task's last event Id so that on restart the task knows where it left off.")
+@CapabilityDescription("Công bố các sự kiện Provenance bằng giao thức Site-to-Site.")
+@Stateful(scopes = Scope.LOCAL, description = "Lưu trữ ID sự kiện cuối cùng của Tác vụ Báo cáo để khi khởi động lại, tác vụ biết nó đã dừng ở đâu.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXPORT_NIFI_DETAILS,
-                        explanation = "Provides operator the ability to send sensitive details contained in Provenance events to any external system.")
+                        explanation = "Cung cấp cho người vận hành khả năng gửi các chi tiết nhạy cảm có trong các sự kiện Provenance đến bất kỳ hệ thống bên ngoài nào.")
         }
 )
 public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReportingTask {
 
-    static final AllowableValue BEGINNING_OF_STREAM = new AllowableValue("beginning-of-stream", "Beginning of Stream",
-            "Start reading provenance Events from the beginning of the stream (the oldest event first)");
-    static final AllowableValue END_OF_STREAM = new AllowableValue("end-of-stream", "End of Stream",
-            "Start reading provenance Events from the end of the stream, ignoring old events");
+    static final AllowableValue BEGINNING_OF_STREAM = new AllowableValue("beginning-of-stream", "Bắt đầu Luồng",
+            "Bắt đầu đọc các Sự kiện Provenance từ đầu luồng (sự kiện cũ nhất trước tiên)");
+    static final AllowableValue END_OF_STREAM = new AllowableValue("end-of-stream", "Cuối Luồng",
+            "Bắt đầu đọc các Sự kiện Provenance từ cuối luồng, bỏ qua các sự kiện cũ");
 
     static final PropertyDescriptor FILTER_EVENT_TYPE = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-event-filter")
-            .displayName("Event Type to Include")
-            .description("Comma-separated list of event types that will be used to filter the provenance events sent by the reporting task. "
-                    + "Available event types are " + Arrays.deepToString(ProvenanceEventType.values()) + ". If no filter is set, all the events are sent. If "
-                    + "multiple filters are set, the filters are cumulative.")
+            .displayName("Loại Sự kiện cần Bao gồm")
+            .description("Danh sách các loại sự kiện được phân tách bằng dấu phẩy sẽ được sử dụng để lọc các sự kiện provenance được gửi bởi tác vụ báo cáo. "
+                    + "Các loại sự kiện có sẵn là " + Arrays.deepToString(ProvenanceEventType.values()) + ". Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu "
+                    + "nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -99,11 +99,11 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor FILTER_EVENT_TYPE_EXCLUDE = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-event-filter-exclude")
-            .displayName("Event Type to Exclude")
-            .description("Comma-separated list of event types that will be used to exclude the provenance events sent by the reporting task. "
-                    + "Available event types are " + Arrays.deepToString(ProvenanceEventType.values()) + ". If no filter is set, all the events are sent. If "
-                    + "multiple filters are set, the filters are cumulative. If an event type is included in Event Type to Include and excluded here, then the "
-                    + "exclusion takes precedence and the event will not be sent.")
+            .displayName("Loại Sự kiện cần Loại trừ")
+            .description("Danh sách các loại sự kiện được phân tách bằng dấu phẩy sẽ được sử dụng để loại trừ các sự kiện provenance được gửi bởi tác vụ báo cáo. "
+                    + "Các loại sự kiện có sẵn là " + Arrays.deepToString(ProvenanceEventType.values()) + ". Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu "
+                    + "nhi-ều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. Nếu một loại sự kiện được bao gồm trong Loại Sự kiện cần Bao gồm và bị loại trừ ở đây, thì "
+                    + "việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -111,9 +111,9 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor FILTER_COMPONENT_TYPE = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-type-filter")
-            .displayName("Component Type to Include")
-            .description("Regular expression to filter the provenance events based on the component type. Only the events matching the regular "
-                    + "expression will be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative.")
+            .displayName("Loại Thành phần cần Bao gồm")
+            .description("Biểu thức chính quy để lọc các sự kiện provenance dựa trên loại thành phần. Chỉ những sự kiện khớp với biểu thức chính quy "
+                    + "mới được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
@@ -121,10 +121,10 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor FILTER_COMPONENT_TYPE_EXCLUDE = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-type-filter-exclude")
-            .displayName("Component Type to Exclude")
-            .description("Regular expression to exclude the provenance events based on the component type. The events matching the regular "
-                    + "expression will not be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative. "
-                    + "If a component type is included in Component Type to Include and excluded here, then the exclusion takes precedence and the event will not be sent.")
+            .displayName("Loại Thành phần cần Loại trừ")
+            .description("Biểu thức chính quy để loại trừ các sự kiện provenance dựa trên loại thành phần. Các sự kiện khớp với biểu thức chính quy "
+                    + "sẽ không được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. "
+                    + "Nếu một loại thành phần được bao gồm trong Loại Thành phần cần Bao gồm và bị loại trừ ở đây, thì việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
@@ -132,9 +132,9 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor FILTER_COMPONENT_ID = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-id-filter")
-            .displayName("Component ID to Include")
-            .description("Comma-separated list of component UUID that will be used to filter the provenance events sent by the reporting task. If no "
-                    + "filter is set, all the events are sent. If multiple filters are set, the filters are cumulative.")
+            .displayName("ID Thành phần cần Bao gồm")
+            .description("Danh sách các UUID của thành phần được phân tách bằng dấu phẩy sẽ được sử dụng để lọc các sự kiện provenance được gửi bởi tác vụ báo cáo. Nếu không có "
+                    + "bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -142,10 +142,10 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor FILTER_COMPONENT_ID_EXCLUDE = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-id-filter-exclude")
-            .displayName("Component ID to Exclude")
-            .description("Comma-separated list of component UUID that will be used to exclude the provenance events sent by the reporting task. If no "
-                    + "filter is set, all the events are sent. If multiple filters are set, the filters are cumulative. If a component UUID is included in "
-                    + "Component ID to Include and excluded here, then the exclusion takes precedence and the event will not be sent.")
+            .displayName("ID Thành phần cần Loại trừ")
+            .description("Danh sách các UUID của thành phần được phân tách bằng dấu phẩy sẽ được sử dụng để loại trừ các sự kiện provenance được gửi bởi tác vụ báo cáo. Nếu không có "
+                    + "bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. Nếu một UUID của thành phần được bao gồm trong "
+                    + "ID Thành phần cần Bao gồm và bị loại trừ ở đây, thì việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -153,9 +153,9 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor FILTER_COMPONENT_NAME = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-name-filter")
-            .displayName("Component Name to Include")
-            .description("Regular expression to filter the provenance events based on the component name. Only the events matching the regular "
-                    + "expression will be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative.")
+            .displayName("Tên Thành phần cần Bao gồm")
+            .description("Biểu thức chính quy để lọc các sự kiện provenance dựa trên tên thành phần. Chỉ những sự kiện khớp với biểu thức chính quy "
+                    + "mới được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
@@ -163,10 +163,10 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor FILTER_COMPONENT_NAME_EXCLUDE = new PropertyDescriptor.Builder()
             .name("s2s-prov-task-name-filter-exclude")
-            .displayName("Component Name to Exclude")
-            .description("Regular expression to exclude the provenance events based on the component name. The events matching the regular "
-                    + "expression will not be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative. "
-                    + "If a component name is included in Component Name to Include and excluded here, then the exclusion takes precedence and the event will not be sent.")
+            .displayName("Tên Thành phần cần Loại trừ")
+            .description("Biểu thức chính quy để loại trừ các sự kiện provenance dựa trên tên thành phần. Các sự kiện khớp với biểu thức chính quy "
+                    + "sẽ không được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. "
+                    + "Nếu một tên thành phần được bao gồm trong Tên Thành phần cần Bao gồm và bị loại trừ ở đây, thì việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
@@ -174,13 +174,12 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
 
     static final PropertyDescriptor START_POSITION = new PropertyDescriptor.Builder()
             .name("start-position")
-            .displayName("Start Position")
-            .description("If the Reporting Task has never been run, or if its state has been reset by a user, specifies where in the stream of Provenance Events the Reporting Task should start")
+            .displayName("Vị trí Bắt đầu")
+            .description("Nếu Tác vụ Báo cáo chưa từng được chạy, hoặc nếu trạng thái của nó đã được người dùng đặt lại, chỉ định nơi trong luồng Sự kiện Provenance mà Tác vụ Báo cáo nên bắt đầu")
             .allowableValues(BEGINNING_OF_STREAM, END_OF_STREAM)
             .defaultValue(BEGINNING_OF_STREAM.getValue())
             .required(true)
             .build();
-
     private volatile ProvenanceEventConsumer consumer;
 
     public SiteToSiteProvenanceReportingTask() throws IOException {
@@ -265,7 +264,7 @@ public class SiteToSiteProvenanceReportingTask extends AbstractSiteToSiteReporti
         final boolean isClustered = context.isClustered();
         final String nodeId = context.getClusterNodeIdentifier();
         if (nodeId == null && isClustered) {
-            getLogger().debug("This instance of NiFi is configured for clustering, but the Cluster Node Identifier is not yet available. "
+            getLogger().debug("This instance of Life is configured for clustering, but the Cluster Node Identifier is not yet available. "
                 + "Will wait for Node Identifier to be established.");
             return;
         }

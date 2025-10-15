@@ -40,25 +40,25 @@ public class HashiCorpVaultProperties {
     private final Optional<String> readTimeout;
     private final int kvVersion;
 
-    private HashiCorpVaultProperties(final HashiCorpVaultPropertiesBuilder builder) {
-        this.uri =  Objects.requireNonNull(builder.uri, "Vault URI is required");;
-        this.authPropertiesFilename = Objects.requireNonNull(builder.authPropertiesFilename, "Vault auth properties filename is required");
+ private HashiCorpVaultProperties(final HashiCorpVaultPropertiesBuilder builder) {
+        this.uri =  Objects.requireNonNull(builder.uri, "URI của Vault là bắt buộc");;
+        this.authPropertiesFilename = Objects.requireNonNull(builder.authPropertiesFilename, "Tên tệp thuộc tính xác thực Vault là bắt buộc");
         this.ssl = new HashiCorpVaultSslProperties(builder.keyStore, builder.keyStoreType, builder.keyStorePassword,
                 builder.trustStore, builder.trustStoreType, builder.trustStorePassword,builder.enabledTlsCipherSuites, builder.enabledTlsProtocols);
         this.connectionTimeout = builder.connectionTimeout == null ? Optional.empty() : Optional.of(builder.connectionTimeout);
         this.readTimeout = builder.readTimeout == null ? Optional.empty() : Optional.of(builder.readTimeout);
         this.kvVersion = builder.kvVersion;
         if (kvVersion != 1 && kvVersion != 2) {
-            throw new HashiCorpVaultConfigurationException("Key/Value version " + kvVersion + " is not supported");
+            throw new HashiCorpVaultConfigurationException("Phiên bản Key/Value " + kvVersion + " không được hỗ trợ");
         }
 
         if (uri.startsWith(HTTPS)) {
-            Objects.requireNonNull(builder.keyStore, "KeyStore is required with an https URI");
-            Objects.requireNonNull(builder.keyStorePassword, "KeyStore password is required with an https URI");
-            Objects.requireNonNull(builder.keyStoreType, "KeyStore type is required with an https URI");
-            Objects.requireNonNull(builder.trustStore, "TrustStore is required with an https URI");
-            Objects.requireNonNull(builder.trustStorePassword, "TrustStore password is required with an https URI");
-            Objects.requireNonNull(builder.trustStoreType, "TrustStore type is required with an https URI");
+            Objects.requireNonNull(builder.keyStore, "KeyStore là bắt buộc với URI https");
+            Objects.requireNonNull(builder.keyStorePassword, "Mật khẩu KeyStore là bắt buộc với URI https");
+            Objects.requireNonNull(builder.keyStoreType, "Loại KeyStore là bắt buộc với URI https");
+            Objects.requireNonNull(builder.trustStore, "TrustStore là bắt buộc với URI https");
+            Objects.requireNonNull(builder.trustStorePassword, "Mật khẩu TrustStore là bắt buộc với URI https");
+            Objects.requireNonNull(builder.trustStoreType, "Loại TrustStore là bắt buộc với URI https");
         }
         validateAuthProperties();
     }

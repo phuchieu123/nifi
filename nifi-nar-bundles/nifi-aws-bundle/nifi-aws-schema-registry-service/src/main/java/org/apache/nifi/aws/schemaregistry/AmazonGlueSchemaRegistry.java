@@ -63,7 +63,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"schema", "registry", "aws", "avro", "glue"})
-@CapabilityDescription("Cung cấp Schema Registry tương tác với AWS Glue Schema Registry, cho phép sử dụng các Schema được lưu trữ trong Glue Schema Registry trong NiFi. " +
+@CapabilityDescription("Cung cấp Schema Registry tương tác với AWS Glue Schema Registry, cho phép sử dụng các Schema được lưu trữ trong Glue Schema Registry trong Life. " +
 "Khi một Schema được tra cứu theo tên trong registry này, nó sẽ tìm Schema tương ứng trong AWS Glue Schema Registry có cùng tên.")
 public class AmazonGlueSchemaRegistry extends AbstractControllerService implements SchemaRegistry {
 

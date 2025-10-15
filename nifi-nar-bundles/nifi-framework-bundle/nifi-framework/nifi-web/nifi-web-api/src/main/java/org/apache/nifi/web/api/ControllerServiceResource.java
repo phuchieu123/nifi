@@ -1098,7 +1098,7 @@ public class ControllerServiceResource extends ApplicationResource {
 
         final VerifyConfigRequestDTO requestDto = configRequest.getRequest();
         final String serviceId = requestDto.getComponentId();
-        final List<UpdateStep> updateSteps = Collections.singletonList(new StandardUpdateStep("Verify Controller Service Configuration"));
+        final List<UpdateStep> updateSteps = Collections.singletonList(new StandardUpdateStep("Xác minh cấu hình dịch vụ điều khiển"));
 
         final AsynchronousWebRequest<VerifyConfigRequestEntity, List<ConfigVerificationResultDTO>> request =
             new StandardAsynchronousWebRequest<>(requestId, configRequest, serviceId, user, updateSteps);
@@ -1111,7 +1111,7 @@ public class ControllerServiceResource extends ApplicationResource {
                 asyncRequest.markStepComplete(results);
             } catch (final Exception e) {
                 logger.error("Failed to verify Controller Service configuration", e);
-                asyncRequest.fail("Failed to verify Controller Service configuration due to " + e);
+                asyncRequest.fail("Không thể xác minh cấu hình Dịch vụ điều khiển do " + e);
             }
         };
 

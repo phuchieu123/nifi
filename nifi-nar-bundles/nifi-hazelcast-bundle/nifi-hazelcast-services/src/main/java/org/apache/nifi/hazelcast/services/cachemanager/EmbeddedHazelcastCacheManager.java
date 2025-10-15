@@ -43,29 +43,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Tags({"hazelcast", "cache"})
-@CapabilityDescription("A service that runs embedded Hazelcast and provides cache instances backed by that." +
-        " The server does not ask for authentication, it is recommended to run it within secured network.")
+@CapabilityDescription("Một service chạy Hazelcast nhúng và cung cấp các phiên bản cache dựa trên đó." +
+        " Máy chủ không yêu cầu xác thực, nên khuyến nghị chạy trong mạng được bảo mật.")
 public class EmbeddedHazelcastCacheManager extends IMapBasedHazelcastCacheManager {
 
     private static final int DEFAULT_HAZELCAST_PORT = 5701;
     private static final String PORT_SEPARATOR = ":";
-    private static final String INSTANCE_CREATION_LOG = "Embedded Hazelcast server instance with instance name %s has been created successfully";
-    private static final String MEMBER_LIST_LOG = "Hazelcast cluster will be created based on the NiFi cluster with the following members: %s";
+    private static final String INSTANCE_CREATION_LOG = "Phiên bản máy chủ Hazelcast nhúng với tên %s đã được tạo thành công";
+    private static final String MEMBER_LIST_LOG = "Cụm Hazelcast sẽ được tạo dựa trên cụm Life với các thành viên sau: %s";
 
-    private static final AllowableValue CLUSTER_NONE = new AllowableValue("none", "None", "No high availability or data replication is provided," +
-            " every node has access only to the data stored locally.");
-    private static final AllowableValue CLUSTER_ALL_NODES = new AllowableValue("all_nodes", "All Nodes", "Creates Hazelcast cluster based on the NiFi cluster:" +
-            " It expects every NiFi nodes to have a running Hazelcast instance on the same port as specified in the Hazelcast Port property. No explicit listing of the" +
-            " instances is needed.");
-    private static final AllowableValue CLUSTER_EXPLICIT = new AllowableValue("explicit", "Explicit", "Works with an explicit list of Hazelcast instances," +
-            " creating a cluster using the listed instances. This provides greater control, making it possible to utilize only certain nodes as Hazelcast servers." +
-            " The list of Hazelcast instances can be set in the property \"Hazelcast Instances\". The list items must refer to hosts within the NiFi cluster, no external Hazelcast" +
-            " is allowed. NiFi nodes are not listed will be join to the Hazelcast cluster as clients.");
+    private static final AllowableValue CLUSTER_NONE = new AllowableValue("none", "Không có", "Không cung cấp khả năng sẵn sàng cao hoặc sao chép dữ liệu," +
+            " mỗi node chỉ có quyền truy cập vào dữ liệu được lưu trữ cục bộ.");
+    private static final AllowableValue CLUSTER_ALL_NODES = new AllowableValue("all_nodes", "Tất cả các Node", "Tạo cụm Hazelcast dựa trên cụm Life:" +
+            " Yêu cầu mọi node Life đều có một phiên bản Hazelcast đang chạy trên cùng cổng được chỉ định trong thuộc tính Hazelcast Port. Không cần liệt kê thủ công các phiên bản.");
+    private static final AllowableValue CLUSTER_EXPLICIT = new AllowableValue("explicit", "Tường minh", "Hoạt động với danh sách cụ thể các phiên bản Hazelcast," +
+            " tạo một cụm sử dụng các phiên bản đã liệt kê. Điều này cung cấp quyền kiểm soát cao hơn, cho phép chỉ định rõ node nào được dùng làm máy chủ Hazelcast." +
+            " Danh sách các phiên bản Hazelcast có thể được đặt trong thuộc tính \"Hazelcast Instances\". Các phần tử trong danh sách phải là các host thuộc cụm Life, không được phép sử dụng Hazelcast bên ngoài." +
+            " Các node Life không được liệt kê sẽ tham gia cụm Hazelcast dưới dạng client.");
 
     private static final PropertyDescriptor HAZELCAST_PORT = new PropertyDescriptor.Builder()
             .name("hazelcast-port")
-            .displayName("Hazelcast Port")
-            .description("Port for the Hazelcast instance to use.")
+            .displayName("Cổng Hazelcast")
+            .description("Cổng được sử dụng cho phiên bản Hazelcast.")
             .required(true)
             .defaultValue(String.valueOf(DEFAULT_HAZELCAST_PORT))
             .addValidator(StandardValidators.PORT_VALIDATOR)
@@ -74,25 +73,26 @@ public class EmbeddedHazelcastCacheManager extends IMapBasedHazelcastCacheManage
 
     private static final PropertyDescriptor HAZELCAST_CLUSTERING_STRATEGY = new PropertyDescriptor.Builder()
             .name("hazelcast-clustering-strategy")
-            .displayName("Hazelcast Clustering Strategy")
-            .description("Specifies with what strategy the Hazelcast cluster should be created.")
+            .displayName("Chiến lược tạo cụm Hazelcast")
+            .description("Chỉ định chiến lược tạo cụm Hazelcast sẽ được sử dụng.")
             .required(true)
             .allowableValues(CLUSTER_NONE, CLUSTER_ALL_NODES, CLUSTER_EXPLICIT)
-            .defaultValue(CLUSTER_NONE.getValue()) // None is used for default in order to be valid with standalone NiFi.
+            .defaultValue(CLUSTER_NONE.getValue()) // Mặc định là “Không có” để phù hợp với Life chạy độc lập.
             .build();
 
     private static final PropertyDescriptor HAZELCAST_INSTANCES = new PropertyDescriptor.Builder()
             .name("hazelcast-instances")
-            .displayName("Hazelcast Instances")
-            .description("Only used with \"Explicit\" Clustering Strategy!" +
-                    " List of NiFi instance host names which should be part of the Hazelcast cluster. Host names are separated by comma." +
-                    " The port specified in the \"Hazelcast Port\" property will be used as server port." +
-                    " The list must contain every instance that will be part of the cluster. Other instances will join the Hazelcast cluster as clients.")
+            .displayName("Các phiên bản Hazelcast")
+            .description("Chỉ sử dụng khi chọn \"Chiến lược cụm Tường minh (Explicit)\"!" +
+                    " Danh sách tên host của các instance Life sẽ tham gia cụm Hazelcast. Các host được ngăn cách bằng dấu phẩy." +
+                    " Cổng được chỉ định trong thuộc tính \"Cổng Hazelcast\" sẽ được sử dụng làm cổng máy chủ." +
+                    " Danh sách này phải bao gồm tất cả các instance sẽ là thành phần của cụm. Các instance khác sẽ tham gia cụm Hazelcast dưới dạng client.")
             .required(false)
-            // HOSTNAME_PORT_LIST_VALIDATOR would not work properly as we do not expect port here, only list of hosts. Custom validator provides further checks.
+            // HOSTNAME_PORT_LIST_VALIDATOR sẽ không hoạt động chính xác vì ở đây chỉ mong đợi danh sách host, không bao gồm cổng. Bộ kiểm tra tùy chỉnh sẽ xử lý thêm.
             .addValidator(StandardValidators.URI_LIST_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
+
 
     private static final List<PropertyDescriptor> PROPERTY_DESCRIPTORS;
 
@@ -192,7 +192,7 @@ public class EmbeddedHazelcastCacheManager extends IMapBasedHazelcastCacheManage
             results.add(new ValidationResult.Builder()
                     .subject(HAZELCAST_CLUSTERING_STRATEGY.getDisplayName())
                     .valid(false)
-                    .explanation("cannot use \"" + CLUSTER_ALL_NODES.getDisplayName() + "\" Clustering Strategy when NiFi is not part of a cluster!")
+                    .explanation("cannot use \"" + CLUSTER_ALL_NODES.getDisplayName() + "\" Clustering Strategy when Life is not part of a cluster!")
                     .build());
         }
 
@@ -200,7 +200,7 @@ public class EmbeddedHazelcastCacheManager extends IMapBasedHazelcastCacheManage
             results.add(new ValidationResult.Builder()
                     .subject(HAZELCAST_CLUSTERING_STRATEGY.getDisplayName())
                     .valid(false)
-                    .explanation("cannot use \"" + CLUSTER_EXPLICIT.getDisplayName() + "\" Clustering Strategy when NiFi is not part of a cluster!")
+                    .explanation("cannot use \"" + CLUSTER_EXPLICIT.getDisplayName() + "\" Clustering Strategy when Life is not part of a cluster!")
                     .build());
         }
 
@@ -229,7 +229,7 @@ public class EmbeddedHazelcastCacheManager extends IMapBasedHazelcastCacheManage
                     results.add(new ValidationResult.Builder()
                             .subject(HAZELCAST_INSTANCES.getDisplayName())
                             .valid(false)
-                            .explanation("host \"" + hazelcastHost + "\" is not part of the NiFi cluster!")
+                            .explanation("host \"" + hazelcastHost + "\" is not part of the Life cluster!")
                             .build());
                 }
             }

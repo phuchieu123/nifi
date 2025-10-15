@@ -99,14 +99,15 @@ public class ValidationResult {
         return true;
     }
 
-    @Override
-        public String toString() {
-            if (input == null) {
-                return String.format("'%s' là %s vì %s", subject, (valid ? "hợp lệ" : "không hợp lệ"), explanation);
-            } else {
-                return String.format("'%s' được xác thực với '%s' là %s vì %s", subject, input, (valid ? "hợp lệ" : "không hợp lệ"), explanation);
-            }
+   @Override
+    public String toString() {
+        if (input == null) {
+            return String.format("'%s' là %s vì %s", subject, (valid ? "hợp lệ" : "không hợp lệ"), explanation);
+        } else {
+            return String.format("'%s' được xác thực với '%s' là %s vì %s",
+                    subject, input, (valid ? "hợp lệ" : "không hợp lệ"), explanation);
         }
+    }
 
     public static final class Builder {
 

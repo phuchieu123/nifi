@@ -108,30 +108,30 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.nifi.reporting.util.provenance.ProvenanceEventConsumer.PROVENANCE_BATCH_SIZE;
 import static org.apache.nifi.reporting.util.provenance.ProvenanceEventConsumer.PROVENANCE_START_POSITION;
 
-@DeprecationNotice(reason = "Planned for removal in NiFi 2.0")
+@DeprecationNotice(reason = "Dự kiến sẽ bị xóa trong Life 2.0")
 @Tags({"atlas", "lineage"})
-@CapabilityDescription("Report NiFi flow data set level lineage to Apache Atlas." +
-        " End-to-end lineages across NiFi environments and other systems can be reported if those are" +
-        " connected by different protocols and data set, such as NiFi Site-to-Site, Kafka topic or Hive tables ... etc." +
-        " Atlas lineage reported by this reporting task can be useful to grasp the high level relationships between processes and data sets," +
-        " in addition to NiFi provenance events providing detailed event level lineage." +
-        " See 'Additional Details' for further description and limitations.")
-@Stateful(scopes = Scope.LOCAL, description = "Stores the Reporting Task's last event Id so that on restart the task knows where it left off.")
-@DynamicProperty(name = "hostnamePattern.<namespace>", value = "hostname Regex patterns",
+@CapabilityDescription("Báo cáo dòng dõi dữ liệu cấp độ tập dữ liệu của luồng Life cho Apache Atlas." +
+        " Dòng dõi dữ liệu từ đầu đến cuối qua các môi trường Life và các hệ thống khác có thể được báo cáo nếu chúng" +
+        " được kết nối bằng các giao thức và tập dữ liệu khác nhau, chẳng hạn như Life Site-to-Site, chủ đề Kafka hoặc bảng Hive ... v.v." +
+        " Dòng dõi dữ liệu Atlas được báo cáo bởi tác vụ báo cáo này có thể hữu ích để nắm bắt các mối quan hệ cấp cao giữa các quy trình và tập dữ liệu," +
+        " ngoài các sự kiện xuất xứ của Life cung cấp dòng dõi dữ liệu chi tiết ở cấp độ sự kiện." +
+        " Xem 'Chi tiết bổ sung' để biết thêm mô tả và các hạn chế.")
+@Stateful(scopes = Scope.LOCAL, description = "Lưu trữ Id sự kiện cuối cùng của Tác vụ Báo cáo để khi khởi động lại, tác vụ biết nó đã dừng ở đâu.")
+@DynamicProperty(name = "hostnamePattern.<namespace>", value = "Các mẫu Regex của tên máy chủ",
                  description = RegexNamespaceResolver.PATTERN_PROPERTY_PREFIX_DESC, expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY)
-// In order for each reporting task instance to have its own static objects such as KafkaNotification.
+// Để mỗi phiên bản tác vụ báo cáo có các đối tượng tĩnh riêng, chẳng hạn như KafkaNotification.
 @RequiresInstanceClassLoading
 public class ReportLineageToAtlas extends AbstractReportingTask {
 
     private static final String ATLAS_URL_DELIMITER = ",";
     static final PropertyDescriptor ATLAS_URLS = new PropertyDescriptor.Builder()
             .name("atlas-urls")
-            .displayName("Atlas URLs")
-            .description("Comma separated URL of Atlas Servers" +
-                    " (e.g. http://atlas-server-hostname:21000 or https://atlas-server-hostname:21443)." +
-                    " For accessing Atlas behind Knox gateway, specify Knox gateway URL" +
-                    " (e.g. https://knox-hostname:8443/gateway/{topology-name}/atlas)." +
-                    " If not specified, 'atlas.rest.address' in Atlas Configuration File is used.")
+            .displayName("Các URL của Atlas")
+            .description("URL của các Máy chủ Atlas được phân tách bằng dấu phẩy" +
+                    " (ví dụ: http://atlas-server-hostname:21000 hoặc https://atlas-server-hostname:21443)." +
+                    " Để truy cập Atlas phía sau cổng Knox, hãy chỉ định URL cổng Knox" +
+                    " (ví dụ: https://knox-hostname:8443/gateway/{topology-name}/atlas)." +
+                    " Nếu không được chỉ định, 'atlas.rest.address' trong Tệp cấu hình Atlas sẽ được sử dụng.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -139,28 +139,28 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     public static final PropertyDescriptor ATLAS_CONNECT_TIMEOUT = new PropertyDescriptor.Builder()
             .name("atlas-connect-timeout")
-            .displayName("Atlas Connect Timeout")
-            .description("Max wait time for connection to Atlas.")
+            .displayName("Thời gian chờ kết nối Atlas")
+            .description("Thời gian chờ tối đa để kết nối đến Atlas.")
             .required(true)
-            .defaultValue("60 sec")
+            .defaultValue("60 giây")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor ATLAS_READ_TIMEOUT = new PropertyDescriptor.Builder()
             .name("atlas-read-timeout")
-            .displayName("Atlas Read Timeout")
-            .description("Max wait time for response from Atlas.")
+            .displayName("Thời gian chờ đọc Atlas")
+            .description("Thời gian chờ tối đa để nhận phản hồi từ Atlas.")
             .required(true)
-            .defaultValue("60 sec")
+            .defaultValue("60 giây")
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
             .build();
 
-    static final AllowableValue ATLAS_AUTHN_BASIC = new AllowableValue("basic", "Basic", "Use username and password.");
-    static final AllowableValue ATLAS_AUTHN_KERBEROS = new AllowableValue("kerberos", "Kerberos", "Use Kerberos keytab file.");
+    static final AllowableValue ATLAS_AUTHN_BASIC = new AllowableValue("basic", "Cơ bản", "Sử dụng tên người dùng và mật khẩu.");
+    static final AllowableValue ATLAS_AUTHN_KERBEROS = new AllowableValue("kerberos", "Kerberos", "Sử dụng tệp keytab Kerberos.");
     static final PropertyDescriptor ATLAS_AUTHN_METHOD = new PropertyDescriptor.Builder()
             .name("atlas-authentication-method")
-            .displayName("Atlas Authentication Method")
-            .description("Specify how to authenticate this reporting task to Atlas server.")
+            .displayName("Phương thức xác thực Atlas")
+            .description("Chỉ định cách xác thực tác vụ báo cáo này với máy chủ Atlas.")
             .required(true)
             .allowableValues(ATLAS_AUTHN_BASIC, ATLAS_AUTHN_KERBEROS)
             .defaultValue(ATLAS_AUTHN_BASIC.getValue())
@@ -168,8 +168,8 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     public static final PropertyDescriptor ATLAS_USER = new PropertyDescriptor.Builder()
             .name("atlas-username")
-            .displayName("Atlas Username")
-            .description("User name to communicate with Atlas.")
+            .displayName("Tên người dùng Atlas")
+            .description("Tên người dùng để giao tiếp với Atlas.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -177,8 +177,8 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     public static final PropertyDescriptor ATLAS_PASSWORD = new PropertyDescriptor.Builder()
             .name("atlas-password")
-            .displayName("Atlas Password")
-            .description("Password to communicate with Atlas.")
+            .displayName("Mật khẩu Atlas")
+            .description("Mật khẩu để giao tiếp với Atlas.")
             .required(false)
             .sensitive(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -187,22 +187,22 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     static final PropertyDescriptor ATLAS_CONF_DIR = new PropertyDescriptor.Builder()
             .name("atlas-conf-dir")
-            .displayName("Atlas Configuration Directory")
-            .description("Directory path that contains 'atlas-application.properties' file." +
-                    " If not specified and 'Create Atlas Configuration File' is disabled," +
-                    " then, 'atlas-application.properties' file under root classpath is used.")
+            .displayName("Thư mục cấu hình Atlas")
+            .description("Đường dẫn thư mục chứa tệp 'atlas-application.properties'." +
+                    " Nếu không được chỉ định và 'Tạo tệp cấu hình Atlas' bị vô hiệu hóa," +
+                    " thì, tệp 'atlas-application.properties' trong classpath gốc sẽ được sử dụng.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.DIRECTORY)
-            // Atlas generates ssl-client.xml in this directory and then loads it from classpath
+            // Atlas tạo ssl-client.xml trong thư mục này và sau đó tải nó từ classpath
             .dynamicallyModifiesClasspath(true)
             .build();
 
     public static final PropertyDescriptor ATLAS_NIFI_URL = new PropertyDescriptor.Builder()
             .name("atlas-nifi-url")
-            .displayName("NiFi URL for Atlas")
-            .description("NiFi URL is used in Atlas to represent this NiFi cluster (or standalone instance)." +
-                    " It is recommended to use one that can be accessible remotely instead of using 'localhost'.")
+            .displayName("URL Life cho Atlas")
+            .description("URL Life được sử dụng trong Atlas để đại diện cho cụm Life này (hoặc phiên bản độc lập)." +
+                    " Khuyến nghị sử dụng một URL có thể truy cập từ xa thay vì sử dụng 'localhost'.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.URL_VALIDATOR)
@@ -210,11 +210,11 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     public static final PropertyDescriptor ATLAS_DEFAULT_CLUSTER_NAME = new PropertyDescriptor.Builder()
             .name("atlas-default-cluster-name")
-            .displayName("Atlas Default Metadata Namespace")
-            .description("Namespace for Atlas entities reported by this ReportingTask." +
-                    " If not specified, 'atlas.metadata.namespace' or 'atlas.cluster.name' (the former having priority) in Atlas Configuration File is used." +
-                    " Multiple mappings can be configured by user defined properties." +
-                    " See 'Additional Details...' for more.")
+            .displayName("Không gian tên siêu dữ liệu mặc định của Atlas")
+            .description("Không gian tên cho các thực thể Atlas được báo cáo bởi Tác vụ Báo cáo này." +
+                    " Nếu không được chỉ định, 'atlas.metadata.namespace' hoặc 'atlas.cluster.name' (ưu tiên cái trước) trong Tệp cấu hình Atlas sẽ được sử dụng." +
+                    " Nhiều ánh xạ có thể được cấu hình bởi các thuộc tính do người dùng định nghĩa." +
+                    " Xem 'Chi tiết bổ sung...' để biết thêm.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -222,10 +222,10 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     static final PropertyDescriptor ATLAS_CONF_CREATE = new PropertyDescriptor.Builder()
             .name("atlas-conf-create")
-            .displayName("Create Atlas Configuration File")
-            .description("If enabled, 'atlas-application.properties' file will be created in 'Atlas Configuration Directory'" +
-                    " automatically when this Reporting Task starts." +
-                    " Note that the existing configuration file will be overwritten.")
+            .displayName("Tạo tệp cấu hình Atlas")
+            .description("Nếu được bật, tệp 'atlas-application.properties' sẽ được tạo trong 'Thư mục cấu hình Atlas'" +
+                    " tự động khi Tác vụ Báo cáo này bắt đầu." +
+                    " Lưu ý rằng tệp cấu hình hiện có sẽ bị ghi đè.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
@@ -234,19 +234,19 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     static final PropertyDescriptor SSL_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
             .name("ssl-context-service")
-            .displayName("SSL Context Service")
-            .description("Specifies the SSL Context Service to use for communicating with Atlas and Kafka.")
+            .displayName("Dịch vụ ngữ cảnh SSL")
+            .description("Chỉ định Dịch vụ ngữ cảnh SSL sẽ sử dụng để giao tiếp với Atlas và Kafka.")
             .required(false)
             .identifiesControllerService(SSLContextService.class)
             .build();
 
     static final PropertyDescriptor KAFKA_BOOTSTRAP_SERVERS = new PropertyDescriptor.Builder()
             .name("kafka-bootstrap-servers")
-            .displayName("Kafka Bootstrap Servers")
-            .description("Kafka Bootstrap Servers to send Atlas hook notification messages based on NiFi provenance events." +
-                    " E.g. 'localhost:9092'" +
-                    " NOTE: Once this reporting task has started, restarting NiFi is required to changed this property" +
-                    " as Atlas library holds a unmodifiable static reference to Kafka client.")
+            .displayName("Các máy chủ Bootstrap của Kafka")
+            .description("Các máy chủ Bootstrap của Kafka để gửi các thông báo hook của Atlas dựa trên các sự kiện xuất xứ của Life." +
+                    " Ví dụ: 'localhost:9092'" +
+                    " LƯU Ý: Sau khi tác vụ báo cáo này đã bắt đầu, cần phải khởi động lại Life để thay đổi thuộc tính này" +
+                    " vì thư viện Atlas giữ một tham chiếu tĩnh không thể sửa đổi đến máy khách Kafka.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -258,9 +258,9 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
     static final AllowableValue SEC_SASL_SSL = new AllowableValue("SASL_SSL", "SASL_SSL", "SASL_SSL");
     static final PropertyDescriptor KAFKA_SECURITY_PROTOCOL = new PropertyDescriptor.Builder()
             .name("kafka-security-protocol")
-            .displayName("Kafka Security Protocol")
-            .description("Protocol used to communicate with Kafka brokers to send Atlas hook notification messages." +
-                    " Corresponds to Kafka's 'security.protocol' property.")
+            .displayName("Giao thức bảo mật Kafka")
+            .description("Giao thức được sử dụng để giao tiếp với các broker Kafka để gửi thông báo hook của Atlas." +
+                    " Tương ứng với thuộc tính 'security.protocol' của Kafka.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues(SEC_PLAINTEXT, SEC_SSL, SEC_SASL_PLAINTEXT, SEC_SASL_SSL)
@@ -269,20 +269,20 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     public static final PropertyDescriptor KERBEROS_PRINCIPAL = new PropertyDescriptor.Builder()
             .name("nifi-kerberos-principal")
-            .displayName("Kerberos Principal")
-            .description("The Kerberos principal for this NiFi instance to access Atlas API and Kafka brokers." +
-                    " If not set, it is expected to set a JAAS configuration file in the JVM properties defined in the bootstrap.conf file." +
-                    " This principal will be set into 'sasl.jaas.config' Kafka's property.")
+            .displayName("Principal Kerberos")
+            .description("Principal Kerberos cho phiên bản Life này để truy cập API Atlas và các broker Kafka." +
+                    " Nếu không được đặt, dự kiến sẽ đặt một tệp cấu hình JAAS trong các thuộc tính JVM được định nghĩa trong tệp bootstrap.conf." +
+                    " Principal này sẽ được đặt vào thuộc tính 'sasl.jaas.config' của Kafka.")
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
     public static final PropertyDescriptor KERBEROS_KEYTAB = new PropertyDescriptor.Builder()
             .name("nifi-kerberos-keytab")
-            .displayName("Kerberos Keytab")
-            .description("The Kerberos keytab for this NiFi instance to access Atlas API and Kafka brokers." +
-                    " If not set, it is expected to set a JAAS configuration file in the JVM properties defined in the bootstrap.conf file." +
-                    " This principal will be set into 'sasl.jaas.config' Kafka's property.")
+            .displayName("Keytab Kerberos")
+            .description("Keytab Kerberos cho phiên bản Life này để truy cập API Atlas và các broker Kafka." +
+                    " Nếu không được đặt, dự kiến sẽ đặt một tệp cấu hình JAAS trong các thuộc tính JVM được định nghĩa trong tệp bootstrap.conf." +
+                    " Principal này sẽ được đặt vào thuộc tính 'sasl.jaas.config' của Kafka.")
             .required(false)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -290,7 +290,7 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
     public static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
         .name("kerberos-credentials-service")
         .displayName("Dịch vụ chứng thực Kerberos")
-        .description("Specifies the Kerberos Credentials Controller Service that should be used for authenticating with Kerberos")
+        .description("Chỉ định Dịch vụ kiểm soát chứng thực Kerberos (Kerberos Credentials Controller Service) sẽ được sử dụng để xác thực với Kerberos")
         .identifiesControllerService(KerberosCredentialsService.class)
         .required(false)
         .build();
@@ -298,70 +298,69 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
 
     static final PropertyDescriptor KAFKA_KERBEROS_SERVICE_NAME = new PropertyDescriptor.Builder()
             .name("kafka-kerberos-service-name")
-            .displayName("Kafka Kerberos Service Name")
-            .description("The service name that matches the primary name of the Kafka server configured in the broker JAAS file." +
-                    " This can be defined either in Kafka's JAAS config or in Kafka's config." +
-                    " Corresponds to Kafka's 'security.protocol' property." +
-                    " It is ignored unless one of the SASL options of the <Security Protocol> are selected.")
+            .displayName("Tên dịch vụ Kerberos của Kafka")
+            .description("Tên dịch vụ khớp với tên chính của máy chủ Kafka được cấu hình trong tệp JAAS của broker." +
+                    " Điều này có thể được định nghĩa trong cấu hình JAAS của Kafka hoặc trong cấu hình của Kafka." +
+                    " Tương ứng với thuộc tính 'security.protocol' của Kafka." +
+                    " Nó sẽ bị bỏ qua trừ khi một trong các tùy chọn SASL của <Giao thức bảo mật> được chọn.")
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("kafka")
             .build();
 
-    static final AllowableValue LINEAGE_STRATEGY_SIMPLE_PATH = new AllowableValue("SimplePath", "Simple Path",
-            "Map NiFi provenance events and target Atlas DataSets to statically created 'nifi_flow_path' Atlas Processes." +
-                    " See also 'Additional Details'.");
-    static final AllowableValue LINEAGE_STRATEGY_COMPLETE_PATH = new AllowableValue("CompletePath", "Complete Path",
-            "Create separate 'nifi_flow_path' Atlas Processes for each distinct input and output DataSet combinations" +
-                    " by looking at the complete route for a given FlowFile. See also 'Additional Details.");
+    static final AllowableValue LINEAGE_STRATEGY_SIMPLE_PATH = new AllowableValue("SimplePath", "Đường dẫn đơn giản",
+            "Ánh xạ các sự kiện xuất xứ của Life và các DataSet Atlas mục tiêu tới các Quy trình Atlas 'nifi_flow_path' được tạo tĩnh." +
+                    " Xem thêm 'Chi tiết bổ sung'.");
+    static final AllowableValue LINEAGE_STRATEGY_COMPLETE_PATH = new AllowableValue("CompletePath", "Đường dẫn hoàn chỉnh",
+            "Tạo các Quy trình Atlas 'nifi_flow_path' riêng biệt cho mỗi sự kết hợp DataSet đầu vào và đầu ra khác nhau" +
+                    " bằng cách xem xét tuyến đường hoàn chỉnh cho một FlowFile nhất định. Xem thêm 'Chi tiết bổ sung'.");
 
     static final PropertyDescriptor LINEAGE_STRATEGY = new PropertyDescriptor.Builder()
             .name("nifi-lineage-strategy")
-            .displayName("Lineage Strategy")
-            .description("Specifies granularity on how NiFi data flow should be reported to Atlas." +
-                    " NOTE: It is strongly recommended to keep using the same strategy once this reporting task started to keep Atlas data clean." +
-                    " Switching strategies will not delete Atlas entities created by the old strategy." +
-                    " Having mixed entities created by different strategies makes Atlas lineage graph noisy." +
-                    " For more detailed description on each strategy and differences, refer 'NiFi Lineage Strategy' section in Additional Details.")
+            .displayName("Chiến lược dòng dõi dữ liệu")
+            .description("Chỉ định mức độ chi tiết về cách luồng dữ liệu Life sẽ được báo cáo cho Atlas." +
+                    " LƯU Ý: Rất khuyến khích tiếp tục sử dụng cùng một chiến lược sau khi tác vụ báo cáo này bắt đầu để giữ cho dữ liệu Atlas sạch sẽ." +
+                    " Việc chuyển đổi chiến lược sẽ không xóa các thực thể Atlas được tạo bởi chiến lược cũ." +
+                    " Việc có các thực thể hỗn hợp được tạo bởi các chiến lược khác nhau làm cho biểu đồ dòng dõi dữ liệu của Atlas trở nên nhiễu." +
+                    " Để biết mô tả chi tiết hơn về từng chiến lược và sự khác biệt, hãy tham khảo phần 'Chiến lược dòng dõi dữ liệu Life' trong Chi tiết bổ sung.")
             .required(true)
             .allowableValues(LINEAGE_STRATEGY_SIMPLE_PATH, LINEAGE_STRATEGY_COMPLETE_PATH)
             .defaultValue(LINEAGE_STRATEGY_SIMPLE_PATH.getValue())
             .build();
 
     static final AllowableValue AWS_S3_MODEL_VERSION_V1 = new AllowableValue("v1", "v1",
-            "Creates AWS S3 directory entities version 1 (aws_s3_pseudo_dir).");
+            "Tạo các thực thể thư mục AWS S3 phiên bản 1 (aws_s3_pseudo_dir).");
     static final AllowableValue AWS_S3_MODEL_VERSION_V2 = new AllowableValue(AtlasPathExtractorUtil.AWS_S3_ATLAS_MODEL_VERSION_V2, "v2",
-            "Creates AWS S3 directory entities version 2 (aws_s3_v2_directory).");
+            "Tạo các thực thể thư mục AWS S3 phiên bản 2 (aws_s3_v2_directory).");
 
     static final PropertyDescriptor AWS_S3_MODEL_VERSION = new PropertyDescriptor.Builder()
             .name("aws-s3-model-version")
-            .displayName("AWS S3 Model Version")
-            .description("Specifies what type of AWS S3 directory entities will be created in Atlas for s3a:// transit URIs (eg. PutHDFS with S3 integration)." +
-                    " NOTE: It is strongly recommended to keep using the same AWS S3 entity model version once this reporting task started to keep Atlas data clean." +
-                    " Switching versions will not delete existing Atlas entities created by the old version, nor migrate them to the new version.")
+            .displayName("Phiên bản mô hình AWS S3")
+            .description("Chỉ định loại thực thể thư mục AWS S3 nào sẽ được tạo trong Atlas cho các URI chuyển tiếp s3a:// (ví dụ: PutHDFS với tích hợp S3)." +
+                    " LƯU Ý: Rất khuyến khích tiếp tục sử dụng cùng một phiên bản mô hình thực thể AWS S3 sau khi tác vụ báo cáo này bắt đầu để giữ cho dữ liệu Atlas sạch sẽ." +
+                    " Việc chuyển đổi phiên bản sẽ không xóa các thực thể Atlas hiện có được tạo bởi phiên bản cũ, cũng không di chuyển chúng sang phiên bản mới.")
             .required(true)
             .allowableValues(AWS_S3_MODEL_VERSION_V1, AWS_S3_MODEL_VERSION_V2)
             .defaultValue(AWS_S3_MODEL_VERSION_V2.getValue())
             .build();
 
     static final AllowableValue FILESYSTEM_PATHS_LEVEL_FILE = new AllowableValue(FilesystemPathsLevel.FILE.name(), FilesystemPathsLevel.FILE.getDisplayName(),
-            "Creates File level paths.");
+            "Tạo đường dẫn ở cấp độ Tệp.");
     static final AllowableValue FILESYSTEM_PATHS_LEVEL_DIRECTORY = new AllowableValue(FilesystemPathsLevel.DIRECTORY.name(), FilesystemPathsLevel.DIRECTORY.getDisplayName(),
-            "Creates Directory level paths.");
+            "Tạo đường dẫn ở cấp độ Thư mục.");
 
     static final PropertyDescriptor FILESYSTEM_PATHS_LEVEL = new PropertyDescriptor.Builder()
             .name("filesystem-paths-level")
-            .displayName("Filesystem Path Entities Level")
-            .description("Specifies how the filesystem path entities (fs_path and hdfs_path) will be logged in Atlas: File or Directory level. In case of File level, each individual file entity " +
-                    "will be sent to Atlas as a separate entity with the full path including the filename. Directory level only logs the path of the parent directory without the filename. " +
-                    "This setting affects processors working with files, like GetFile or PutHDFS. NOTE: Although the default value is File level for backward compatibility reasons, " +
-                    "it is highly recommended to set it to Directory level because File level logging can generate a huge number of entities in Atlas.")
+            .displayName("Cấp độ thực thể đường dẫn hệ thống tệp")
+            .description("Chỉ định cách các thực thể đường dẫn hệ thống tệp (fs_path và hdfs_path) sẽ được ghi lại trong Atlas: Cấp độ Tệp hoặc Thư mục. Trong trường hợp cấp độ Tệp, mỗi thực thể tệp riêng lẻ " +
+                    "sẽ được gửi đến Atlas như một thực thể riêng biệt với đường dẫn đầy đủ bao gồm cả tên tệp. Cấp độ thư mục chỉ ghi lại đường dẫn của thư mục cha mà không có tên tệp. " +
+                    "Cài đặt này ảnh hưởng đến các bộ xử lý làm việc với các tệp, như GetFile hoặc PutHDFS. LƯU Ý: Mặc dù giá trị mặc định là cấp độ Tệp vì lý do tương thích ngược, " +
+                    "rất khuyến khích đặt nó thành cấp độ Thư mục vì việc ghi nhật ký cấp độ Tệp có thể tạo ra một số lượng lớn các thực thể trong Atlas.")
             .required(true)
             .allowableValues(FILESYSTEM_PATHS_LEVEL_FILE, FILESYSTEM_PATHS_LEVEL_DIRECTORY)
             .defaultValue(FILESYSTEM_PATHS_LEVEL_FILE.getValue())
             .build();
-
     private static final String ATLAS_PROPERTIES_FILENAME = "atlas-application.properties";
     private static final String ATLAS_PROPERTY_CLIENT_CONNECT_TIMEOUT_MS = "atlas.client.connectTimeoutMSecs";
     private static final String ATLAS_PROPERTY_CLIENT_READ_TIMEOUT_MS = "atlas.client.readTimeoutMSecs";
@@ -637,7 +636,7 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
                 String ts = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                         .withZone(ZoneOffset.UTC)
                         .format(Instant.now());
-                atlasProperties.store(fos, "Generated by Apache NiFi ReportLineageToAtlas ReportingTask at " + ts);
+                atlasProperties.store(fos, "Generated by Apache Life ReportLineageToAtlas ReportingTask at " + ts);
             }
         } else {
             // check if synchronous notification sending has been set (needed for the checkpointing in ProvenanceEventConsumer)
@@ -812,7 +811,7 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
             return;
         }
 
-        // If standalone or being primary node in a NiFi cluster, this node is responsible for doing primary tasks.
+        // If standalone or being primary node in a Life cluster, this node is responsible for doing primary tasks.
         final boolean isResponsibleForPrimaryTasks = !isClustered || getNodeTypeProvider().isPrimary();
 
         try (final NiFiAtlasClient atlasClient = createNiFiAtlasClient(context)) {
@@ -821,23 +820,23 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
             if (!isTypeDefCreated) {
                 try {
                     if (isResponsibleForPrimaryTasks) {
-                        // Create NiFi type definitions in Atlas type system.
+                        // Create Life type definitions in Atlas type system.
                         atlasClient.registerNiFiTypeDefs(false);
                     } else {
-                        // Otherwise, just check existence of NiFi type definitions.
+                        // Otherwise, just check existence of Life type definitions.
                         if (!atlasClient.isNiFiTypeDefsRegistered()) {
-                            getLogger().debug("NiFi type definitions are not ready in Atlas type system yet.");
+                            getLogger().debug("Life type definitions are not ready in Atlas type system yet.");
                             return;
                         }
                     }
                     isTypeDefCreated = true;
                 } catch (AtlasServiceException e) {
-                    throw new RuntimeException("Failed to check and create NiFi flow type definitions in Atlas due to " + e, e);
+                    throw new RuntimeException("Failed to check and create Life flow type definitions in Atlas due to " + e, e);
                 }
             }
 
             // Regardless of whether being a primary task node, each node has to analyse NiFiFlow.
-            // Assuming each node has the same flow definition, that is guaranteed by NiFi cluster management mechanism.
+            // Assuming each node has the same flow definition, that is guaranteed by Life cluster management mechanism.
             final NiFiFlow nifiFlow = createNiFiFlow(context, atlasClient);
 
 
@@ -850,7 +849,7 @@ public class ReportLineageToAtlas extends AbstractReportingTask {
             }
 
             // NOTE: There is a race condition between the primary node and other nodes.
-            // If a node notifies an event related to a NiFi component which is not yet created by NiFi primary node,
+            // If a node notifies an event related to a Life component which is not yet created by Life primary node,
             // then the notification message will fail due to having a reference to a non-existing entity.
             nifiAtlasHook.setAtlasClient(atlasClient);
             consumeNiFiProvenanceEvents(context, nifiFlow);

@@ -74,7 +74,7 @@ import java.util.stream.Collectors;
 @CapabilityDescription("Tra cứu một bản ghi từ Kudu Server dựa trên khóa được chỉ định. Các cột nhị phân sẽ được mã hóa base64. "
         + "Chỉ một hàng khớp sẽ được trả về.")
 @Tags({"lookup", "enrich", "key", "value", "kudu"})
-@DeprecationNotice(reason = "Component này đã bị đánh dấu deprecated và sẽ bị loại bỏ trong NiFi 2.x.")
+@DeprecationNotice(reason = "Component này đã bị đánh dấu deprecated và sẽ bị loại bỏ trong Life 2.x.")
 public class KuduLookupService extends AbstractControllerService implements RecordLookupService {
 
     public static final PropertyDescriptor KUDU_MASTERS = new PropertyDescriptor.Builder()

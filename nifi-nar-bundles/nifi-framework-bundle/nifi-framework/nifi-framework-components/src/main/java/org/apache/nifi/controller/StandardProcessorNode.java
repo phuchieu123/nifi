@@ -1134,7 +1134,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
         return validationState.getValidationErrors();
     }
 
-    @Override
+   @Override
     protected Collection<ValidationResult> computeValidationErrors(final ValidationContext validationContext) {
         final List<ValidationResult> results = new ArrayList<>();
         try {
@@ -1144,19 +1144,19 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                 .filter(result -> !result.isValid())
                 .forEach(results::add);
 
-            // Ensure that any relationships that don't have a connection defined are auto-terminated
+            // Đảm bảo rằng mọi mối quan hệ không có kết nối được xác định đều được tự động kết thúc
             if (validationContext.isValidateConnections()) {
                 for (final Relationship relationship : getUndefinedRelationships()) {
                     if (!isAutoTerminated(relationship)) {
                         final ValidationResult error = new ValidationResult.Builder()
-                            .explanation("Relationship '" + relationship.getName()
-                                + "' is not connected to any component and is not auto-terminated")
-                            .subject("Relationship " + relationship.getName()).valid(false).build();
+                            .explanation("Mối quan hệ '" + relationship.getName()
+                                + "' không được kết nối với bất kỳ thành phần nào và không được tự động kết thúc")
+                            .subject("Mối quan hệ " + relationship.getName()).valid(false).build();
                         results.add(error);
                     }
                 }
 
-                // Ensure that the requirements of the InputRequirement are met.
+                // Đảm bảo rằng các yêu cầu của InputRequirement được đáp ứng.
                 switch (getInputRequirement()) {
                     case INPUT_ALLOWED:
                         break;
@@ -1164,7 +1164,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                         final int incomingConnCount = getIncomingNonLoopConnections().size();
                         if (incomingConnCount != 0) {
                             results.add(new ValidationResult.Builder().explanation(
-                                "Processor does not allow upstream connections but currently has " + incomingConnCount)
+                                "Bộ xử lý không cho phép kết nối ngược dòng nhưng hiện có " + incomingConnCount)
                                 .subject("Kết nối ngược dòng").valid(false).build());
                         }
                         break;
@@ -1172,7 +1172,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                     case INPUT_REQUIRED: {
                         if (getIncomingNonLoopConnections().isEmpty()) {
                             results.add(new ValidationResult.Builder()
-                                .explanation("Processor requires an upstream connection but currently has none")
+                                .explanation("Bộ xử lý yêu cầu một kết nối ngược dòng nhưng hiện không có")
                                 .subject("Kết nối ngược dòng").valid(false).build());
                         }
                         break;
@@ -1180,15 +1180,15 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                 }
             }
 
-            // Ensure that execution node will not be misused
+            // Đảm bảo rằng nút thực thi sẽ không bị sử dụng sai
             if (getExecutionNode() == ExecutionNode.PRIMARY && hasIncomingConnection()) {
                 results.add(new ValidationResult.Builder()
-                        .explanation("Processors with incoming connections cannot be scheduled for Primary Node Only.")
-                        .subject("Execution Node").valid(false).build());
+                        .explanation("Các bộ xử lý có kết nối đến không thể được lên lịch chỉ cho Nút chính.")
+                        .subject("Nút thực thi").valid(false).build());
             }
         } catch (final Throwable t) {
-            LOG.error("Failed to perform validation", t);
-            results.add(new ValidationResult.Builder().explanation("Failed to run validation due to " + t.toString())
+            LOG.error("Không thể thực hiện xác thực", t);
+            results.add(new ValidationResult.Builder().explanation("Không thể chạy xác thực do " + t.toString())
                     .valid(false).build());
         }
 
@@ -1205,9 +1205,9 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
         if (parameterContext == null && !this.parameterReferences.isEmpty()) {
             results.add(new ValidationResult.Builder()
                     .subject(RUN_SCHEDULE)
-                    .input("Parameter Context")
+                    .input("Bối cảnh tham số")
                     .valid(false)
-                    .explanation("Processor configuration references one or more Parameters but no Parameter Context is currently set on the Process Group.")
+                    .explanation("Cấu hình bộ xử lý tham chiếu đến một hoặc nhiều Tham số nhưng hiện tại không có Bối cảnh tham số nào được đặt trên Nhóm quy trình.")
                     .build());
         } else {
             for (final ParameterReference paramRef : parameterReferences) {
@@ -1217,8 +1217,8 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                             .subject(RUN_SCHEDULE)
                             .input(paramRef.getParameterName())
                             .valid(false)
-                            .explanation("Processor configuration references Parameter '" + paramRef.getParameterName() +
-                                    "' but the currently selected Parameter Context does not have a Parameter with that name")
+                            .explanation("Cấu hình bộ xử lý tham chiếu đến Tham số '" + paramRef.getParameterName() +
+                                    "' nhưng Bối cảnh tham số hiện được chọn không có Tham số nào có tên đó")
                             .build());
                 } else {
                     final ParameterDescriptor parameterDescriptor = parameterRef.get().getDescriptor();
@@ -1227,7 +1227,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                                 .subject(RUN_SCHEDULE)
                                 .input(parameterDescriptor.getName())
                                 .valid(false)
-                                .explanation("Processor configuration cannot reference sensitive parameters")
+                                .explanation("Cấu hình bộ xử lý không thể tham chiếu các tham số nhạy cảm")
                                 .build());
                     }
                 }
@@ -1246,7 +1246,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                                     .subject(RUN_SCHEDULE)
                                     .input(schedulingPeriod)
                                     .valid(false)
-                                    .explanation("Scheduling Period is not a valid cron expression")
+                                    .explanation("Khoảng thời gian lập lịch không phải là một biểu thức cron hợp lệ")
                                     .build());
                         }
                     }
@@ -1262,7 +1262,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                                         .subject(RUN_SCHEDULE)
                                         .input(schedulingPeriod)
                                         .valid(false)
-                                        .explanation("Scheduling Period must be positive")
+                                        .explanation("Khoảng thời gian lập lịch phải là số dương")
                                         .build());
                             }
 
@@ -1273,7 +1273,7 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
                                     .subject(RUN_SCHEDULE)
                                     .input(schedulingPeriod)
                                     .valid(false)
-                                    .explanation("Scheduling Period is not a valid time duration")
+                                    .explanation("Khoảng thời gian lập lịch không phải là một khoảng thời gian hợp lệ")
                                     .build());
                         }
                     }
@@ -1286,7 +1286,6 @@ public class StandardProcessorNode extends ProcessorNode implements Connectable 
         }
         return results;
     }
-
     @Override
     public Requirement getInputRequirement() {
         return processorRef.get().getInputRequirement();

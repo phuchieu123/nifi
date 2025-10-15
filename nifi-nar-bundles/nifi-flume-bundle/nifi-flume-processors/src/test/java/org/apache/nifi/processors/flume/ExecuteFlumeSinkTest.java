@@ -64,13 +64,13 @@ public class ExecuteFlumeSinkTest {
         if (pc instanceof MockProcessContext) {
             results = ((MockProcessContext) pc).validate();
         }
-        assertEquals(1, results.size());
+       assertEquals(1, results.size());
         for (ValidationResult vr : results) {
             logger.debug(vr.toString());
-            assertTrue(vr.toString().contains("is invalid because Sink Type is required"));
+            assertTrue(vr.toString().contains("không hợp lệ vì Loại Sink là bắt buộc"));
         }
 
-        // non-existent class
+        // lớp không tồn tại
         results = new HashSet<>();
         runner.setProperty(ExecuteFlumeSink.SINK_TYPE, "invalid.class.name");
         runner.enqueue(new byte[0]);
@@ -81,10 +81,10 @@ public class ExecuteFlumeSinkTest {
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
             logger.debug(vr.toString());
-            assertTrue(vr.toString().contains("is invalid because unable to load sink"));
+            assertTrue(vr.toString().contains("không hợp lệ vì không thể tải sink"));
         }
 
-        // class doesn't implement Sink
+        // lớp không triển khai Sink
         results = new HashSet<>();
         runner.setProperty(ExecuteFlumeSink.SINK_TYPE, AvroSource.class.getName());
         runner.enqueue(new byte[0]);
@@ -95,7 +95,7 @@ public class ExecuteFlumeSinkTest {
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
             logger.debug(vr.toString());
-            assertTrue(vr.toString().contains("is invalid because unable to create sink"));
+            assertTrue(vr.toString().contains("không hợp lệ vì không thể tạo sink"));
         }
 
         results = new HashSet<>();

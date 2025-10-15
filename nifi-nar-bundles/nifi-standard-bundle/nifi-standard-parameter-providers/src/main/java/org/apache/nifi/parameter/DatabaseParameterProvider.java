@@ -42,7 +42,7 @@ import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 @Tags({"database", "dbcp", "sql"})
-@CapabilityDescription("Fetches parameters from database tables")
+@CapabilityDescription("Tìm nạp các tham số từ các bảng cơ sở dữ liệu")
 
 public class DatabaseParameterProvider extends AbstractParameterProvider implements VerifiableParameterProvider {
 
@@ -51,7 +51,7 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
     public static final PropertyDescriptor DB_TYPE;
 
     static {
-        // Load the DatabaseAdapters
+        // Tải các DatabaseAdapters
         ArrayList<AllowableValue> dbAdapterValues = new ArrayList<>();
         ServiceLoader<DatabaseAdapter> dbAdapterLoader = ServiceLoader.load(DatabaseAdapter.class);
         dbAdapterLoader.forEach(it -> {
@@ -61,9 +61,9 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
 
         DB_TYPE = new PropertyDescriptor.Builder()
                 .name("db-type")
-                .displayName("Database Type")
-                .description("The type/flavor of database, used for generating database-specific code. In many cases the Generic type "
-                        + "should suffice, but some databases (such as Oracle) require custom SQL clauses. ")
+                .displayName("Loại Cơ sở dữ liệu")
+                .description("Loại/hương vị của cơ sở dữ liệu, được sử dụng để tạo mã dành riêng cho cơ sở dữ liệu. Trong nhiều trường hợp, loại Chung (Generic) "
+                        + "sẽ đủ, nhưng một số cơ sở dữ liệu (chẳng hạn như Oracle) yêu cầu các mệnh đề SQL tùy chỉnh. ")
                 .allowableValues(dbAdapterValues.toArray(new AllowableValue[dbAdapterValues.size()]))
                 .defaultValue("Generic")
                 .required(true)
@@ -71,23 +71,23 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
     }
 
     static AllowableValue GROUPING_BY_COLUMN = new AllowableValue("grouping-by-column", "Column",
-            "A single table is partitioned by the 'Parameter Group Name Column'.  All rows with the same value in this column will " +
-                    "map to a group of the same name.");
+            "Một bảng duy nhất được phân vùng bởi 'Cột Tên Nhóm Tham số' (Parameter Group Name Column). Tất cả các hàng có cùng giá trị trong cột này sẽ " +
+                    "được ánh xạ tới một nhóm có cùng tên.");
     static AllowableValue GROUPING_BY_TABLE_NAME = new AllowableValue("grouping-by-table-name", "Table Name",
-            "An entire table maps to a Parameter Group.  The group name will be the table name.");
+            "Toàn bộ một bảng được ánh xạ tới một Nhóm Tham số (Parameter Group). Tên nhóm sẽ là tên bảng.");
 
     public static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name("dbcp-service")
-            .displayName("Database Connection Pooling Service")
-            .description("The Controller Service that is used to obtain a connection to the database.")
+            .displayName("Dịch vụ Gộp kết nối Cơ sở dữ liệu")
+            .description("Controller Service được sử dụng để lấy kết nối đến cơ sở dữ liệu.")
             .required(true)
             .identifiesControllerService(DBCPService.class)
             .build();
 
     public static final PropertyDescriptor PARAMETER_GROUPING_STRATEGY = new PropertyDescriptor.Builder()
             .name("parameter-grouping-strategy")
-            .displayName("Parameter Grouping Strategy")
-            .description("The strategy used to group parameters.")
+            .displayName("Chiến lược Nhóm Tham số")
+            .description("Chiến lược được sử dụng để nhóm các tham số.")
             .required(true)
             .allowableValues(GROUPING_BY_COLUMN, GROUPING_BY_TABLE_NAME)
             .defaultValue(GROUPING_BY_COLUMN.getValue())
@@ -95,8 +95,8 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
 
     public static final PropertyDescriptor TABLE_NAMES = new PropertyDescriptor.Builder()
             .name("table-names")
-            .displayName("Table Names")
-            .description("A comma-separated list of names of the database tables containing the parameters.")
+            .displayName("Tên các Bảng")
+            .description("Một danh sách tên các bảng cơ sở dữ liệu chứa các tham số, được phân tách bằng dấu phẩy.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .dependsOn(PARAMETER_GROUPING_STRATEGY, GROUPING_BY_TABLE_NAME)
@@ -104,8 +104,8 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
 
     public static final PropertyDescriptor TABLE_NAME = new PropertyDescriptor.Builder()
             .name("table-name")
-            .displayName("Table Name")
-            .description("The name of the database table containing the parameters.")
+            .displayName("Tên Bảng")
+            .description("Tên của bảng cơ sở dữ liệu chứa các tham số.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .dependsOn(PARAMETER_GROUPING_STRATEGY, GROUPING_BY_COLUMN)
@@ -113,24 +113,24 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
 
     public static final PropertyDescriptor PARAMETER_NAME_COLUMN = new PropertyDescriptor.Builder()
             .name("parameter-name-column")
-            .displayName("Parameter Name Column")
-            .description("The name of a column containing the parameter name.")
+            .displayName("Cột Tên Tham số")
+            .description("Tên của một cột chứa tên tham số.")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor PARAMETER_VALUE_COLUMN = new PropertyDescriptor.Builder()
             .name("parameter-value-column")
-            .displayName("Parameter Value Column")
-            .description("The name of a column containing the parameter value.")
+            .displayName("Cột Giá trị Tham số")
+            .description("Tên của một cột chứa giá trị tham số.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .build();
 
     public static final PropertyDescriptor PARAMETER_GROUP_NAME_COLUMN = new PropertyDescriptor.Builder()
             .name("parameter-group-name-column")
-            .displayName("Parameter Group Name Column")
-            .description("The name of a column containing the name of the parameter group into which the parameter should be mapped.")
+            .displayName("Cột Tên Nhóm Tham số")
+            .description("Tên của một cột chứa tên của nhóm tham số mà tham số sẽ được ánh xạ vào.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .dependsOn(PARAMETER_GROUPING_STRATEGY, GROUPING_BY_COLUMN)
@@ -138,11 +138,10 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
 
     public static final PropertyDescriptor SQL_WHERE_CLAUSE = new PropertyDescriptor.Builder()
             .name("sql-where-clause")
-            .displayName("SQL WHERE clause")
-            .description("A optional SQL query 'WHERE' clause by which to filter all results.  The 'WHERE' keyword should not be included.")
+            .displayName("Mệnh đề SQL WHERE")
+            .description("Một mệnh đề 'WHERE' của truy vấn SQL tùy chọn để lọc tất cả các kết quả. Từ khóa 'WHERE' không nên được bao gồm.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
-
     private List<PropertyDescriptor> properties;
 
     @Override
@@ -238,7 +237,7 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
     }
 
     @Override
-    public List<ConfigVerificationResult> verify(final ConfigurationContext context, final ComponentLog verificationLogger) {
+   public List<ConfigVerificationResult> verify(final ConfigurationContext context, final ComponentLog verificationLogger) {
         final List<ConfigVerificationResult> results = new ArrayList<>();
         try {
             final List<ParameterGroup> parameterGroups = fetchParameters(context);
@@ -247,16 +246,16 @@ public class DatabaseParameterProvider extends AbstractParameterProvider impleme
                     .count();
             results.add(new ConfigVerificationResult.Builder()
                     .outcome(ConfigVerificationResult.Outcome.SUCCESSFUL)
-                    .verificationStepName("Fetch Parameters")
-                    .explanation(String.format("Successfully fetched %s Parameter Groups containing %s Parameters matching the filter.", parameterGroups.size(),
+                    .verificationStepName("Tìm nạp Tham số")
+                    .explanation(String.format("Đã tìm nạp thành công %s Nhóm Tham số chứa %s Tham số khớp với bộ lọc.", parameterGroups.size(),
                             parameterCount))
                     .build());
         } catch (final Exception e) {
-            verificationLogger.error("Failed to fetch Parameter Groups", e);
+            verificationLogger.error("Không thể tìm nạp các Nhóm Tham số", e);
             results.add(new ConfigVerificationResult.Builder()
                     .outcome(ConfigVerificationResult.Outcome.FAILED)
-                    .verificationStepName("Fetch Parameters")
-                    .explanation(String.format("Failed to parameters: " + e.getMessage()))
+                    .verificationStepName("Tìm nạp Tham số")
+                    .explanation(String.format("Không thể tìm nạp các tham số: " + e.getMessage()))
                     .build());
         }
 

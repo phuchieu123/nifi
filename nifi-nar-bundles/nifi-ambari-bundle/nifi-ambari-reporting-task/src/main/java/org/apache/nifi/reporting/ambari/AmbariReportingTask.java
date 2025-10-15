@@ -51,17 +51,17 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"reporting", "ambari", "metrics"})
-@CapabilityDescription("Publishes metrics from NiFi to Ambari Metrics Service (AMS). Due to how the Ambari Metrics Service " +
-        "works, this reporting task should be scheduled to run every 60 seconds. Each iteration it will send the metrics " +
-        "from the previous iteration, and calculate the current metrics to be sent on next iteration. Scheduling this reporting " +
-        "task at a frequency other than 60 seconds may produce unexpected results.")
-@DeprecationNotice(reason = "This reporting task is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Công bố các chỉ số từ Life đến Dịch vụ Chỉ số Ambari (AMS). Do cách hoạt động của Dịch vụ Chỉ số Ambari, " +
+        "tác vụ báo cáo này nên được lên lịch chạy mỗi 60 giây. Mỗi lần lặp, nó sẽ gửi các chỉ số " +
+        "từ lần lặp trước đó, và tính toán các chỉ số hiện tại để gửi trong lần lặp tiếp theo. Việc lên lịch cho tác vụ báo cáo " +
+        "này với tần suất khác 60 giây có thể tạo ra các kết quả không mong muốn.")
+@DeprecationNotice(reason = "Tác vụ báo cáo này không được dùng nữa và sẽ bị xóa trong Life 2.x.")
 @DefaultSchedule(strategy = SchedulingStrategy.TIMER_DRIVEN, period = "1 min")
 public class AmbariReportingTask extends AbstractReportingTask {
 
     static final PropertyDescriptor METRICS_COLLECTOR_URL = new PropertyDescriptor.Builder()
             .name("Metrics Collector URL")
-            .description("The URL of the Ambari Metrics Collector Service")
+            .description("URL của Dịch vụ Bộ thu thập Chỉ số Ambari (Ambari Metrics Collector Service)")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("http://localhost:6188/ws/v1/timeline/metrics")
@@ -70,7 +70,7 @@ public class AmbariReportingTask extends AbstractReportingTask {
 
     static final PropertyDescriptor APPLICATION_ID = new PropertyDescriptor.Builder()
             .name("Application ID")
-            .description("The Application ID to be included in the metrics sent to Ambari")
+            .description("ID Ứng dụng (Application ID) sẽ được bao gồm trong các chỉ số gửi đến Ambari")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("nifi")
@@ -79,7 +79,7 @@ public class AmbariReportingTask extends AbstractReportingTask {
 
     static final PropertyDescriptor HOSTNAME = new PropertyDescriptor.Builder()
             .name("Hostname")
-            .description("The Hostname of this NiFi instance to be included in the metrics sent to Ambari")
+            .description("Tên máy chủ (Hostname) của phiên bản Life này sẽ được bao gồm trong các chỉ số gửi đến Ambari")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("${hostname(true)}")
@@ -88,8 +88,8 @@ public class AmbariReportingTask extends AbstractReportingTask {
 
     static final PropertyDescriptor PROCESS_GROUP_ID = new PropertyDescriptor.Builder()
             .name("Process Group ID")
-            .description("If specified, the reporting task will send metrics about this process group only. If"
-                    + " not, the root process group is used and global metrics are sent.")
+            .description("Nếu được chỉ định, tác vụ báo cáo sẽ chỉ gửi các chỉ số về nhóm quy trình này. Nếu"
+                    + " không, nhóm quy trình gốc sẽ được sử dụng và các chỉ số toàn cục sẽ được gửi đi.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)

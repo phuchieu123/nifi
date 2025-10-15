@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Tags({"hbase", "client"})
-@CapabilityDescription("A controller service for accessing an HBase client.")
+@CapabilityDescription("Một dịch vụ điều khiển (controller service) dùng để truy cập client của HBase.")
 public interface HBaseClientService extends ControllerService {
 
     /**

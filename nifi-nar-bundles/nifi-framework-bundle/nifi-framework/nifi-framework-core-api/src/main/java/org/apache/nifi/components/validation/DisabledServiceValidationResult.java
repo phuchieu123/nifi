@@ -23,7 +23,7 @@ public class DisabledServiceValidationResult extends ValidationResult {
     private String serviceId;
 
     public DisabledServiceValidationResult(final String subject, final String serviceId) {
-        this(subject, serviceId, "Controller Service with ID " + serviceId + " is disabled");
+        this(subject, serviceId, "Dịch vụ điều khiển có ID " + serviceId + " bị tắt");
     }
 
     public DisabledServiceValidationResult(final String subject, final String serviceId, final String explanation) {

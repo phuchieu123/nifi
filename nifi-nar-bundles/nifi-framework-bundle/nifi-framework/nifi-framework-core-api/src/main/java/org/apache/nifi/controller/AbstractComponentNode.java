@@ -401,7 +401,7 @@ public abstract class AbstractComponentNode implements ComponentNode {
                     results.add(new ConfigVerificationResult.Builder()
                         .verificationStepName(PERFORM_VALIDATION_STEP_NAME)
                         .outcome(Outcome.FAILED)
-                        .explanation("Component is invalid: " + result)
+                        .explanation("Thành phần không hợp lệ: " + result)
                         .build());
                 }
 
@@ -409,7 +409,7 @@ public abstract class AbstractComponentNode implements ComponentNode {
                     results.add(new ConfigVerificationResult.Builder()
                         .verificationStepName(PERFORM_VALIDATION_STEP_NAME)
                         .outcome(Outcome.FAILED)
-                        .explanation("Component is invalid but provided no Validation Results to indicate why")
+                        .explanation("Thành phần không hợp lệ nhưng không cung cấp Kết quả xác thực nào để cho biết lý do")
                         .build());
                 }
 

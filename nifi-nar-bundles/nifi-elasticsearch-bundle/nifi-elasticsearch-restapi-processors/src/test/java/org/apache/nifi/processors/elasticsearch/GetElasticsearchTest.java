@@ -59,10 +59,10 @@ public class GetElasticsearchTest {
         runner.removeProperty(GetElasticsearch.ATTRIBUTE_NAME);
 
         final AssertionError assertionError = assertThrows(AssertionError.class, () -> runner.run());
-        final String expected = String.format("Processor has 3 validation failures:\n" +
-                        "'%s' is invalid because %s is required\n" +
-                        "'%s' is invalid because %s is required\n" +
-                        "'%s' is invalid because %s is required\n",
+        final String expected = String.format("Bộ xử lý có 3 lỗi xác thực:\n" +
+                        "'%s' không hợp lệ vì %s là bắt buộc\n" +
+                        "'%s' không hợp lệ vì %s là bắt buộc\n" +
+                        "'%s' không hợp lệ vì %s là bắt buộc\n",
                 GetElasticsearch.ID.getDisplayName(), GetElasticsearch.ID.getDisplayName(),
                 GetElasticsearch.INDEX.getDisplayName(), GetElasticsearch.INDEX.getDisplayName(),
                 GetElasticsearch.CLIENT_SERVICE.getDisplayName(), GetElasticsearch.CLIENT_SERVICE.getDisplayName());

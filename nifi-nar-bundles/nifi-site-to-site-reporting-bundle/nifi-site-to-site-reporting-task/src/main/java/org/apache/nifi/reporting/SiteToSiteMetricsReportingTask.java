@@ -60,19 +60,19 @@ import org.apache.nifi.reporting.util.metrics.MetricsService;
 import org.apache.nifi.reporting.util.metrics.api.MetricsBuilder;
 
 @Tags({"status", "metrics", "site", "site to site"})
-@CapabilityDescription("Publishes same metrics as the Ambari Reporting task using the Site To Site protocol.")
+@CapabilityDescription("Công bố các chỉ số tương tự như tác vụ Báo cáo Ambari bằng giao thức Site-to-Site.")
 public class SiteToSiteMetricsReportingTask extends AbstractSiteToSiteReportingTask {
 
-    static final AllowableValue AMBARI_FORMAT = new AllowableValue("ambari-format", "Ambari Format", "Metrics will be formatted"
-            + " according to the Ambari Metrics API. See Additional Details in Usage documentation.");
-    static final AllowableValue RECORD_FORMAT = new AllowableValue("record-format", "Record Format", "Metrics will be formatted"
-            + " using the Record Writer property of this reporting task. See Additional Details in Usage documentation to"
-            + " have the description of the default schema.");
+    static final AllowableValue AMBARI_FORMAT = new AllowableValue("ambari-format", "Định dạng Ambari", "Các chỉ số sẽ được định dạng"
+            + " theo API Chỉ số Ambari. Xem Chi tiết Bổ sung trong tài liệu Sử dụng.");
+    static final AllowableValue RECORD_FORMAT = new AllowableValue("record-format", "Định dạng Bản ghi", "Các chỉ số sẽ được định dạng"
+            + " bằng cách sử dụng thuộc tính Record Writer của tác vụ báo cáo này. Xem Chi tiết Bổ sung trong tài liệu Sử dụng để"
+            + " có mô tả về lược đồ mặc định.");
 
     static final PropertyDescriptor APPLICATION_ID = new PropertyDescriptor.Builder()
             .name("s2s-metrics-application-id")
-            .displayName("Application ID")
-            .description("The Application ID to be included in the metrics")
+            .displayName("ID Ứng dụng")
+            .description("ID Ứng dụng sẽ được bao gồm trong các chỉ số")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("nifi")
@@ -81,8 +81,8 @@ public class SiteToSiteMetricsReportingTask extends AbstractSiteToSiteReportingT
 
     static final PropertyDescriptor HOSTNAME = new PropertyDescriptor.Builder()
             .name("s2s-metrics-hostname")
-            .displayName("Hostname")
-            .description("The Hostname of this NiFi instance to be included in the metrics")
+            .displayName("Tên máy chủ")
+            .description("Tên máy chủ của phiên bản NiFi này sẽ được bao gồm trong các chỉ số")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("${hostname(true)}")
@@ -91,10 +91,10 @@ public class SiteToSiteMetricsReportingTask extends AbstractSiteToSiteReportingT
 
     static final PropertyDescriptor FORMAT = new PropertyDescriptor.Builder()
             .name("s2s-metrics-format")
-            .displayName("Output Format")
-            .description("The output format that will be used for the metrics. If " + RECORD_FORMAT.getDisplayName() + " is selected, "
-                    + "a Record Writer must be provided. If " + AMBARI_FORMAT.getDisplayName() + " is selected, the Record Writer property "
-                    + "should be empty.")
+            .displayName("Định dạng Đầu ra")
+            .description("Định dạng đầu ra sẽ được sử dụng cho các chỉ số. Nếu " + RECORD_FORMAT.getDisplayName() + " được chọn, "
+                    + "phải cung cấp một Record Writer. Nếu " + AMBARI_FORMAT.getDisplayName() + " được chọn, thuộc tính Record Writer "
+                    + "nên để trống.")
             .required(true)
             .allowableValues(AMBARI_FORMAT, RECORD_FORMAT)
             .defaultValue(AMBARI_FORMAT.getValue())

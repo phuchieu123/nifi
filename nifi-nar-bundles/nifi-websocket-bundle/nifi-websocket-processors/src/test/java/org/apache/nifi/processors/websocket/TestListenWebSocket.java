@@ -102,11 +102,11 @@ public class TestListenWebSocket {
         runner.setProperty(ListenWebSocket.PROP_WEBSOCKET_SERVER_SERVICE, serviceId);
         runner.setProperty(ListenWebSocket.PROP_SERVER_URL_PATH, endpointId);
 
-        try {
+     try {
             runner.run();
-            fail("Should fail with validation error.");
+            fail("Nên thất bại với lỗi xác thực.");
         } catch (AssertionError e) {
-            assertTrue(e.toString().contains("'server-url-path' is invalid because Must starts with"));
+            assertTrue(e.toString().contains("'server-url-path' không hợp lệ vì Phải bắt đầu bằng"));
         }
     }
 

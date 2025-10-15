@@ -86,25 +86,25 @@ import java.util.concurrent.atomic.AtomicLong;
 @Tags({"cassandra", "cql", "select"})
 @EventDriven
 @InputRequirement(InputRequirement.Requirement.INPUT_ALLOWED)
-@CapabilityDescription("Execute provided Cassandra Query Language (CQL) select query on a Cassandra 1.x, 2.x, or 3.0.x cluster. Query result "
-        + "may be converted to Avro or JSON format. Streaming is used so arbitrarily large result sets are supported. This processor can be "
-        + "scheduled to run on a timer, or cron expression, using the standard scheduling methods, or it can be triggered by an incoming FlowFile. "
-        + "If it is triggered by an incoming FlowFile, then attributes of that FlowFile will be available when evaluating the "
-        + "select query. FlowFile attribute 'executecql.row.count' indicates how many rows were selected.")
+@CapabilityDescription("Thực thi truy vấn select Cassandra Query Language (CQL) được cung cấp trên một cụm Cassandra 1.x, 2.x, hoặc 3.0.x. Kết quả truy vấn "
+        + "có thể được chuyển đổi sang định dạng Avro hoặc JSON. Luồng (Streaming) được sử dụng để hỗ trợ các tập kết quả lớn tùy ý. Bộ xử lý này có thể "
+        + "được lên lịch để chạy theo bộ đếm thời gian, hoặc biểu thức cron, sử dụng các phương pháp lên lịch chuẩn, hoặc nó có thể được kích hoạt bởi một FlowFile đến. "
+        + "Nếu nó được kích hoạt bởi một FlowFile đến, thì các thuộc tính của FlowFile đó sẽ có sẵn khi đánh giá "
+        + "truy vấn select. Thuộc tính 'executecql.row.count' của FlowFile cho biết có bao nhiêu hàng đã được chọn.")
 @WritesAttributes({
-        @WritesAttribute(attribute = "executecql.row.count", description = "The number of rows returned by the CQL query"),
-        @WritesAttribute(attribute = "fragment.identifier", description = "If 'Max Rows Per Flow File' is set then all FlowFiles from the same query result set "
-                + "will have the same value for the fragment.identifier attribute. This can then be used to correlate the results."),
-        @WritesAttribute(attribute = "fragment.count", description = "If 'Max Rows Per Flow File' is set then this is the total number of  "
-                + "FlowFiles produced by a single ResultSet. This can be used in conjunction with the "
-                + "fragment.identifier attribute in order to know how many FlowFiles belonged to the same incoming ResultSet. If Output Batch Size is set, then this "
-                + "attribute will not be populated."),
-        @WritesAttribute(attribute = "fragment.index", description = "If 'Max Rows Per Flow File' is set then the position of this FlowFile in the list of "
-                + "outgoing FlowFiles that were all derived from the same result set FlowFile. This can be "
-                + "used in conjunction with the fragment.identifier attribute to know which FlowFiles originated from the same query result set and in what order  "
-                + "FlowFiles were produced")
+        @WritesAttribute(attribute = "executecql.row.count", description = "Số hàng được trả về bởi truy vấn CQL"),
+        @WritesAttribute(attribute = "fragment.identifier", description = "Nếu 'Số hàng tối đa cho mỗi FlowFile' được đặt thì tất cả các FlowFile từ cùng một tập kết quả truy vấn "
+                + "sẽ có cùng giá trị cho thuộc tính fragment.identifier. Điều này sau đó có thể được sử dụng để tương quan các kết quả."),
+        @WritesAttribute(attribute = "fragment.count", description = "Nếu 'Số hàng tối đa cho mỗi FlowFile' được đặt thì đây là tổng số "
+                + "FlowFile được tạo ra bởi một ResultSet duy nhất. Điều này có thể được sử dụng kết hợp với "
+                + "thuộc tính fragment.identifier để biết có bao nhiêu FlowFile thuộc cùng một ResultSet đến. Nếu Kích thước lô đầu ra được đặt, thì "
+                + "thuộc tính này sẽ không được điền."),
+        @WritesAttribute(attribute = "fragment.index", description = "Nếu 'Số hàng tối đa cho mỗi FlowFile' được đặt thì vị trí của FlowFile này trong danh sách các "
+                + "FlowFile đi ra mà tất cả đều được lấy từ cùng một FlowFile tập kết quả. Điều này có thể "
+                + "được sử dụng kết hợp với thuộc tính fragment.identifier để biết FlowFile nào bắt nguồn từ cùng một tập kết quả truy vấn và theo thứ tự "
+                + "FlowFile nào đã được tạo ra")
 })
-@DeprecationNotice(reason = "DataStax 3 driver for Cassandra is no longer the current version and requires new components.")
+@DeprecationNotice(reason = "Trình điều khiển DataStax 3 cho Cassandra không còn là phiên bản hiện tại và yêu cầu các thành phần mới.")
 public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final String AVRO_FORMAT = "Avro";
@@ -118,7 +118,7 @@ public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final PropertyDescriptor CQL_SELECT_QUERY = new PropertyDescriptor.Builder()
             .name("CQL select query")
-            .description("CQL select query")
+            .description("Truy vấn select CQL")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -126,9 +126,9 @@ public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final PropertyDescriptor QUERY_TIMEOUT = new PropertyDescriptor.Builder()
             .name("Max Wait Time")
-            .description("The maximum amount of time allowed for a running CQL select query. Must be of format "
-                    + "<duration> <TimeUnit> where <duration> is a non-negative integer and TimeUnit is a supported "
-                    + "Time Unit, such as: millis, secs, mins, hrs, days. A value of zero means there is no limit. ")
+            .description("Khoảng thời gian tối đa cho phép cho một truy vấn select CQL đang chạy. Phải có định dạng "
+                    + "<duration> <TimeUnit> trong đó <duration> là một số nguyên không âm và TimeUnit là một "
+                    + "Đơn vị thời gian được hỗ trợ, chẳng hạn như: millis, secs, mins, hrs, days. Giá trị bằng không có nghĩa là không có giới hạn. ")
             .defaultValue("0 seconds")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -137,8 +137,8 @@ public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final PropertyDescriptor FETCH_SIZE = new PropertyDescriptor.Builder()
             .name("Fetch size")
-            .description("The number of result rows to be fetched from the result set at a time. Zero is the default "
-                    + "and means there is no limit.")
+            .description("Số lượng hàng kết quả được tìm nạp từ tập kết quả tại một thời điểm. Không là giá trị mặc định "
+                    + "và có nghĩa là không có giới hạn.")
             .defaultValue("0")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -147,8 +147,8 @@ public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final PropertyDescriptor MAX_ROWS_PER_FLOW_FILE = new PropertyDescriptor.Builder()
             .name("Max Rows Per Flow File")
-            .description("The maximum number of result rows that will be included in a single FlowFile. This will allow you to break up very large "
-                    + "result sets into multiple FlowFiles. If the value specified is zero, then all rows are returned in a single FlowFile.")
+            .description("Số lượng hàng kết quả tối đa sẽ được bao gồm trong một FlowFile duy nhất. Điều này sẽ cho phép bạn chia nhỏ các tập kết quả rất lớn "
+                    + "thành nhiều FlowFile. Nếu giá trị được chỉ định bằng không, thì tất cả các hàng sẽ được trả về trong một FlowFile duy nhất.")
             .defaultValue("0")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -157,12 +157,12 @@ public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final PropertyDescriptor OUTPUT_BATCH_SIZE = new PropertyDescriptor.Builder()
             .name("qdbt-output-batch-size")
-            .displayName("Output Batch Size")
-            .description("The number of output FlowFiles to queue before committing the process session. When set to zero, the session will be committed when all result set rows "
-                    + "have been processed and the output FlowFiles are ready for transfer to the downstream relationship. For large result sets, this can cause a large burst of FlowFiles "
-                    + "to be transferred at the end of processor execution. If this property is set, then when the specified number of FlowFiles are ready for transfer, then the session will "
-                    + "be committed, thus releasing the FlowFiles to the downstream relationship. NOTE: The maxvalue.* and fragment.count attributes will not be set on FlowFiles when this "
-                    + "property is set.")
+            .displayName("Kích thước lô đầu ra")
+            .description("Số lượng FlowFile đầu ra được xếp hàng đợi trước khi cam kết phiên xử lý. Khi được đặt thành không, phiên sẽ được cam kết khi tất cả các hàng của tập kết quả "
+                    + "đã được xử lý và các FlowFile đầu ra sẵn sàng để chuyển đến mối quan hệ hạ nguồn. Đối với các tập kết quả lớn, điều này có thể gây ra một lượng lớn FlowFile "
+                    + "được chuyển đi vào cuối quá trình thực thi của bộ xử lý. Nếu thuộc tính này được đặt, thì khi số lượng FlowFile được chỉ định sẵn sàng để chuyển đi, thì phiên sẽ "
+                    + "được cam kết, do đó giải phóng các FlowFile cho mối quan hệ hạ nguồn. LƯU Ý: Các thuộc tính maxvalue.* và fragment.count sẽ không được đặt trên FlowFiles khi "
+                    + "thuộc tính này được đặt.")
             .defaultValue("0")
             .required(true)
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
@@ -171,9 +171,9 @@ public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final PropertyDescriptor OUTPUT_FORMAT = new PropertyDescriptor.Builder()
             .name("Output Format")
-            .description("The format to which the result rows will be converted. If JSON is selected, the output will "
-                    + "contain an object with field 'results' containing an array of result rows. Each row in the array is a "
-                    + "map of the named column to its value. For example: { \"results\": [{\"userid\":1, \"name\":\"Joe Smith\"}]}")
+            .description("Định dạng mà các hàng kết quả sẽ được chuyển đổi sang. Nếu JSON được chọn, đầu ra sẽ "
+                    + "chứa một đối tượng với trường 'results' chứa một mảng các hàng kết quả. Mỗi hàng trong mảng là một "
+                    + "bản đồ của cột được đặt tên tới giá trị của nó. Ví dụ: { \"results\": [{\"userid\":1, \"name\":\"Joe Smith\"}]}")
             .required(true)
             .allowableValues(AVRO_FORMAT, JSON_FORMAT)
             .defaultValue(AVRO_FORMAT)
@@ -181,17 +181,17 @@ public class QueryCassandra extends AbstractCassandraProcessor {
 
     public static final PropertyDescriptor TIMESTAMP_FORMAT_PATTERN = new PropertyDescriptor.Builder()
             .name("timestamp-format-pattern")
-            .displayName("Timestamp Format Pattern for JSON output")
-            .description("Pattern to use when converting timestamp fields to JSON. Note: the formatted timestamp will be in UTC timezone.")
+            .displayName("Mẫu định dạng dấu thời gian cho đầu ra JSON")
+            .description("Mẫu được sử dụng khi chuyển đổi các trường dấu thời gian sang JSON. Lưu ý: dấu thời gian được định dạng sẽ ở múi giờ UTC.")
             .required(true)
             .defaultValue("yyyy-MM-dd HH:mm:ssZ")
             .addValidator((subject, input, context) -> {
                 final ValidationResult.Builder vrb = new ValidationResult.Builder().subject(subject).input(input);
                 try {
                     new SimpleDateFormat(input).format(new Date());
-                    vrb.valid(true).explanation("Valid date format pattern");
+                    vrb.valid(true).explanation("Mẫu định dạng ngày hợp lệ");
                 } catch (Exception ex) {
-                    vrb.valid(false).explanation("the pattern is invalid: " + ex.getMessage());
+                    vrb.valid(false).explanation("mẫu không hợp lệ: " + ex.getMessage());
                 }
                 return vrb.build();
             })

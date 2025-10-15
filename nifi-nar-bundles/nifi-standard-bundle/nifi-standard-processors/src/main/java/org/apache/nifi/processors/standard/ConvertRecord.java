@@ -40,16 +40,16 @@ import java.util.List;
 @SideEffectFree
 @Tags({"convert", "record", "generic", "schema", "json", "csv", "avro", "log", "logs", "freeform", "text"})
 @WritesAttributes({
-    @WritesAttribute(attribute = "mime.type", description = "Sets the mime.type attribute to the MIME Type specified by the Record Writer"),
-    @WritesAttribute(attribute = "record.count", description = "The number of records in the FlowFile"),
-    @WritesAttribute(attribute = "record.error.message", description = "This attribute provides on failure the error message encountered by the Reader or Writer.")
+    @WritesAttribute(attribute = "mime.type", description = "Đặt thuộc tính mime.type thành Loại MIME được chỉ định bởi Record Writer"),
+    @WritesAttribute(attribute = "record.count", description = "Số lượng bản ghi trong FlowFile"),
+    @WritesAttribute(attribute = "record.error.message", description = "Thuộc tính này cung cấp thông báo lỗi gặp phải bởi Reader hoặc Writer khi xảy ra lỗi.")
 })
-@CapabilityDescription("Converts records from one data format to another using configured Record Reader and Record Write Controller Services. "
-    + "The Reader and Writer must be configured with \"matching\" schemas. By this, we mean the schemas must have the same field names. The types of the fields "
-    + "do not have to be the same if a field value can be coerced from one type to another. For instance, if the input schema has a field named \"balance\" of type double, "
-    + "the output schema can have a field named \"balance\" with a type of string, double, or float. If any field is present in the input that is not present in the output, "
-    + "the field will be left out of the output. If any field is specified in the output schema but is not present in the input data/schema, then the field will not be "
-    + "present in the output or will have a null value, depending on the writer.")
+@CapabilityDescription("Chuyển đổi các bản ghi từ một định dạng dữ liệu này sang định dạng khác bằng cách sử dụng các Dịch vụ Điều khiển (Controller Services) Record Reader và Record Writer đã được cấu hình. "
+    + "Reader và Writer phải được cấu hình với các lược đồ \"khớp nhau\". Điều này có nghĩa là các lược đồ phải có cùng tên trường. Kiểu của các trường "
+    + "không nhất thiết phải giống nhau nếu giá trị của một trường có thể được ép kiểu từ kiểu này sang kiểu khác. Ví dụ, nếu lược đồ đầu vào có một trường tên là \"balance\" kiểu double, "
+    + "lược đồ đầu ra có thể có một trường tên là \"balance\" với kiểu string, double, hoặc float. Nếu có bất kỳ trường nào trong đầu vào mà không có trong đầu ra, "
+    + "trường đó sẽ bị bỏ qua ở đầu ra. Nếu có bất kỳ trường nào được chỉ định trong lược đồ đầu ra nhưng không có trong dữ liệu/lược đồ đầu vào, thì trường đó sẽ không có "
+    + "trong đầu ra hoặc sẽ có giá trị null, tùy thuộc vào writer.")
 public class ConvertRecord extends AbstractRecordProcessor {
 
     @Override

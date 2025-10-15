@@ -2937,7 +2937,7 @@ public final class StandardProcessGroup implements ProcessGroup {
 
             // ensure a template with this name doesnt already exist
             if (name.equals(existingDto.getName())) {
-                throw new IllegalStateException(String.format("A template named '%s' already exists.", name));
+                throw new IllegalStateException(String.format("Mẫu có tên '%s' đã tồn tại.", name));
             }
         }
     }

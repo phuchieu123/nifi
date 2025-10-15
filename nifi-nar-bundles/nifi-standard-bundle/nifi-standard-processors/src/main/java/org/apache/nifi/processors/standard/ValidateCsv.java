@@ -88,13 +88,13 @@ import org.supercsv.util.CsvContext;
 @SupportsBatching
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @Tags({"csv", "schema", "validation"})
-@CapabilityDescription("Validates the contents of FlowFiles against a user-specified CSV schema. " +
-        "Take a look at the additional documentation of this processor for some schema examples.")
+@CapabilityDescription("Xác thực nội dung của FlowFiles dựa trên một lược đồ CSV do người dùng chỉ định. " +
+        "Hãy xem tài liệu bổ sung của bộ xử lý này để biết một số ví dụ về lược đồ.")
 @WritesAttributes({
-    @WritesAttribute(attribute="count.valid.lines", description="If line by line validation, number of valid lines extracted from the source data"),
-    @WritesAttribute(attribute="count.invalid.lines", description="If line by line validation, number of invalid lines extracted from the source data"),
-    @WritesAttribute(attribute="count.total.lines", description="If line by line validation, total number of lines in the source data"),
-    @WritesAttribute(attribute="validation.error.message", description="For flow files routed to invalid, message of the first validation error")
+    @WritesAttribute(attribute="count.valid.lines", description="Nếu xác thực theo từng dòng, số lượng dòng hợp lệ được trích xuất từ dữ liệu nguồn"),
+    @WritesAttribute(attribute="count.invalid.lines", description="Nếu xác thực theo từng dòng, số lượng dòng không hợp lệ được trích xuất từ dữ liệu nguồn"),
+    @WritesAttribute(attribute="count.total.lines", description="Nếu xác thực theo từng dòng, tổng số dòng trong dữ liệu nguồn"),
+    @WritesAttribute(attribute="validation.error.message", description="Đối với các flow file được chuyển đến luồng không hợp lệ, thông báo về lỗi xác thực đầu tiên")
 })
 public class ValidateCsv extends AbstractProcessor {
 
@@ -103,25 +103,25 @@ public class ValidateCsv extends AbstractProcessor {
             "RequireHashCode", "RequireSubStr", "Strlen", "StrMinMax", "StrNotNullOrEmpty", "StrRegEx", "Unique",
             "UniqueHashCode", "IsIncludedIn");
 
-    private static final String routeWholeFlowFile = "FlowFile validation";
-    private static final String routeLinesIndividually = "Line by line validation";
+    private static final String routeWholeFlowFile = "Xác thực FlowFile";
+    private static final String routeLinesIndividually = "Xác thực từng dòng";
 
     public static final AllowableValue VALIDATE_WHOLE_FLOWFILE = new AllowableValue(routeWholeFlowFile, routeWholeFlowFile,
-            "As soon as an error is found in the CSV file, the validation will stop and the whole flow file will be routed to the 'invalid'"
-                    + " relationship. This option offers best performances.");
+            "Ngay khi một lỗi được tìm thấy trong tệp CSV, quá trình xác thực sẽ dừng lại và toàn bộ flow file sẽ được chuyển đến mối quan hệ 'không hợp lệ'"
+                    + ". Tùy chọn này mang lại hiệu suất tốt nhất.");
 
     public static final AllowableValue VALIDATE_LINES_INDIVIDUALLY = new AllowableValue(routeLinesIndividually, routeLinesIndividually,
-            "In case an error is found, the input CSV file will be split into two FlowFiles: one routed to the 'valid' "
-                    + "relationship containing all the correct lines and one routed to the 'invalid' relationship containing all "
-                    + "the incorrect lines. Take care if choosing this option while using Unique cell processors in schema definition:"
-                    + "the first occurrence will be considered valid and the next ones as invalid.");
+            "Trong trường hợp tìm thấy lỗi, tệp CSV đầu vào sẽ được chia thành hai FlowFiles: một được chuyển đến mối quan hệ 'hợp lệ' "
+                    + "chứa tất cả các dòng đúng và một được chuyển đến mối quan hệ 'không hợp lệ' chứa tất cả "
+                    + "các dòng không chính xác. Hãy cẩn thận khi chọn tùy chọn này trong khi sử dụng bộ xử lý ô Unique trong định nghĩa lược đồ:"
+                    + "lần xuất hiện đầu tiên sẽ được coi là hợp lệ và những lần tiếp theo là không hợp lệ.");
 
     public static final PropertyDescriptor SCHEMA = new PropertyDescriptor.Builder()
             .name("validate-csv-schema")
-            .displayName("Schema")
-            .description("The schema to be used for validation. Is expected a comma-delimited string representing the cell "
-                    + "processors to apply. The following cell processors are allowed in the schema definition: "
-                    + allowedOperators.toString() + ". Note: cell processors cannot be nested except with Optional.")
+            .displayName("Lược đồ")
+            .description("Lược đồ sẽ được sử dụng để xác thực. Dự kiến là một chuỗi được phân tách bằng dấu phẩy đại diện cho các bộ xử lý ô (cell "
+                    + "processors) sẽ áp dụng. Các bộ xử lý ô sau đây được phép trong định nghĩa lược đồ: "
+                    + allowedOperators.toString() + ". Lưu ý: các bộ xử lý ô không thể được lồng vào nhau ngoại trừ với Optional.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_EL_VALIDATOR)
@@ -129,8 +129,8 @@ public class ValidateCsv extends AbstractProcessor {
 
     public static final PropertyDescriptor HEADER = new PropertyDescriptor.Builder()
             .name("validate-csv-header")
-            .displayName("Header")
-            .description("True if the incoming flow file contains a header to ignore, false otherwise.")
+            .displayName("Tiêu đề")
+            .description("True nếu flow file đến chứa một dòng tiêu đề để bỏ qua, ngược lại là false.")
             .required(true)
             .defaultValue("true")
             .allowableValues("true", "false")
@@ -139,8 +139,8 @@ public class ValidateCsv extends AbstractProcessor {
 
     public static final PropertyDescriptor QUOTE_CHARACTER = new PropertyDescriptor.Builder()
             .name("validate-csv-quote")
-            .displayName("Quote character")
-            .description("Character used as 'quote' in the incoming data. Example: \"")
+            .displayName("Ký tự trích dẫn")
+            .description("Ký tự được sử dụng làm 'dấu trích dẫn' trong dữ liệu đến. Ví dụ: \"")
             .required(true)
             .defaultValue("\"")
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -149,8 +149,8 @@ public class ValidateCsv extends AbstractProcessor {
 
     public static final PropertyDescriptor DELIMITER_CHARACTER = new PropertyDescriptor.Builder()
             .name("validate-csv-delimiter")
-            .displayName("Delimiter character")
-            .description("Character used as 'delimiter' in the incoming data. Example: ,")
+            .displayName("Ký tự phân cách")
+            .description("Ký tự được sử dụng làm 'dấu phân cách' trong dữ liệu đến. Ví dụ: ,")
             .required(true)
             .defaultValue(",")
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -159,8 +159,8 @@ public class ValidateCsv extends AbstractProcessor {
 
     public static final PropertyDescriptor END_OF_LINE_CHARACTER = new PropertyDescriptor.Builder()
             .name("validate-csv-eol")
-            .displayName("End of line symbols")
-            .description("Symbols used as 'end of line' in the incoming data. Example: \\n")
+            .displayName("Ký hiệu cuối dòng")
+            .description("Các ký hiệu được sử dụng làm 'cuối dòng' trong dữ liệu đến. Ví dụ: \\n")
             .required(true)
             .defaultValue("\\n")
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -169,8 +169,8 @@ public class ValidateCsv extends AbstractProcessor {
 
     public static final PropertyDescriptor VALIDATION_STRATEGY = new PropertyDescriptor.Builder()
             .name("validate-csv-strategy")
-            .displayName("Validation strategy")
-            .description("Strategy to apply when routing input files to output relationships.")
+            .displayName("Chiến lược xác thực")
+            .description("Chiến lược áp dụng khi định tuyến các tệp đầu vào đến các mối quan hệ đầu ra.")
             .required(true)
             .defaultValue(VALIDATE_WHOLE_FLOWFILE.getValue())
             .allowableValues(VALIDATE_LINES_INDIVIDUALLY, VALIDATE_WHOLE_FLOWFILE)
@@ -179,12 +179,12 @@ public class ValidateCsv extends AbstractProcessor {
 
     public static final PropertyDescriptor INCLUDE_ALL_VIOLATIONS = new PropertyDescriptor.Builder()
             .name("validate-csv-violations")
-            .displayName("Include all violations")
-            .description("If true, the validation.error.message attribute would include the list of all the violations"
-                    + " for the first invalid line. Note that setting this property to true would slightly decrease"
-                    + " the performances as all columns would be validated. If false, a line is invalid as soon as a"
-                    + " column is found violating the specified constraint and only this violation for the first invalid"
-                    + " line will be included in the validation.error.message attribute.")
+            .displayName("Bao gồm tất cả các vi phạm")
+            .description("Nếu true, thuộc tính validation.error.message sẽ bao gồm danh sách tất cả các vi phạm"
+                    + " cho dòng không hợp lệ đầu tiên. Lưu ý rằng việc đặt thuộc tính này thành true sẽ làm giảm một chút"
+                    + " hiệu suất vì tất cả các cột sẽ được xác thực. Nếu false, một dòng không hợp lệ ngay khi một"
+                    + " cột được tìm thấy vi phạm ràng buộc đã chỉ định và chỉ có vi phạm này cho dòng không hợp lệ đầu tiên"
+                    + " sẽ được bao gồm trong thuộc tính validation.error.message.")
             .required(true)
             .allowableValues("true", "false")
             .defaultValue("false")
@@ -192,11 +192,11 @@ public class ValidateCsv extends AbstractProcessor {
 
     public static final Relationship REL_VALID = new Relationship.Builder()
             .name("valid")
-            .description("FlowFiles that are successfully validated against the schema are routed to this relationship")
+            .description("Các FlowFiles được xác thực thành công dựa trên lược đồ sẽ được chuyển đến mối quan hệ này")
             .build();
     public static final Relationship REL_INVALID = new Relationship.Builder()
             .name("invalid")
-            .description("FlowFiles that are not valid according to the specified schema are routed to this relationship")
+            .description("Các FlowFiles không hợp lệ theo lược đồ đã chỉ định sẽ được chuyển đến mối quan hệ này")
             .build();
 
     private List<PropertyDescriptor> properties;

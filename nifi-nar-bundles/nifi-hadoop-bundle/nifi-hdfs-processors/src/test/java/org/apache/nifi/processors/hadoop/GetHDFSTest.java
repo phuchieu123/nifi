@@ -112,7 +112,7 @@ public class GetHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because Directory is required"));
+            assertTrue(vr.toString().contains("không hợp lệ vì Thư mục là bắt buộc"));
         }
 
         results = new HashSet<>();
@@ -135,7 +135,7 @@ public class GetHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because Minimum File Age cannot be greater than Maximum File Age"));
+            assertTrue(vr.toString().contains("không hợp lệ vì Tuổi tệp tối thiểu không thể lớn hơn Tuổi tệp tối đa"));
         }
     }
 

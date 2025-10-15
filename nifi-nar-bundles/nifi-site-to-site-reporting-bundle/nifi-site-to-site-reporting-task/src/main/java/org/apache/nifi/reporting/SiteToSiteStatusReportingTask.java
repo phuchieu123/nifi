@@ -60,14 +60,14 @@ import org.apache.nifi.remote.TransferDirection;
 import org.apache.nifi.reporting.s2s.SiteToSiteUtils;
 
 @Tags({"status", "metrics", "history", "site", "site to site"})
-@CapabilityDescription("Publishes Status events using the Site To Site protocol.  "
-        + "The component type and name filter regexes form a union: only components matching both regexes will be reported.  "
-        + "However, all process groups are recursively searched for matching components, regardless of whether the process group matches the component filters.")
+@CapabilityDescription("Công bố các sự kiện Trạng thái (Status) bằng giao thức Site-to-Site.  "
+        + "Các biểu thức chính quy lọc loại và tên thành phần tạo thành một phép hợp: chỉ những thành phần khớp với cả hai biểu thức chính quy mới được báo cáo.  "
+        + "Tuy nhiên, tất cả các nhóm quy trình đều được tìm kiếm đệ quy để tìm các thành phần khớp, bất kể nhóm quy trình đó có khớp với các bộ lọc thành phần hay không.")
 public class SiteToSiteStatusReportingTask extends AbstractSiteToSiteReportingTask {
 
     static final PropertyDescriptor PLATFORM = new PropertyDescriptor.Builder()
         .name("Platform")
-        .description("The value to use for the platform field in each status record.")
+        .description("Giá trị sẽ được sử dụng cho trường platform trong mỗi bản ghi trạng thái.")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .defaultValue("nifi")
@@ -76,8 +76,8 @@ public class SiteToSiteStatusReportingTask extends AbstractSiteToSiteReportingTa
 
     static final PropertyDescriptor COMPONENT_TYPE_FILTER_REGEX = new PropertyDescriptor.Builder()
         .name("Component Type Filter Regex")
-        .description("A regex specifying which component types to report.  Any component type matching this regex will be included.  "
-                + "Component types are: Processor, RootProcessGroup, ProcessGroup, RemoteProcessGroup, Connection, InputPort, OutputPort")
+        .description("Một biểu thức chính quy chỉ định loại thành phần nào sẽ được báo cáo. Bất kỳ loại thành phần nào khớp với biểu thức chính quy này sẽ được bao gồm.  "
+                + "Các loại thành phần là: Processor, RootProcessGroup, ProcessGroup, RemoteProcessGroup, Connection, InputPort, OutputPort")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .defaultValue("(Processor|ProcessGroup|RemoteProcessGroup|RootProcessGroup|Connection|InputPort|OutputPort)")
@@ -86,7 +86,7 @@ public class SiteToSiteStatusReportingTask extends AbstractSiteToSiteReportingTa
 
     static final PropertyDescriptor COMPONENT_NAME_FILTER_REGEX = new PropertyDescriptor.Builder()
         .name("Component Name Filter Regex")
-        .description("A regex specifying which component names to report.  Any component name matching this regex will be included.")
+        .description("Một biểu thức chính quy chỉ định tên thành phần nào sẽ được báo cáo. Bất kỳ tên thành phần nào khớp với biểu thức chính quy này sẽ được bao gồm.")
         .required(true)
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .defaultValue(".*")
@@ -116,7 +116,7 @@ public class SiteToSiteStatusReportingTask extends AbstractSiteToSiteReportingTa
         final boolean isClustered = context.isClustered();
         final String nodeId = context.getClusterNodeIdentifier();
         if (nodeId == null && isClustered) {
-            getLogger().debug("This instance of NiFi is configured for clustering, but the Cluster Node Identifier is not yet available. "
+            getLogger().debug("This instance of Life is configured for clustering, but the Cluster Node Identifier is not yet available. "
                 + "Will wait for Node Identifier to be established.");
             return;
         }

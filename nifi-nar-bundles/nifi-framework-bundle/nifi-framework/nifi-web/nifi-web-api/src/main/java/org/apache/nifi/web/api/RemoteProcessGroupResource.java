@@ -722,19 +722,19 @@ public class RemoteProcessGroupResource extends ApplicationResource {
                     if (remoteProcessGroup.getTargetUri() != null) {
                         // parse the uri
                         final URI uri;
-                        try {
+                   try {
                             uri = URI.create(remoteProcessGroup.getTargetUri());
                         } catch (final IllegalArgumentException e) {
-                            throw new IllegalArgumentException("The specified remote process group URL is malformed: " + remoteProcessGroup.getTargetUri());
+                            throw new IllegalArgumentException("URL nhóm quy trình từ xa được chỉ định bị định dạng sai: " + remoteProcessGroup.getTargetUri());
                         }
 
-                        // validate each part of the uri
+                        // xác thực từng phần của uri
                         if (uri.getScheme() == null || uri.getHost() == null) {
-                            throw new IllegalArgumentException("The specified remote process group URL is malformed: " + remoteProcessGroup.getTargetUri());
+                            throw new IllegalArgumentException("URL nhóm quy trình từ xa được chỉ định bị định dạng sai: " + remoteProcessGroup.getTargetUri());
                         }
 
                         if (!(uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https"))) {
-                            throw new IllegalArgumentException("The specified remote process group URL is invalid because it is not http or https: " + remoteProcessGroup.getTargetUri());
+                            throw new IllegalArgumentException("URL nhóm quy trình từ xa được chỉ định không hợp lệ vì nó không phải là http hoặc https: " + remoteProcessGroup.getTargetUri());
                         }
 
                         // normalize the uri to the other controller

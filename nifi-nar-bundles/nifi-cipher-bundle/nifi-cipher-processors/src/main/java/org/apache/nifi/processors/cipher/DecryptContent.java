@@ -64,20 +64,20 @@ import java.util.Set;
 @SupportsBatching
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"cryptography", "decipher", "decrypt", "AES", "Argon2", "bcrypt", "scrypt", "PBKDF2"})
-@CapabilityDescription("Decrypt content encrypted with AES and encoded according conventions added in NiFi 0.5.0 for the EncryptContent Processor. " +
-        "The Processor reads the first 256 bytes to determine the presence of a cryptographic salt based on finding the 'NiFiSALT' delimiter. " +
-        "The salt is not present for content encrypted with a raw hexadecimal key. " +
-        "The Processor determines the presence of the initialization vector based on finding the 'NiFiIV' delimiter." +
-        "The salt format indicates the Key Derivation Function that the Processor uses to generate a secret key based on a configured password. " +
-        "The Processor derives keys with a size of 128 bits according to the conventions implemented in NiFi 0.5.0."
+@CapabilityDescription("Giải mã nội dung được mã hóa bằng AES và được mã hóa theo các quy ước được thêm vào trong NiFi 0.5.0 cho Bộ xử lý EncryptContent. " +
+        "Bộ xử lý đọc 256 byte đầu tiên để xác định sự hiện diện của một muối mã hóa dựa trên việc tìm thấy dấu phân cách 'NiFiSALT'. " +
+        "Muối không có mặt đối với nội dung được mã hóa bằng khóa thô dạng thập lục phân. " +
+        "Bộ xử lý xác định sự hiện diện của vector khởi tạo dựa trên việc tìm thấy dấu phân cách 'NiFiIV'." +
+        "Định dạng muối cho biết Hàm Dẫn xuất Khóa mà Bộ xử lý sử dụng để tạo ra một khóa bí mật dựa trên một mật khẩu đã được cấu hình. " +
+        "Bộ xử lý dẫn xuất các khóa có kích thước 128 bit theo các quy ước được triển khai trong NiFi 0.5.0."
 )
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@DeprecationNotice(reason = "Thành phần này không được dùng nữa và sẽ bị xóa trong NiFi 2.x.")
 public class DecryptContent extends AbstractProcessor {
 
     static final PropertyDescriptor CIPHER_ALGORITHM_MODE = new PropertyDescriptor.Builder()
             .name("cipher-algorithm-mode")
-            .displayName("Cipher Algorithm Mode")
-            .description("Block cipher mode of operation for decryption using the Advanced Encryption Standard")
+            .displayName("Chế độ Thuật toán Mật mã")
+            .description("Chế độ hoạt động của mật mã khối để giải mã bằng Tiêu chuẩn Mã hóa Nâng cao (AES)")
             .required(true)
             .allowableValues(CipherAlgorithmMode.class)
             .defaultValue(CipherAlgorithmMode.GCM.getValue())
@@ -85,8 +85,8 @@ public class DecryptContent extends AbstractProcessor {
 
     static final PropertyDescriptor CIPHER_ALGORITHM_PADDING = new PropertyDescriptor.Builder()
             .name("cipher-algorithm-padding")
-            .displayName("Cipher Algorithm Padding")
-            .description("Padding specification used in cipher operation for decryption using the Advanced Encryption Standard")
+            .displayName("Phần đệm Thuật toán Mật mã")
+            .description("Đặc tả phần đệm được sử dụng trong hoạt động mật mã để giải mã bằng Tiêu chuẩn Mã hóa Nâng cao (AES)")
             .required(true)
             .allowableValues(CipherAlgorithmPadding.class)
             .defaultValue(CipherAlgorithmPadding.NO_PADDING.getValue())
@@ -94,8 +94,8 @@ public class DecryptContent extends AbstractProcessor {
 
     static final PropertyDescriptor KEY_SPECIFICATION_FORMAT = new PropertyDescriptor.Builder()
             .name("key-specification-format")
-            .displayName("Key Specification Format")
-            .description("Format describing the configured Key Specification")
+            .displayName("Định dạng Đặc tả Khóa")
+            .description("Định dạng mô tả Đặc tả Khóa đã được cấu hình")
             .required(true)
             .allowableValues(KeySpecificationFormat.class)
             .defaultValue(KeySpecificationFormat.PASSWORD.getValue())
@@ -103,8 +103,8 @@ public class DecryptContent extends AbstractProcessor {
 
     static final PropertyDescriptor KEY_SPECIFICATION = new PropertyDescriptor.Builder()
             .name("key-specification")
-            .displayName("Key Specification")
-            .description("Specification providing the raw secret key or a password from which to derive a secret key")
+            .displayName("Đặc tả Khóa")
+            .description("Đặc tả cung cấp khóa bí mật thô hoặc một mật khẩu để từ đó dẫn xuất ra một khóa bí mật")
             .required(true)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -112,12 +112,12 @@ public class DecryptContent extends AbstractProcessor {
 
     static final Relationship SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("Decryption succeeded")
+            .description("Giải mã thành công")
             .build();
 
     static final Relationship FAILURE = new Relationship.Builder()
             .name("failure")
-            .description("Decryption failed")
+            .description("Giải mã thất bại")
             .build();
 
     private static final List<PropertyDescriptor> DESCRIPTORS = Collections.unmodifiableList(Arrays.asList(

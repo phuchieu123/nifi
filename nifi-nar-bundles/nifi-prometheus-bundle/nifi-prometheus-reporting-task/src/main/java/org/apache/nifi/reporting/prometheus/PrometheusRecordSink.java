@@ -57,7 +57,7 @@ import java.util.function.Function;
 @CapabilityDescription("Xác định một Record Sink Service để xuất các điểm dữ liệu cho dịch vụ Prometheus. " +
         "Các trường số được xuất dưới dạng Gauges, các trường chuỗi là giá trị label cho gauges, " +
         "và các trường khác sẽ bị bỏ qua.")
-@DeprecationNotice(reason = "Component này đã lỗi thời và sẽ bị loại bỏ trong NiFi 2.x.")
+@DeprecationNotice(reason = "Component này đã lỗi thời và sẽ bị loại bỏ trong Life 2.x.")
 public class PrometheusRecordSink extends AbstractControllerService implements RecordSinkService {
 
     private volatile PrometheusServer prometheusServer;

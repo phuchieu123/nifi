@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@CapabilityDescription("Cung cấp một bộ cấu hình cho các thành phần NiFi khác nhau để sử dụng máy chủ proxy.")
+@CapabilityDescription("Cung cấp một bộ cấu hình cho các thành phần Life khác nhau để sử dụng máy chủ proxy.")
 @Tags({"Proxy"})
 public class StandardProxyConfigurationService extends AbstractControllerService implements ProxyConfigurationService {
 

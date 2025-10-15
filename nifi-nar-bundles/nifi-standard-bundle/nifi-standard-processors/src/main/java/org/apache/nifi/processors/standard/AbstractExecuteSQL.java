@@ -72,30 +72,30 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
     public static final String FRAGMENT_COUNT = FragmentAttributes.FRAGMENT_COUNT.key();
 
     // Relationships
-    public static final Relationship REL_SUCCESS = new Relationship.Builder()
+   public static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("Successfully created FlowFile from SQL query result set.")
+            .description("Tạo FlowFile từ tập kết quả truy vấn SQL thành công.")
             .build();
     public static final Relationship REL_FAILURE = new Relationship.Builder()
             .name("failure")
-            .description("SQL query execution failed. Incoming FlowFile will be penalized and routed to this relationship")
+            .description("Thực thi truy vấn SQL thất bại. FlowFile đến sẽ bị phạt và chuyển đến mối quan hệ này")
             .build();
     protected Set<Relationship> relationships;
 
     public static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name("Database Connection Pooling Service")
-            .description("The Controller Service that is used to obtain connection to database")
+            .description("Controller Service được sử dụng để lấy kết nối đến cơ sở dữ liệu")
             .required(true)
             .identifiesControllerService(DBCPService.class)
             .build();
 
     public static final PropertyDescriptor SQL_PRE_QUERY = new PropertyDescriptor.Builder()
             .name("sql-pre-query")
-            .displayName("SQL Pre-Query")
-            .description("A semicolon-delimited list of queries executed before the main SQL query is executed. " +
-                    "For example, set session properties before main query. " +
-                    "It's possible to include semicolons in the statements themselves by escaping them with a backslash ('\\;'). " +
-                    "Results/outputs from these queries will be suppressed if there are no errors.")
+            .displayName("SQL Tiền-Truy vấn")
+            .description("Một danh sách các truy vấn được phân tách bằng dấu chấm phẩy, được thực thi trước khi truy vấn SQL chính được thực thi. " +
+                    "Ví dụ, thiết lập các thuộc tính phiên trước truy vấn chính. " +
+                    "Có thể bao gồm dấu chấm phẩy trong chính các câu lệnh bằng cách thoát chúng bằng một dấu gạch chéo ngược ('\\;'). " +
+                    "Kết quả/đầu ra từ các truy vấn này sẽ bị ẩn đi nếu không có lỗi.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -103,11 +103,11 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
 
     public static final PropertyDescriptor SQL_SELECT_QUERY = new PropertyDescriptor.Builder()
             .name("SQL select query")
-            .description("The SQL select query to execute. The query can be empty, a constant value, or built from attributes "
-                    + "using Expression Language. If this property is specified, it will be used regardless of the content of "
-                    + "incoming flowfiles. If this property is empty, the content of the incoming flow file is expected "
-                    + "to contain a valid SQL select query, to be issued by the processor to the database. Note that Expression "
-                    + "Language is not evaluated for flow file contents.")
+            .description("Truy vấn SQL select để thực thi. Truy vấn có thể trống, là một giá trị hằng, hoặc được xây dựng từ các thuộc tính "
+                    + "bằng cách sử dụng Ngôn ngữ Biểu thức. Nếu thuộc tính này được chỉ định, nó sẽ được sử dụng bất kể nội dung của "
+                    + "các flowfile đến. Nếu thuộc tính này trống, nội dung của flow file đến được mong đợi "
+                    + "sẽ chứa một truy vấn SQL select hợp lệ, để bộ xử lý gửi đến cơ sở dữ liệu. Lưu ý rằng Ngôn ngữ "
+                    + "Biểu thức không được đánh giá đối với nội dung của flow file.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -115,11 +115,11 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
 
     public static final PropertyDescriptor SQL_POST_QUERY = new PropertyDescriptor.Builder()
             .name("sql-post-query")
-            .displayName("SQL Post-Query")
-            .description("A semicolon-delimited list of queries executed after the main SQL query is executed. " +
-                    "Example like setting session properties after main query. " +
-                    "It's possible to include semicolons in the statements themselves by escaping them with a backslash ('\\;'). " +
-                    "Results/outputs from these queries will be suppressed if there are no errors.")
+            .displayName("SQL Hậu-Truy vấn")
+            .description("Một danh sách các truy vấn được phân tách bằng dấu chấm phẩy, được thực thi sau khi truy vấn SQL chính được thực thi. " +
+                    "Ví dụ như thiết lập các thuộc tính phiên sau truy vấn chính. " +
+                    "Có thể bao gồm dấu chấm phẩy trong chính các câu lệnh bằng cách thoát chúng bằng một dấu gạch chéo ngược ('\\;'). " +
+                    "Kết quả/đầu ra từ các truy vấn này sẽ bị ẩn đi nếu không có lỗi.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -127,8 +127,8 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
 
     public static final PropertyDescriptor QUERY_TIMEOUT = new PropertyDescriptor.Builder()
             .name("Max Wait Time")
-            .description("The maximum amount of time allowed for a running SQL select query "
-                    + " , zero means there is no limit. Max time less than 1 second will be equal to zero.")
+            .description("Khoảng thời gian tối đa cho phép đối với một truy vấn SQL select đang chạy "
+                    + " , số không có nghĩa là không có giới hạn. Thời gian tối đa nhỏ hơn 1 giây sẽ được coi là bằng không.")
             .defaultValue("0 seconds")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -138,9 +138,9 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
 
     public static final PropertyDescriptor MAX_ROWS_PER_FLOW_FILE = new PropertyDescriptor.Builder()
             .name("esql-max-rows")
-            .displayName("Max Rows Per Flow File")
-            .description("The maximum number of result rows that will be included in a single FlowFile. This will allow you to break up very large "
-                    + "result sets into multiple FlowFiles. If the value specified is zero, then all rows are returned in a single FlowFile.")
+            .displayName("Số hàng tối đa cho mỗi FlowFile")
+            .description("Số lượng hàng kết quả tối đa sẽ được bao gồm trong một FlowFile duy nhất. Điều này sẽ cho phép bạn chia nhỏ các tập kết quả rất lớn "
+                    + "thành nhiều FlowFile. Nếu giá trị được chỉ định bằng không, thì tất cả các hàng sẽ được trả về trong một FlowFile duy nhất.")
             .defaultValue("0")
             .required(true)
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
@@ -149,12 +149,12 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
 
     public static final PropertyDescriptor OUTPUT_BATCH_SIZE = new PropertyDescriptor.Builder()
             .name("esql-output-batch-size")
-            .displayName("Output Batch Size")
-            .description("The number of output FlowFiles to queue before committing the process session. When set to zero, the session will be committed when all result set rows "
-                    + "have been processed and the output FlowFiles are ready for transfer to the downstream relationship. For large result sets, this can cause a large burst of FlowFiles "
-                    + "to be transferred at the end of processor execution. If this property is set, then when the specified number of FlowFiles are ready for transfer, then the session will "
-                    + "be committed, thus releasing the FlowFiles to the downstream relationship. NOTE: The fragment.count attribute will not be set on FlowFiles when this "
-                    + "property is set.")
+            .displayName("Kích thước Lô đầu ra")
+            .description("Số lượng FlowFile đầu ra được xếp hàng đợi trước khi cam kết phiên xử lý. Khi được đặt thành không, phiên sẽ được cam kết khi tất cả các hàng của tập kết quả "
+                    + "đã được xử lý và các FlowFile đầu ra sẵn sàng để chuyển đến mối quan hệ hạ nguồn. Đối với các tập kết quả lớn, điều này có thể gây ra một lượng lớn FlowFile "
+                    + "được chuyển đi vào cuối quá trình thực thi của bộ xử lý. Nếu thuộc tính này được đặt, thì khi số lượng FlowFile được chỉ định sẵn sàng để chuyển đi, thì phiên sẽ "
+                    + "được cam kết, do đó giải phóng các FlowFile cho mối quan hệ hạ nguồn. LƯU Ý: Thuộc tính fragment.count sẽ không được đặt trên FlowFiles khi "
+                    + "thuộc tính này được đặt.")
             .defaultValue("0")
             .required(true)
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
@@ -163,9 +163,9 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
 
     public static final PropertyDescriptor FETCH_SIZE = new PropertyDescriptor.Builder()
             .name("esql-fetch-size")
-            .displayName("Fetch Size")
-            .description("The number of result rows to be fetched from the result set at a time. This is a hint to the database driver and may not be "
-                    + "honored and/or exact. If the value specified is zero, then the hint is ignored.")
+            .displayName("Kích thước Tìm nạp")
+            .description("Số lượng hàng kết quả được tìm nạp từ tập kết quả tại một thời điểm. Đây là một gợi ý cho trình điều khiển cơ sở dữ liệu và có thể không được "
+                    + "tuân thủ và/hoặc không chính xác. Nếu giá trị được chỉ định bằng không, thì gợi ý sẽ bị bỏ qua.")
             .defaultValue("0")
             .required(true)
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
@@ -174,15 +174,15 @@ public abstract class AbstractExecuteSQL extends AbstractProcessor {
 
     public static final PropertyDescriptor AUTO_COMMIT = new PropertyDescriptor.Builder()
             .name("esql-auto-commit")
-            .displayName("Set Auto Commit")
-            .description("Enables or disables the auto commit functionality of the DB connection. Default value is 'true'. " +
-                    "The default value can be used with most of the JDBC drivers and this functionality doesn't have any impact in most of the cases " +
-                    "since this processor is used to read data. " +
-                    "However, for some JDBC drivers such as PostgreSQL driver, it is required to disable the auto committing functionality " +
-                    "to limit the number of result rows fetching at a time. " +
-                    "When auto commit is enabled, postgreSQL driver loads whole result set to memory at once. " +
-                    "This could lead for a large amount of memory usage when executing queries which fetch large data sets. " +
-                    "More Details of this behaviour in PostgreSQL driver can be found in https://jdbc.postgresql.org//documentation/head/query.html. ")
+            .displayName("Thiết lập Tự động Cam kết")
+            .description("Bật hoặc tắt chức năng tự động cam kết của kết nối DB. Giá trị mặc định là 'true'. " +
+                    "Giá trị mặc định có thể được sử dụng với hầu hết các trình điều khiển JDBC và chức năng này không có tác động trong hầu hết các trường hợp " +
+                    "vì bộ xử lý này được sử dụng để đọc dữ liệu. " +
+                    "Tuy nhiên, đối với một số trình điều khiển JDBC như trình điều khiển PostgreSQL, cần phải tắt chức năng tự động cam kết " +
+                    "để giới hạn số lượng hàng kết quả tìm nạp tại một thời điểm. " +
+                    "Khi tự động cam kết được bật, trình điều khiển PostgreSQL tải toàn bộ tập kết quả vào bộ nhớ cùng một lúc. " +
+                    "Điều này có thể dẫn đến việc sử dụng một lượng lớn bộ nhớ khi thực thi các truy vấn tìm nạp các tập dữ liệu lớn. " +
+                    "Thông tin chi tiết hơn về hành vi này trong trình điều khiển PostgreSQL có thể được tìm thấy tại https://jdbc.postgresql.org//documentation/head/query.html. ")
             .allowableValues("true", "false")
             .defaultValue("true")
             .required(true)

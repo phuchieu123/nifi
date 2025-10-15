@@ -49,50 +49,50 @@ import org.apache.nifi.util.StopWatch;
 
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @Tags({"http", "https", "response", "egress", "web service"})
-@CapabilityDescription("Sends an HTTP Response to the Requestor that generated a FlowFile. This Processor is designed to be used in conjunction with "
-        + "the HandleHttpRequest in order to create a web service.")
-@DynamicProperty(name = "An HTTP header name", value = "An HTTP header value",
-                    description = "These HTTPHeaders are set in the HTTP Response",
+@CapabilityDescription("Gửi một Phản hồi HTTP đến Người yêu cầu đã tạo ra một FlowFile. Bộ xử lý này được thiết kế để sử dụng cùng với "
+        + "HandleHttpRequest để tạo một dịch vụ web.")
+@DynamicProperty(name = "Tên tiêu đề HTTP", value = "Giá trị tiêu đề HTTP",
+                    description = "Các Tiêu đề HTTP này được đặt trong Phản hồi HTTP",
                     expressionLanguageScope = ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
 @ReadsAttributes({
-    @ReadsAttribute(attribute = HTTPUtils.HTTP_CONTEXT_ID, description = "The value of this attribute is used to lookup the HTTP Response so that the "
-        + "proper message can be sent back to the requestor. If this attribute is missing, the FlowFile will be routed to 'failure.'"),
-    @ReadsAttribute(attribute = HTTPUtils.HTTP_REQUEST_URI, description = "Value of the URI requested by the client. Used for provenance event."),
-    @ReadsAttribute(attribute = HTTPUtils.HTTP_REMOTE_HOST, description = "IP address of the client. Used for provenance event."),
-    @ReadsAttribute(attribute = HTTPUtils.HTTP_LOCAL_NAME, description = "IP address/hostname of the server. Used for provenance event."),
-    @ReadsAttribute(attribute = HTTPUtils.HTTP_PORT, description = "Listening port of the server. Used for provenance event."),
-    @ReadsAttribute(attribute = HTTPUtils.HTTP_SSL_CERT, description = "SSL distinguished name (if any). Used for provenance event.")})
+    @ReadsAttribute(attribute = HTTPUtils.HTTP_CONTEXT_ID, description = "Giá trị của thuộc tính này được sử dụng để tra cứu Phản hồi HTTP để "
+        + "thông điệp phù hợp có thể được gửi lại cho người yêu cầu. Nếu thuộc tính này bị thiếu, FlowFile sẽ được chuyển đến 'thất bại'."),
+    @ReadsAttribute(attribute = HTTPUtils.HTTP_REQUEST_URI, description = "Giá trị của URI được yêu cầu bởi client. Được sử dụng cho sự kiện provenance."),
+    @ReadsAttribute(attribute = HTTPUtils.HTTP_REMOTE_HOST, description = "Địa chỉ IP của client. Được sử dụng cho sự kiện provenance."),
+    @ReadsAttribute(attribute = HTTPUtils.HTTP_LOCAL_NAME, description = "Địa chỉ IP/tên máy chủ của máy chủ. Được sử dụng cho sự kiện provenance."),
+    @ReadsAttribute(attribute = HTTPUtils.HTTP_PORT, description = "Cổng lắng nghe của máy chủ. Được sử dụng cho sự kiện provenance."),
+    @ReadsAttribute(attribute = HTTPUtils.HTTP_SSL_CERT, description = "Tên phân biệt SSL (nếu có). Được sử dụng cho sự kiện provenance.")})
 @SeeAlso(value = {HandleHttpRequest.class}, classNames = {"org.apache.nifi.http.StandardHttpContextMap"})
 public class HandleHttpResponse extends AbstractProcessor {
 
     public static final PropertyDescriptor STATUS_CODE = new PropertyDescriptor.Builder()
-            .name("HTTP Status Code")
-            .description("The HTTP Status Code to use when responding to the HTTP Request. See Section 10 of RFC 2616 for more information.")
+            .name("Mã Trạng thái HTTP")
+            .description("Mã Trạng thái HTTP để sử dụng khi phản hồi Yêu cầu HTTP. Xem Mục 10 của RFC 2616 để biết thêm thông tin.")
             .required(true)
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .build();
     public static final PropertyDescriptor HTTP_CONTEXT_MAP = new PropertyDescriptor.Builder()
-            .name("HTTP Context Map")
-            .description("The HTTP Context Map Controller Service to use for caching the HTTP Request Information")
+            .name("Bản đồ Ngữ cảnh HTTP")
+            .description("Dịch vụ Điều khiển Bản đồ Ngữ cảnh HTTP để sử dụng cho việc lưu vào bộ nhớ đệm Thông tin Yêu cầu HTTP")
             .required(true)
             .identifiesControllerService(HttpContextMap.class)
             .build();
     public static final PropertyDescriptor ATTRIBUTES_AS_HEADERS_REGEX = new PropertyDescriptor.Builder()
-            .name("Attributes to add to the HTTP Response (Regex)")
-            .description("Specifies the Regular Expression that determines the names of FlowFile attributes that should be added to the HTTP response")
+            .name("Các thuộc tính cần thêm vào Phản hồi HTTP (Regex)")
+            .description("Chỉ định Biểu thức Chính quy xác định tên của các thuộc tính FlowFile cần được thêm vào phản hồi HTTP")
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
             .required(false)
             .build();
 
     public static final Relationship REL_SUCCESS = new Relationship.Builder()
-            .name("success")
-            .description("FlowFiles will be routed to this Relationship after the response has been successfully sent to the requestor")
+            .name("thành công")
+            .description("Các FlowFile sẽ được chuyển đến Mối quan hệ này sau khi phản hồi đã được gửi thành công đến người yêu cầu")
             .build();
     public static final Relationship REL_FAILURE = new Relationship.Builder()
-            .name("failure")
-            .description("FlowFiles will be routed to this Relationship if the Processor is unable to respond to the requestor. This may happen, "
-                    + "for instance, if the connection times out or if NiFi is restarted before responding to the HTTP Request.")
+            .name("thất bại")
+            .description("Các FlowFile sẽ được chuyển đến Mối quan hệ này nếu Bộ xử lý không thể phản hồi người yêu cầu. Điều này có thể xảy ra, "
+                    + "ví dụ, nếu kết nối hết thời gian chờ hoặc nếu Life được khởi động lại trước khi phản hồi Yêu cầu HTTP.")
             .build();
 
     @Override

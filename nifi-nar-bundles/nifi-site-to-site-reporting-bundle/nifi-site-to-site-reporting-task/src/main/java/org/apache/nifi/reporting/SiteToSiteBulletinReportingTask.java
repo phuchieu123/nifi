@@ -53,14 +53,14 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"bulletin", "site", "site to site"})
-@CapabilityDescription("Publishes Bulletin events using the Site To Site protocol. Note: only up to 5 bulletins are stored per component and up to "
-        + "10 bulletins at controller level for a duration of up to 5 minutes. If this reporting task is not scheduled frequently enough some bulletins "
-        + "may not be sent.")
+@CapabilityDescription("Công bố các sự kiện Bulletin (Bản tin) bằng giao thức Site-to-Site. Lưu ý: chỉ có tối đa 5 bản tin được lưu trữ cho mỗi thành phần và tối đa "
+        + "10 bản tin ở cấp độ controller trong khoảng thời gian tối đa 5 phút. Nếu tác vụ báo cáo này không được lên lịch đủ thường xuyên, một số bản tin "
+        + "có thể không được gửi đi.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXPORT_NIFI_DETAILS,
-                        explanation = "Provides operator the ability to send sensitive details contained in bulletin events to any external system.")
+                        explanation = "Cung cấp cho người vận hành khả năng gửi các chi tiết nhạy cảm có trong các sự kiện bulletin đến bất kỳ hệ thống bên ngoài nào.")
         }
 )
 @DefaultSchedule(strategy = SchedulingStrategy.TIMER_DRIVEN, period = "1 min")

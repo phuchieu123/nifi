@@ -38,36 +38,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@CapabilityDescription("Provides parameters from HashiCorp Vault Key/Value Version 1 Secrets.  Each Secret represents a parameter group, " +
-        "which will map to a Parameter Context.  The keys and values in the Secret map to Parameters.")
+@CapabilityDescription("Cung cấp các tham số từ HashiCorp Vault Key/Value Version 1 Secrets. Mỗi Secret đại diện cho một nhóm tham số, " +
+        "sẽ được ánh xạ tới một Bối cảnh Tham số (Parameter Context). Các khóa và giá trị trong Secret sẽ được ánh xạ tới các Tham số (Parameters).")
 @Tags({"hashicorp", "vault", "secret"})
 public class HashiCorpVaultParameterProvider extends AbstractParameterProvider implements ParameterProvider, VerifiableParameterProvider {
 
     public static final PropertyDescriptor VAULT_CLIENT_SERVICE = new PropertyDescriptor.Builder()
             .name("vault-client-service")
-            .displayName("HashiCorp Vault Client Service")
-            .description("The service used to interact with HashiCorp Vault")
+            .displayName("Dịch vụ Máy khách HashiCorp Vault")
+            .description("Dịch vụ được sử dụng để tương tác với HashiCorp Vault")
             .identifiesControllerService(HashiCorpVaultClientService.class)
             .addValidator(Validator.VALID)
             .required(true)
             .build();
     public static final PropertyDescriptor KV_PATH = new PropertyDescriptor.Builder()
             .name("kv-path")
-            .displayName("Key/Value Path")
-            .description("The HashiCorp Vault path to the Key/Value Version 1 Secrets Engine")
+            .displayName("Đường dẫn Key/Value")
+            .description("Đường dẫn HashiCorp Vault đến Key/Value Version 1 Secrets Engine")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .defaultValue("kv")
             .build();
     public static final PropertyDescriptor SECRET_NAME_PATTERN = new PropertyDescriptor.Builder()
             .name("secret-name-pattern")
-            .displayName("Secret Name Pattern")
-            .description("A Regular Expression indicating which Secrets to include as parameter groups to map to Parameter Contexts by name.")
+            .displayName("Mẫu Tên Secret")
+            .description("Một Biểu thức Chính quy chỉ định các Secret nào sẽ được bao gồm dưới dạng các nhóm tham số để ánh xạ tới các Bối cảnh Tham số theo tên.")
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
             .required(true)
             .defaultValue(".*")
             .build();
-
     private static final List<PropertyDescriptor> PROPERTIES = Collections.unmodifiableList(Arrays.asList(
             VAULT_CLIENT_SERVICE,
             KV_PATH,

@@ -71,30 +71,30 @@ public abstract class AbstractJMSProcessor<T extends JMSWorker> extends Abstract
     static final String TEXT_MESSAGE = "text";
     static final String BYTES_MESSAGE = "bytes";
 
-    static final PropertyDescriptor USER = new PropertyDescriptor.Builder()
+   static final PropertyDescriptor USER = new PropertyDescriptor.Builder()
             .name("User Name")
-            .description("User Name used for authentication and authorization.")
+            .description("Tên người dùng được sử dụng để xác thực và ủy quyền.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_EL_VALIDATOR)
             .build();
     static final PropertyDescriptor PASSWORD = new PropertyDescriptor.Builder()
             .name("Password")
-            .description("Password used for authentication and authorization.")
+            .description("Mật khẩu được sử dụng để xác thực và ủy quyền.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .sensitive(true)
             .build();
     static final PropertyDescriptor DESTINATION = new PropertyDescriptor.Builder()
             .name("Destination Name")
-            .description("The name of the JMS Destination. Usually provided by the administrator (e.g., 'topic://myTopic' or 'myTopic').")
+            .description("Tên của Đích JMS. Thường được cung cấp bởi quản trị viên (ví dụ: 'topic://myTopic' hoặc 'myTopic').")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .build();
     static final PropertyDescriptor DESTINATION_TYPE = new PropertyDescriptor.Builder()
             .name("Destination Type")
-            .description("The type of the JMS Destination. Could be one of 'QUEUE' or 'TOPIC'. Usually provided by the administrator. Defaults to 'QUEUE'")
+            .description("Loại của Đích JMS. Có thể là 'QUEUE' hoặc 'TOPIC'. Thường được cung cấp bởi quản trị viên. Mặc định là 'QUEUE'")
             .required(true)
             .allowableValues(QUEUE, TOPIC)
             .defaultValue(QUEUE)
@@ -102,25 +102,25 @@ public abstract class AbstractJMSProcessor<T extends JMSWorker> extends Abstract
             .build();
     static final PropertyDescriptor CLIENT_ID = new PropertyDescriptor.Builder()
             .name("Connection Client ID")
-            .description("The client id to be set on the connection, if set. For durable non shared consumer this is mandatory, " +
-                         "for all others it is optional, typically with shared consumers it is undesirable to be set. " +
-                         "Please see JMS spec for further details")
+            .description("ID máy khách sẽ được đặt trên kết nối, nếu được đặt. Đối với người tiêu dùng bền vững không chia sẻ, điều này là bắt buộc, " +
+                         "đối với tất cả những người khác thì nó là tùy chọn, thông thường với người tiêu dùng chia sẻ thì không nên đặt nó. " +
+                         "Vui lòng xem thông số kỹ thuật JMS để biết thêm chi tiết")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
     static final PropertyDescriptor SESSION_CACHE_SIZE = new PropertyDescriptor.Builder()
             .name("Session Cache size")
-            .displayName("Session Cache Size")
-            .description("This property is deprecated and no longer has any effect on the Processor. It will be removed in a later version.")
+            .displayName("Kích thước bộ đệm phiên")
+            .description("Thuộc tính này đã lỗi thời và không còn ảnh hưởng đến Bộ xử lý nữa. Nó sẽ bị xóa trong phiên bản sau.")
             .required(false)
             .defaultValue("1")
             .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
             .build();
     static final PropertyDescriptor CHARSET = new PropertyDescriptor.Builder()
             .name("character-set")
-            .displayName("Character Set")
-            .description("The name of the character set to use to construct or interpret TextMessages")
+            .displayName("Bộ ký tự")
+            .description("Tên của bộ ký tự được sử dụng để xây dựng hoặc diễn giải TextMessages")
             .required(true)
             .addValidator(StandardValidators.CHARACTER_SET_VALIDATOR)
             .defaultValue(Charset.defaultCharset().name())
@@ -129,8 +129,8 @@ public abstract class AbstractJMSProcessor<T extends JMSWorker> extends Abstract
 
     static final PropertyDescriptor CF_SERVICE = new PropertyDescriptor.Builder()
             .name("Connection Factory Service")
-            .description("The Controller Service that is used to obtain Connection Factory. Alternatively, the 'JNDI *' or the 'JMS *' properties " +
-                    "can also be be used to configure the Connection Factory.")
+            .description("Dịch vụ Điều khiển được sử dụng để lấy Connection Factory. Ngoài ra, các thuộc tính 'JNDI *' hoặc 'JMS *' " +
+                    "cũng có thể được sử dụng để cấu hình Connection Factory.")
             .required(false)
             .identifiesControllerService(JMSConnectionFactoryProviderDefinition.class)
             .build();
@@ -155,14 +155,14 @@ public abstract class AbstractJMSProcessor<T extends JMSWorker> extends Abstract
 
     static final PropertyDescriptor BASE_RECORD_READER = new PropertyDescriptor.Builder()
             .name("record-reader")
-            .displayName("Record Reader")
+            .displayName("Trình đọc bản ghi")
             .identifiesControllerService(RecordReaderFactory.class)
             .required(false)
             .build();
 
     static final PropertyDescriptor BASE_RECORD_WRITER = new PropertyDescriptor.Builder()
             .name("record-writer")
-            .displayName("Record Writer")
+            .displayName("Trình ghi bản ghi")
             .identifiesControllerService(RecordSetWriterFactory.class)
             .dependsOn(BASE_RECORD_READER)
             .required(true)

@@ -407,7 +407,7 @@ public class HadoopDBCPConnectionPool extends AbstractDBCPConnectionPool {
         try {
             clazz = Class.forName(driverName);
         } catch (final ClassNotFoundException e) {
-            throw new ProcessException("Driver class " + driverName + " is not found", e);
+            throw new ProcessException("Không tìm thấy lớp Driver: " + driverName , e);
         }
 
         try {
@@ -419,9 +419,9 @@ public class HadoopDBCPConnectionPool extends AbstractDBCPConnectionPool {
                 DriverManager.registerDriver(driver);
                 return DriverManager.getDriver(url);
             } catch (final SQLException e2) {
-                throw new ProcessException("No suitable driver for the given Database Connection URL", e2);
+                throw new ProcessException("Không có trình điều khiển phù hợp cho URL kết nối cơ sở dữ liệu nhất định", e2);
             } catch (final IllegalAccessException | InstantiationException e2) {
-                throw new ProcessException("Creating driver instance is failed", e2);
+                throw new ProcessException("Tạo phiên bản trình điều khiển không thành công", e2);
             }
         }
     }
@@ -469,7 +469,7 @@ public class HadoopDBCPConnectionPool extends AbstractDBCPConnectionPool {
                         getLogger().debug("checking TGT on kerberosUser {}", kerberosUser);
                         kerberosUser.checkTGTAndRelogin();
                     } catch (final KerberosLoginException e) {
-                        throw new ProcessException("Unable to relogin with kerberos credentials for " + kerberosUser.getPrincipal(), e);
+                        throw new ProcessException("Không thể đăng nhập lại bằng thông tin xác thực kerberos cho " + kerberosUser.getPrincipal(), e);
                     }
                 } else {
                     getLogger().debug("kerberosUser was null, will not refresh TGT with KerberosUser");

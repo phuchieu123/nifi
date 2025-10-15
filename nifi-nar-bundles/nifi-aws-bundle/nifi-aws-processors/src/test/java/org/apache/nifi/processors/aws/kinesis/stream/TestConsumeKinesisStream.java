@@ -93,10 +93,10 @@ public class TestConsumeKinesisStream {
         runner.assertNotValid();
 
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::run);
-        assertThat(assertionError.getMessage(), equalTo(String.format("Processor has 3 validation failures:\n" +
-                        "'%s' is invalid because %s is required\n" +
-                        "'%s' is invalid because %s is required\n" +
-                        "'%s' is invalid because %s is required\n",
+       assertThat(assertionError.getMessage(), equalTo(String.format("Bộ xử lý có 3 lỗi xác thực:\n" +
+                        "'%s' không hợp lệ vì %s là bắt buộc\n" +
+                        "'%s' không hợp lệ vì %s là bắt buộc\n" +
+                        "'%s' không hợp lệ vì %s là bắt buộc\n",
                 ConsumeKinesisStream.KINESIS_STREAM_NAME.getDisplayName(), ConsumeKinesisStream.KINESIS_STREAM_NAME.getDisplayName(),
                 ConsumeKinesisStream.APPLICATION_NAME.getDisplayName(), ConsumeKinesisStream.APPLICATION_NAME.getDisplayName(),
                 ConsumeKinesisStream.AWS_CREDENTIALS_PROVIDER_SERVICE.getDisplayName(), ConsumeKinesisStream.AWS_CREDENTIALS_PROVIDER_SERVICE.getDisplayName()
@@ -160,8 +160,8 @@ public class TestConsumeKinesisStream {
         runner.assertNotValid();
 
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::run);
-        assertThat(assertionError.getMessage(), equalTo(String.format("Processor has 1 validation failures:\n" +
-                        "'%s' is invalid because %s must be provided when %s is %s\n",
+      assertThat(assertionError.getMessage(), equalTo(String.format("Bộ xử lý có 1 lỗi xác thực:\n" +
+                        "'%s' không hợp lệ vì %s phải được cung cấp khi %s là %s\n",
                 ConsumeKinesisStream.STREAM_POSITION_TIMESTAMP.getName(), ConsumeKinesisStream.STREAM_POSITION_TIMESTAMP.getDisplayName(),
                 ConsumeKinesisStream.INITIAL_STREAM_POSITION.getDisplayName(), InitialPositionInStream.AT_TIMESTAMP
         )));
@@ -175,8 +175,8 @@ public class TestConsumeKinesisStream {
         runner.assertNotValid();
 
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::run);
-        assertThat(assertionError.getMessage(), equalTo(String.format("Processor has 1 validation failures:\n" +
-                        "'%s' is invalid because %s must be parsable by %s\n",
+        assertThat(assertionError.getMessage(), equalTo(String.format("Bộ xử lý có 1 lỗi xác thực:\n" +
+                        "'%s' không hợp lệ vì %s phải có thể được phân tích cú pháp bởi %s\n",
                 ConsumeKinesisStream.STREAM_POSITION_TIMESTAMP.getName(),
                 ConsumeKinesisStream.STREAM_POSITION_TIMESTAMP.getDisplayName(),
                 ConsumeKinesisStream.TIMESTAMP_FORMAT.getDisplayName()
@@ -193,8 +193,8 @@ public class TestConsumeKinesisStream {
         runner.assertNotValid();
 
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::assertValid);
-        assertThat(assertionError.getMessage(), equalTo(String.format("Processor has 1 validation failures:\n" +
-                        "'%s' is invalid because %s must be set if %s is set in order to write FlowFiles as Records.\n",
+        assertThat(assertionError.getMessage(), equalTo(String.format("Bộ xử lý có 1 lỗi xác thực:\n" +
+                        "'%s' không hợp lệ vì %s phải được đặt nếu %s được đặt để ghi FlowFiles dưới dạng Bản ghi (Records).\n",
                 ConsumeKinesisStream.RECORD_WRITER.getName(),
                 ConsumeKinesisStream.RECORD_WRITER.getDisplayName(),
                 ConsumeKinesisStream.RECORD_READER.getDisplayName()
@@ -211,8 +211,8 @@ public class TestConsumeKinesisStream {
         runner.assertNotValid();
 
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::assertValid);
-        assertThat(assertionError.getMessage(), equalTo(String.format("Processor has 1 validation failures:\n" +
-                        "'%s' is invalid because %s must be set if %s is set in order to write FlowFiles as Records.\n",
+        assertThat(assertionError.getMessage(), equalTo(String.format("Bộ xử lý có 1 lỗi xác thực:\n" +
+                        "'%s' không hợp lệ vì %s phải được đặt nếu %s được đặt để ghi FlowFiles dưới dạng Bản ghi (Records).\n",
                 ConsumeKinesisStream.RECORD_READER.getName(),
                 ConsumeKinesisStream.RECORD_READER.getDisplayName(),
                 ConsumeKinesisStream.RECORD_WRITER.getDisplayName()

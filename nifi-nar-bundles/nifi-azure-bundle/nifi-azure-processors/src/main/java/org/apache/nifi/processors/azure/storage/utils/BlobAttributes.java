@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 package org.apache.nifi.processors.azure.storage.utils;
-// 📦 Thuộc tính dùng cho Azure Blob trong NiFi
+// 📦 Thuộc tính dùng cho Azure Blob trong Life
 public final class BlobAttributes {
 
     // 🪣 Tên container chứa blob

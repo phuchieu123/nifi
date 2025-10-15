@@ -68,17 +68,17 @@ public abstract class AbstractCassandraProcessor extends AbstractProcessor {
     // Common descriptors
     static final PropertyDescriptor CONNECTION_PROVIDER_SERVICE = new PropertyDescriptor.Builder()
             .name("cassandra-connection-provider")
-            .displayName("Cassandra Connection Provider")
-            .description("Specifies the Cassandra connection providing controller service to be used to connect to Cassandra cluster.")
+            .displayName("Nhà cung cấp kết nối Cassandra")
+            .description("Chỉ định dịch vụ điều khiển cung cấp kết nối Cassandra sẽ được sử dụng để kết nối với cụm Cassandra.")
             .required(false)
             .identifiesControllerService(CassandraSessionProviderService.class)
             .build();
 
     static final PropertyDescriptor CONTACT_POINTS = new PropertyDescriptor.Builder()
-            .name("Cassandra Contact Points")
-            .description("Contact points are addresses of Cassandra nodes. The list of contact points should be "
-                    + "comma-separated and in hostname:port format. Example node1:port,node2:port,...."
-                    + " The default client port for Cassandra is 9042, but the port(s) must be explicitly specified.")
+            .name("Điểm liên hệ Cassandra")
+            .description("Các điểm liên hệ là địa chỉ của các nút Cassandra. Danh sách các điểm liên hệ phải được "
+                    + "phân tách bằng dấu phẩy và ở định dạng hostname:port. Ví dụ: node1:port,node2:port,...."
+                    + " Cổng máy khách mặc định cho Cassandra là 9042, nhưng (các) cổng phải được chỉ định rõ ràng.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.HOSTNAME_PORT_LIST_VALIDATOR)
@@ -86,44 +86,43 @@ public abstract class AbstractCassandraProcessor extends AbstractProcessor {
 
     static final PropertyDescriptor KEYSPACE = new PropertyDescriptor.Builder()
             .name("Keyspace")
-            .description("The Cassandra Keyspace to connect to. If no keyspace is specified, the query will need to " +
-                    "include the keyspace name before any table reference, in case of 'query' native processors or " +
-                    "if the processor exposes the 'Table' property, the keyspace name has to be provided with the " +
-                    "table name in the form of <KEYSPACE>.<TABLE>")
+            .description("Keyspace Cassandra để kết nối. Nếu không có keyspace nào được chỉ định, truy vấn sẽ cần phải " +
+                    "bao gồm tên keyspace trước bất kỳ tham chiếu bảng nào, trong trường hợp của bộ xử lý gốc 'query' hoặc " +
+                    "nếu bộ xử lý hiển thị thuộc tính 'Table', tên keyspace phải được cung cấp cùng với " +
+                    "tên bảng ở dạng <KEYSPACE>.<TABLE>")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 
     static final PropertyDescriptor PROP_SSL_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
-            .name("SSL Context Service")
-            .description("The SSL Context Service used to provide client certificate information for TLS/SSL "
-                    + "connections.")
+            .name("Dịch vụ Ngữ cảnh SSL")
+            .description("Dịch vụ Ngữ cảnh SSL được sử dụng để cung cấp thông tin chứng chỉ máy khách cho các kết nối TLS/SSL.")
             .required(false)
             .identifiesControllerService(SSLContextService.class)
             .build();
 
     static final PropertyDescriptor CLIENT_AUTH = new PropertyDescriptor.Builder()
-            .name("Client Auth")
-            .description("Client authentication policy when connecting to secure (TLS/SSL) cluster. "
-                    + "Possible values are REQUIRED, WANT, NONE. This property is only used when an SSL Context "
-                    + "has been defined and enabled.")
+            .name("Xác thực Máy khách")
+            .description("Chính sách xác thực máy khách khi kết nối với cụm an toàn (TLS/SSL). "
+                    + "Các giá trị có thể là REQUIRED, WANT, NONE. Thuộc tính này chỉ được sử dụng khi một Ngữ cảnh SSL "
+                    + "đã được xác định và kích hoạt.")
             .required(false)
             .allowableValues(ClientAuth.values())
             .defaultValue("REQUIRED")
             .build();
 
     static final PropertyDescriptor USERNAME = new PropertyDescriptor.Builder()
-            .name("Username")
-            .description("Username to access the Cassandra cluster")
+            .name("Tên người dùng")
+            .description("Tên người dùng để truy cập cụm Cassandra")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 
     static final PropertyDescriptor PASSWORD = new PropertyDescriptor.Builder()
-            .name("Password")
-            .description("Password to access the Cassandra cluster")
+            .name("Mật khẩu")
+            .description("Mật khẩu để truy cập cụm Cassandra")
             .required(false)
             .sensitive(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -131,16 +130,16 @@ public abstract class AbstractCassandraProcessor extends AbstractProcessor {
             .build();
 
     static final PropertyDescriptor CONSISTENCY_LEVEL = new PropertyDescriptor.Builder()
-            .name("Consistency Level")
-            .description("The strategy for how many replicas must respond before results are returned.")
+            .name("Mức độ nhất quán")
+            .description("Chiến lược về số lượng bản sao phải phản hồi trước khi kết quả được trả về.")
             .required(false)
             .allowableValues(ConsistencyLevel.values())
             .defaultValue("ONE")
             .build();
 
     static final PropertyDescriptor COMPRESSION_TYPE = new PropertyDescriptor.Builder()
-            .name("Compression Type")
-            .description("Enable compression at transport-level requests and responses")
+            .name("Loại nén")
+            .description("Bật nén ở cấp độ truyền tải cho các yêu cầu và phản hồi")
             .required(false)
             .allowableValues(ProtocolOptions.Compression.values())
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -148,8 +147,8 @@ public abstract class AbstractCassandraProcessor extends AbstractProcessor {
             .build();
 
     static final PropertyDescriptor CHARSET = new PropertyDescriptor.Builder()
-            .name("Character Set")
-            .description("Specifies the character set of the record data.")
+            .name("Bộ ký tự")
+            .description("Chỉ định bộ ký tự của dữ liệu bản ghi.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .defaultValue("UTF-8")
@@ -157,18 +156,18 @@ public abstract class AbstractCassandraProcessor extends AbstractProcessor {
             .build();
 
     static final Relationship REL_SUCCESS = new Relationship.Builder()
-            .name("success")
-            .description("A FlowFile is transferred to this relationship if the operation completed successfully.")
+            .name("thành công")
+            .description("Một FlowFile được chuyển đến mối quan hệ này nếu hoạt động hoàn thành thành công.")
             .build();
 
     static final Relationship REL_FAILURE = new Relationship.Builder()
-            .name("failure")
-            .description("A FlowFile is transferred to this relationship if the operation failed.")
+            .name("thất bại")
+            .description("Một FlowFile được chuyển đến mối quan hệ này nếu hoạt động thất bại.")
             .build();
 
-    static final Relationship REL_RETRY = new Relationship.Builder().name("retry")
-            .description("A FlowFile is transferred to this relationship if the operation cannot be completed but attempting "
-                    + "it again may succeed.")
+    static final Relationship REL_RETRY = new Relationship.Builder().name("thử lại")
+            .description("Một FlowFile được chuyển đến mối quan hệ này nếu hoạt động không thể hoàn thành nhưng việc thử "
+                    + "lại có thể thành công.")
             .build();
 
     protected static List<PropertyDescriptor> descriptors = new ArrayList<>();

@@ -53,10 +53,10 @@ import static org.apache.nifi.couchbase.CouchbaseConfigurationProperties.COUCHBA
 
 // TODO: Doc
 @Tags({"distributed", "cache", "map", "cluster", "couchbase"})
-@CapabilityDescription("Provides the ability to communicate with a Couchbase Server cluster as a DistributedMapCacheServer." +
-        " This can be used in order to share a Map between nodes in a NiFi cluster." +
-        " Couchbase Server cluster can provide a high available and persistent cache storage.")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Cung cấp khả năng giao tiếp với một cụm Couchbase Server dưới dạng DistributedMapCacheServer." +
+        " Điều này có thể được sử dụng để chia sẻ Map giữa các nút trong một cụm Life." +
+        " Cụm Couchbase Server có thể cung cấp một kho lưu trữ cache có tính sẵn sàng cao và bền bỉ.")
+@DeprecationNotice(reason = "Thành phần này không được dùng nữa và sẽ bị xóa trong Life 2.x.")
 public class CouchbaseMapCacheClient extends AbstractControllerService implements AtomicDistributedMapCacheClient<Long> {
 
     private static final Logger logger = LoggerFactory.getLogger(CouchbaseMapCacheClient.class);

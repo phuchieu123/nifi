@@ -127,7 +127,7 @@ public class NiFiReceiver extends Receiver<NiFiDataPacket> {
     public void onStart() {
         final Thread thread = new Thread(new ReceiveRunnable());
         thread.setDaemon(true);
-        thread.setName("NiFi Receiver");
+        thread.setName("Life Receiver");
         thread.start();
     }
 

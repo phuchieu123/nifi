@@ -45,35 +45,34 @@ import java.util.concurrent.atomic.AtomicReference;
  * otherwise is 8649)
  */
 @Tags({"ganglia", "stats"})
-@CapabilityDescription("Reports metrics to Ganglia so that Ganglia can be used for external monitoring of the application. Metrics"
-        + " reported include JVM Metrics (optional); the following 5-minute NiFi statistics: FlowFiles Received, Bytes Received,"
-        + " FlowFiles Sent, Bytes Sent, Bytes Read, Bytes Written, Total Task Duration; and the current values for"
-        + " FlowFiles Queued, Bytes Queued, and number of Active Threads.")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@CapabilityDescription("Báo cáo các chỉ số đến Ganglia để Ganglia có thể được sử dụng để giám sát ứng dụng từ bên ngoài. Các chỉ số"
+        + " được báo cáo bao gồm Chỉ số JVM (tùy chọn); các thống kê 5 phút sau đây của Life: FlowFiles đã nhận, Bytes đã nhận,"
+        + " FlowFiles đã gửi, Bytes đã gửi, Bytes đã đọc, Bytes đã ghi, Tổng thời gian Tác vụ; và các giá trị hiện tại cho"
+        + " FlowFiles đang trong hàng đợi, Bytes đang trong hàng đợi, và số lượng Luồng đang hoạt động.")
+@DeprecationNotice(reason = "Thành phần này không được dùng nữa và sẽ bị xóa trong Life 2.x.")
 public class StandardGangliaReporter extends AbstractReportingTask {
 
     public static final PropertyDescriptor HOSTNAME = new PropertyDescriptor.Builder()
             .name("Hostname")
-            .description("The fully-qualified name of the host on which Ganglia is running")
+            .description("Tên máy chủ đầy đủ của máy chủ đang chạy Ganglia")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .defaultValue("localhost")
             .build();
     public static final PropertyDescriptor PORT = new PropertyDescriptor.Builder()
             .name("Port")
-            .description("The Port on which Ganglia is listening for incoming connections")
+            .description("Cổng mà Ganglia đang lắng nghe các kết nối đến")
             .required(true)
             .addValidator(StandardValidators.PORT_VALIDATOR)
             .defaultValue("8649")
             .build();
     public static final PropertyDescriptor SEND_JVM_METRICS = new PropertyDescriptor.Builder()
             .name("Send JVM Metrics")
-            .description("Specifies whether or not JVM Metrics should be gathered and sent, in addition to NiFi-specific metrics")
+            .description("Chỉ định liệu Chỉ số JVM có nên được thu thập và gửi đi hay không, ngoài các chỉ số dành riêng cho Life")
             .required(true)
             .allowableValues("true", "false")
             .defaultValue("false")
             .build();
-
     public static final String METRICS_GROUP = "NiFi";
 
     private MetricsRegistry metricsRegistry;

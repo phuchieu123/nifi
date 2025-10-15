@@ -57,119 +57,131 @@ import java.util.Map;
 import java.util.Properties;
 
 @Tags({"email", "smtp", "record", "sink", "send", "write"})
-@CapabilityDescription("Provides a RecordSinkService that can be used to send records in email using the specified writer for formatting.")
+@CapabilityDescription("Cung cấp một RecordSinkService có thể được sử dụng để gửi các bản ghi qua email bằng cách sử dụng writer được chỉ định để định dạng.")
 public class EmailRecordSink extends AbstractControllerService implements RecordSinkService {
 
-    private static final String RFC822 = "Comma separated sequence of addresses following RFC822 syntax.";
+    private static final String RFC822 = "Chuỗi các địa chỉ được phân tách bằng dấu phẩy theo cú pháp RFC822.";
 
     public static final PropertyDescriptor FROM = new PropertyDescriptor.Builder()
             .name("from")
-            .displayName("From")
-            .description("Specifies the Email address to use as the sender. " + RFC822)
+            .displayName("Người gửi (From)")
+            .description("Chỉ định địa chỉ Email sẽ được sử dụng làm người gửi. " + RFC822)
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
+
     public static final PropertyDescriptor TO = new PropertyDescriptor.Builder()
             .name("to")
-            .displayName("To")
-            .description("The recipients to include in the To-Line of the email. " + RFC822)
+            .displayName("Người nhận (To)")
+            .description("Danh sách người nhận được bao gồm trong dòng To của email. " + RFC822)
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
+
     public static final PropertyDescriptor CC = new PropertyDescriptor.Builder()
             .name("cc")
-            .displayName("CC")
-            .description("The recipients to include in the CC-Line of the email. " + RFC822)
+            .displayName("Sao chép (CC)")
+            .description("Danh sách người nhận được bao gồm trong dòng CC của email. " + RFC822)
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
+
     public static final PropertyDescriptor BCC = new PropertyDescriptor.Builder()
             .name("bcc")
-            .displayName("BCC")
-            .description("The recipients to include in the BCC-Line of the email. " + RFC822)
+            .displayName("Ẩn danh (BCC)")
+            .description("Danh sách người nhận được bao gồm trong dòng BCC của email. " + RFC822)
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
+
     public static final PropertyDescriptor SUBJECT = new PropertyDescriptor.Builder()
             .name("subject")
-            .displayName("Subject")
-            .description("The email subject")
+            .displayName("Tiêu đề (Subject)")
+            .description("Tiêu đề của email")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
-            .defaultValue("Message from NiFi")
+            .defaultValue("Thông điệp từ NiFi")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
+
     public static final PropertyDescriptor SMTP_HOSTNAME = new PropertyDescriptor.Builder()
             .name("smtp-hostname")
-            .displayName("SMTP Hostname")
-            .description("The hostname of the SMTP Server that is used to send Email Notifications")
+            .displayName("Tên máy chủ SMTP")
+            .description("Tên máy chủ SMTP được sử dụng để gửi thông báo qua Email")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .build();
+
     public static final PropertyDescriptor SMTP_PORT = new PropertyDescriptor.Builder()
             .name("smtp-port")
-            .displayName("SMTP Port")
-            .description("The Port used for SMTP communications")
+            .displayName("Cổng SMTP")
+            .description("Cổng được sử dụng cho giao tiếp SMTP")
             .required(true)
             .defaultValue("25")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.PORT_VALIDATOR)
             .build();
+
     public static final PropertyDescriptor SMTP_AUTH = new PropertyDescriptor.Builder()
             .name("smtp-auth")
-            .displayName("SMTP Auth")
-            .description("Flag indicating whether authentication should be used")
+            .displayName("Xác thực SMTP")
+            .description("Cờ cho biết có cần sử dụng xác thực hay không")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
             .defaultValue("true")
             .build();
+
     public static final PropertyDescriptor SMTP_USERNAME = new PropertyDescriptor.Builder()
             .name("smtp-username")
-            .displayName("SMTP Username")
-            .description("Username for the SMTP account")
+            .displayName("Tên người dùng SMTP")
+            .description("Tên người dùng cho tài khoản SMTP")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(false)
             .dependsOn(SMTP_AUTH, "true")
             .build();
+
     public static final PropertyDescriptor SMTP_PASSWORD = new PropertyDescriptor.Builder()
             .name("smtp-password")
-            .displayName("SMTP Password")
-            .description("Password for the SMTP account")
+            .displayName("Mật khẩu SMTP")
+            .description("Mật khẩu cho tài khoản SMTP")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(false)
             .sensitive(true)
             .dependsOn(SMTP_AUTH, "true")
             .build();
+
     public static final PropertyDescriptor SMTP_STARTTLS = new PropertyDescriptor.Builder()
             .name("smtp-starttls")
-            .displayName("SMTP STARTTLS")
-            .description("Flag indicating whether STARTTLS should be enabled. "
-                    + "If the server does not support STARTTLS, the connection continues without the use of TLS")
+            .displayName("Bật STARTTLS")
+            .description("Cờ cho biết có bật STARTTLS hay không. "
+                    + "Nếu máy chủ không hỗ trợ STARTTLS, kết nối sẽ tiếp tục mà không sử dụng TLS.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.BOOLEAN_VALIDATOR)
             .defaultValue("false")
             .build();
+
     public static final PropertyDescriptor SMTP_SSL = new PropertyDescriptor.Builder()
             .name("smtp-ssl")
-            .displayName("SMTP SSL")
-            .description("Flag indicating whether SSL should be enabled")
+            .displayName("Bật SSL")
+            .description("Cờ cho biết có bật SSL hay không")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .defaultValue("false")
             .build();
+
     public static final PropertyDescriptor HEADER_XMAILER = new PropertyDescriptor.Builder()
             .name("smtp-xmailer-header")
-            .displayName("SMTP X-Mailer Header")
-            .description("X-Mailer used in the header of the outgoing email")
+            .displayName("Tiêu đề SMTP X-Mailer")
+            .description("Giá trị X-Mailer được sử dụng trong header của email gửi đi")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)

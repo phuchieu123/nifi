@@ -41,30 +41,30 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Tags({"stats", "log"})
-@CapabilityDescription("Logs the 5-minute stats that are shown in the NiFi Summary Page for Processors and Connections, as"
-        + " well optionally logging the deltas between the previous iteration and the current iteration. Processors' stats are"
-        + " logged using the org.apache.nifi.controller.ControllerStatusReportingTask.Processors logger, while Connections' stats are"
-        + " logged using the org.apache.nifi.controller.ControllerStatusReportingTask.Connections logger. These can be configured"
-        + " in the NiFi logging configuration to log to different files, if desired.")
+@CapabilityDescription("Ghi lại số liệu thống kê trong 5 phút được hiển thị trên Trang Tóm tắt NiFi cho các Bộ xử lý và Kết nối, cũng như"
+        + " tùy chọn ghi lại sự thay đổi (delta) giữa lần lặp trước và lần lặp hiện tại. Số liệu thống kê của các Bộ xử lý được"
+        + " ghi lại bằng logger org.apache.nifi.controller.ControllerStatusReportingTask.Processors, trong khi số liệu thống kê của các Kết nối được"
+        + " ghi lại bằng logger org.apache.nifi.controller.ControllerStatusReportingTask.Connections. Những logger này có thể được cấu hình"
+        + " trong cấu hình ghi nhật ký của NiFi để ghi vào các tệp khác nhau, nếu muốn.")
 public class ControllerStatusReportingTask extends AbstractReportingTask {
 
-    static final AllowableValue FIVE_MINUTE_GRANULARITY = new AllowableValue("five-minutes", "Five Minutes", "The stats that are reported will reflect up to the last 5 minutes' worth of processing," +
-        " which will coincide with the stats that are shown in the UI.");
-    static final AllowableValue ONE_SECOND_GRANULARITY = new AllowableValue("one-second", "One Second", "The stats that are reported will be an average of the value per second, gathered over the " +
-        "last 5 minutes. This is essentially obtained by dividing the stats that are shown in the UI by 300 (300 seconds in 5 minutes), with the exception of when NiFi has been running for less " +
-        "than 5 minutes. In that case, the stats will be divided by the amount of time NiFi has been running.");
+    static final AllowableValue FIVE_MINUTE_GRANULARITY = new AllowableValue("five-minutes", "Năm phút", "Các số liệu thống kê được báo cáo sẽ phản ánh quá trình xử lý trong tối đa 5 phút qua," +
+        " trùng khớp với các số liệu được hiển thị trên giao diện người dùng.");
+    static final AllowableValue ONE_SECOND_GRANULARITY = new AllowableValue("one-second", "Một giây", "Các số liệu thống kê được báo cáo sẽ là giá trị trung bình mỗi giây, được thu thập trong " +
+        "5 phút qua. Về cơ bản, điều này có được bằng cách chia các số liệu được hiển thị trên giao diện người dùng cho 300 (300 giây trong 5 phút), ngoại trừ trường hợp NiFi đã chạy ít hơn " +
+        "5 phút. Trong trường hợp đó, các số liệu sẽ được chia cho khoảng thời gian NiFi đã chạy.");
 
     public static final PropertyDescriptor SHOW_DELTAS = new Builder()
             .name("Show Deltas")
-            .description("Specifies whether or not to show the difference in values between the current status and the previous status")
+            .description("Chỉ định liệu có hiển thị sự khác biệt về giá trị giữa trạng thái hiện tại và trạng thái trước đó hay không")
             .required(true)
             .allowableValues("true", "false")
             .defaultValue("true")
             .build();
     static final PropertyDescriptor REPORTING_GRANULARITY = new Builder()
         .name("reporting-granularity")
-        .displayName("Reporting Granularity")
-        .description("When reporting information, specifies the granularity of the metrics to report")
+        .displayName("Mức độ chi tiết Báo cáo")
+        .description("Khi báo cáo thông tin, chỉ định mức độ chi tiết của các chỉ số cần báo cáo")
         .allowableValues(FIVE_MINUTE_GRANULARITY, ONE_SECOND_GRANULARITY)
         .defaultValue(FIVE_MINUTE_GRANULARITY.getValue())
         .build();

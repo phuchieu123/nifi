@@ -75,20 +75,20 @@ import java.util.concurrent.atomic.AtomicReference;
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @Tags({"xml", "schema", "validation", "xsd"})
 @WritesAttributes({
-    @WritesAttribute(attribute = "validatexml.invalid.error", description = "If the flow file is routed to the invalid relationship "
-            + "the attribute will contain the error message resulting from the validation failure.")
+    @WritesAttribute(attribute = "validatexml.invalid.error", description = "Nếu flow file được chuyển đến mối quan hệ không hợp lệ "
+            + "thuộc tính này sẽ chứa thông báo lỗi do xác thực thất bại.")
 })
-@CapabilityDescription("Validates XML contained in a FlowFile. By default, the XML is contained in the FlowFile content. If the 'XML Source Attribute' property is set, the XML to be validated "
-        + "is contained in the specified attribute. It is not recommended to use attributes to hold large XML documents; doing so could adversely affect system performance. "
-        + "Full schema validation is performed if the processor is configured with the XSD schema details. Otherwise, the only validation performed is "
-        + "to ensure the XML syntax is correct and well-formed, e.g. all opening tags are properly closed.")
-@SystemResourceConsideration(resource = SystemResource.MEMORY, description = "While this processor supports processing XML within attributes, it is strongly discouraged to hold "
-        + "large amounts of data in attributes. In general, attribute values should be as small as possible and hold no more than a couple hundred characters.")
+@CapabilityDescription("Xác thực XML chứa trong một FlowFile. Theo mặc định, XML nằm trong nội dung của FlowFile. Nếu thuộc tính 'Thuộc tính Nguồn XML' (XML Source Attribute) được đặt, XML cần xác thực "
+        + "sẽ nằm trong thuộc tính được chỉ định. Không khuyến khích sử dụng thuộc tính để chứa các tài liệu XML lớn; làm như vậy có thể ảnh hưởng xấu đến hiệu suất hệ thống. "
+        + "Việc xác thực lược đồ đầy đủ sẽ được thực hiện nếu bộ xử lý được cấu hình với chi tiết lược đồ XSD. Nếu không, việc xác thực duy nhất được thực hiện là "
+        + "để đảm bảo cú pháp XML là chính xác và được định dạng tốt, ví dụ: tất cả các thẻ mở đều được đóng đúng cách.")
+@SystemResourceConsideration(resource = SystemResource.MEMORY, description = "Mặc dù bộ xử lý này hỗ trợ xử lý XML trong các thuộc tính, nhưng việc chứa "
+        + "một lượng lớn dữ liệu trong thuộc tính là không được khuyến khích. Nói chung, giá trị thuộc tính nên càng nhỏ càng tốt và không chứa quá vài trăm ký tự.")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.REFERENCE_REMOTE_RESOURCES,
-                        explanation = "Schema configuration can reference resources over HTTP"
+                        explanation = "Cấu hình lược đồ có thể tham chiếu đến các tài nguyên qua HTTP"
                 )
         }
 )
@@ -98,16 +98,16 @@ public class ValidateXml extends AbstractProcessor {
 
     public static final PropertyDescriptor SCHEMA_FILE = new PropertyDescriptor.Builder()
             .name("Schema File")
-            .displayName("Schema File")
-            .description("The file path or URL to the XSD Schema file that is to be used for validation. If this property is blank, only XML syntax/structure will be validated.")
+            .displayName("Tệp Lược đồ")
+            .description("Đường dẫn tệp hoặc URL đến tệp Lược đồ XSD sẽ được sử dụng để xác thực. Nếu thuộc tính này để trống, chỉ cú pháp/cấu trúc XML sẽ được xác thực.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE, ResourceType.URL)
             .build();
     public static final PropertyDescriptor XML_SOURCE_ATTRIBUTE = new PropertyDescriptor.Builder()
             .name("XML Source Attribute")
-            .displayName("XML Source Attribute")
-            .description("The name of the attribute containing XML to be validated. If this property is blank, the FlowFile content will be validated.")
+            .displayName("Thuộc tính Nguồn XML")
+            .description("Tên của thuộc tính chứa XML cần được xác thực. Nếu thuộc tính này để trống, nội dung của FlowFile sẽ được xác thực.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.ATTRIBUTE_KEY_VALIDATOR)
@@ -115,13 +115,12 @@ public class ValidateXml extends AbstractProcessor {
 
     public static final Relationship REL_VALID = new Relationship.Builder()
             .name("valid")
-            .description("FlowFiles that are successfully validated against the schema, if provided, or verified to be well-formed XML are routed to this relationship")
+            .description("Các FlowFile được xác thực thành công dựa trên lược đồ (nếu được cung cấp), hoặc được xác minh là XML được định dạng tốt sẽ được chuyển đến mối quan hệ này")
             .build();
     public static final Relationship REL_INVALID = new Relationship.Builder()
             .name("invalid")
-            .description("FlowFiles that are not valid according to the specified schema or contain invalid XML are routed to this relationship")
+            .description("Các FlowFile không hợp lệ theo lược đồ đã chỉ định hoặc chứa XML không hợp lệ sẽ được chuyển đến mối quan hệ này")
             .build();
-
     private static final String SCHEMA_LANGUAGE = "http://www.w3.org/2001/XMLSchema";
 
     private static final SchemaValidator SCHEMA_VALIDATOR = new StandardSchemaValidator();

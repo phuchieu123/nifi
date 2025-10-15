@@ -45,24 +45,24 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Tags({"environment", "variable"})
-@CapabilityDescription("Fetches parameters from environment variables")
+@CapabilityDescription("Tìm nạp các tham số từ các biến môi trường")
 
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.ACCESS_ENVIRONMENT_CREDENTIALS,
-                        explanation = "Provides operator the ability to read environment variables, which may contain environment credentials.")
+                        explanation = "Cung cấp cho người vận hành khả năng đọc các biến môi trường, có thể chứa thông tin xác thực môi trường.")
         }
 )
 public class EnvironmentVariableParameterProvider extends AbstractParameterProvider implements VerifiableParameterProvider {
     private final Map<String, String> environmentVariables = new ConcurrentHashMap<>();
 
-    private static final AllowableValue INCLUDE_ALL_STRATEGY = new AllowableValue("include-all", "Include All",
-            "All Environment Variables will be included");
-    private static final AllowableValue COMMA_SEPARATED_STRATEGY = new AllowableValue("comma-separated", "Comma-Separated",
-            "List comma-separated Environment Variable names to include");
-    private static final AllowableValue REGEX_STRATEGY = new AllowableValue("regex", "Regular Expression",
-            "Include Environment Variable names that match a Regular Expression");
+    private static final AllowableValue INCLUDE_ALL_STRATEGY = new AllowableValue("include-all", "Bao gồm Tất cả",
+            "Tất cả các Biến Môi trường sẽ được bao gồm");
+    private static final AllowableValue COMMA_SEPARATED_STRATEGY = new AllowableValue("comma-separated", "Phân tách bằng Dấu phẩy",
+            "Liệt kê tên các Biến Môi trường cần bao gồm, được phân tách bằng dấu phẩy");
+    private static final AllowableValue REGEX_STRATEGY = new AllowableValue("regex", "Biểu thức Chính quy",
+            "Bao gồm các tên Biến Môi trường khớp với một Biểu thức Chính quy");
 
     private enum InclusionStrategyValue {
         INCLUDE_ALL(EnvironmentVariableParameterProvider.INCLUDE_ALL_STRATEGY.getValue(), IncludeAllEnvironmentVariableInclusionStrategy::new),
@@ -83,21 +83,21 @@ public class EnvironmentVariableParameterProvider extends AbstractParameterProvi
 
         static InclusionStrategyValue fromValue(final String value) {
             if (value == null) {
-                throw new IllegalArgumentException("Inclusion strategy value is required");
+                throw new IllegalArgumentException("Giá trị chiến lược bao gồm là bắt buộc");
             }
             for (final InclusionStrategyValue v : values()) {
                 if (v.name.equals(value)) {
                     return v;
                 }
             }
-            throw new IllegalArgumentException("Unrecognized inclusion strategy value");
+            throw new IllegalArgumentException("Giá trị chiến lược bao gồm không nhận dạng được");
         }
     }
 
     public static final PropertyDescriptor ENVIRONMENT_VARIABLE_INCLUSION_STRATEGY = new PropertyDescriptor.Builder()
             .name("environment-variable-inclusion-strategy")
-            .displayName("Environment Variable Inclusion Strategy")
-            .description("Indicates how Environment Variables should be included")
+            .displayName("Chiến lược Bao gồm Biến Môi trường")
+            .description("Cho biết cách các Biến Môi trường sẽ được bao gồm")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .allowableValues(new AllowableValue[] { INCLUDE_ALL_STRATEGY, COMMA_SEPARATED_STRATEGY, REGEX_STRATEGY })
             .defaultValue(INCLUDE_ALL_STRATEGY.getValue())
@@ -105,22 +105,21 @@ public class EnvironmentVariableParameterProvider extends AbstractParameterProvi
             .build();
     public static final PropertyDescriptor INCLUDE_ENVIRONMENT_VARIABLES = new PropertyDescriptor.Builder()
             .name("include-environment-variables")
-            .displayName("Include Environment Variables")
-            .description("Specifies environment variable names that should be included from the fetched environment variables.")
+            .displayName("Bao gồm các Biến Môi trường")
+            .description("Chỉ định tên các biến môi trường sẽ được bao gồm từ các biến môi trường đã tìm nạp.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(false)
             .dependsOn(ENVIRONMENT_VARIABLE_INCLUSION_STRATEGY, REGEX_STRATEGY, COMMA_SEPARATED_STRATEGY)
             .build();
     public static final PropertyDescriptor PARAMETER_GROUP_NAME = new PropertyDescriptor.Builder()
             .name("parameter-group-name")
-            .displayName("Parameter Group Name")
-            .description("The name of the parameter group that will be fetched.  This indicates the name of the Parameter Context that may receive " +
-                    "the fetched parameters.")
+            .displayName("Tên Nhóm Tham số")
+            .description("Tên của nhóm tham số sẽ được tìm nạp. Điều này cho biết tên của Bối cảnh Tham số (Parameter Context) có thể nhận " +
+                    "các tham số đã tìm nạp.")
             .addValidator(StandardValidators.createRegexMatchingValidator(Pattern.compile("^[a-zA-Z0-9_. -]+$")))
-            .defaultValue("Environment Variables")
+            .defaultValue("Biến Môi trường")
             .required(true)
             .build();
-
     private List<PropertyDescriptor> properties;
 
     @Override

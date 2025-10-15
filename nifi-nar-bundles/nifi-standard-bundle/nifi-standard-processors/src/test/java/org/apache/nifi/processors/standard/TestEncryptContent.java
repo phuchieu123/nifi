@@ -468,10 +468,10 @@ public class TestEncryptContent {
 
         // The default validation error is:
         // Raw key hex cannot be empty
-        final String RAW_KEY_ERROR = "'raw-key-hex' is invalid because Raw Key (hexadecimal) is " +
-                "required when using algorithm AES/GCM/NoPadding and KDF KeyDerivationFunction[KDF " +
-                "Name=None,Description=The cipher is given a raw key conforming to the algorithm " +
-                "specifications]. See Admin Guide.";
+        final String RAW_KEY_ERROR = "'raw-key-hex' không hợp lệ vì Khóa thô (hệ thập lục phân) là " +
+                "bắt buộc khi sử dụng thuật toán AES/GCM/NoPadding và KDF KeyDerivationFunction[KDF " +
+                "Name=None,Description=Mật mã được cung cấp một khóa thô phù hợp với các thông số kỹ thuật " +
+                "của thuật toán]. Xem Hướng dẫn quản trị.";
 
         final Set<String>  EXPECTED_ERRORS = new HashSet<>();
         EXPECTED_ERRORS.add(RAW_KEY_ERROR);
@@ -501,8 +501,8 @@ public class TestEncryptContent {
         assertEquals(1, results.size());
         for (final ValidationResult vr : results) {
             assertTrue(vr.toString().contains(
-                    " encryption without a " + EncryptContent.PASSWORD.getDisplayName() + " requires both "
-                            + EncryptContent.PUBLIC_KEYRING.getDisplayName() + " and "
+                    " encryption without a " + EncryptContent.PASSWORD.getDisplayName() + " đòi hỏi cả hai "
+                            + EncryptContent.PUBLIC_KEYRING.getDisplayName() + " và "
                             + EncryptContent.PUBLIC_KEY_USERID.getDisplayName()));
         }
 
@@ -521,8 +521,8 @@ public class TestEncryptContent {
         assertEquals(1, results.size());
         for (final ValidationResult vr : results) {
             assertTrue(vr.toString().contains(
-                    " decryption without a " + EncryptContent.PASSWORD.getDisplayName() + " requires both "
-                            + EncryptContent.PRIVATE_KEYRING.getDisplayName() + " and "
+                    " giải mã mà không cần " + EncryptContent.PASSWORD.getDisplayName() + " đòi hỏi cả hai "
+                            + EncryptContent.PRIVATE_KEYRING.getDisplayName() + " và "
                             + EncryptContent.PRIVATE_KEYRING_PASSPHRASE.getDisplayName()));
 
         }
@@ -534,7 +534,7 @@ public class TestEncryptContent {
         assertEquals(1, results.size());
         for (final ValidationResult vr : results) {
             assertTrue(vr.toString().contains(
-                    " could not be opened with the provided " + EncryptContent.PRIVATE_KEYRING_PASSPHRASE.getDisplayName()));
+                    " không thể mở được với cái được cung cấp " + EncryptContent.PRIVATE_KEYRING_PASSPHRASE.getDisplayName()));
 
         }
         runner.removeProperty(EncryptContent.PRIVATE_KEYRING_PASSPHRASE);
@@ -593,8 +593,8 @@ public class TestEncryptContent {
         assertEquals(1, results.size());
         ValidationResult vr = results.iterator().next();
 
-        String expectedResult = "'raw-key-hex' is invalid because Key must be valid length [128, 192, 256]";
-        String message = "'" + vr.toString() + "' contains '" + expectedResult + "'";
+        String expectedResult = "'raw-key-hex' không hợp lệ vì Khóa phải có độ dài hợp lệ [128, 192, 256]";
+        String message = "'" + vr.toString() + "' chứa '" + expectedResult + "'";
         assertTrue(vr.toString().contains(expectedResult), message);
     }
 
@@ -622,7 +622,7 @@ public class TestEncryptContent {
         assertEquals(1, results.size());
         ValidationResult keyLengthInvalidVR = results.iterator().next();
 
-        String expectedResult = "'raw-key-hex' is invalid because Key must be valid length [128, 192, 256]";
+        String expectedResult = "'raw-key-hex' không hợp lệ vì Khóa phải có độ dài hợp lệ [128, 192, 256]";
         String message = "'" + keyLengthInvalidVR.toString() + "' contains '" + expectedResult + "'";
         assertTrue(keyLengthInvalidVR.toString().contains(expectedResult), message);
     }
@@ -656,9 +656,9 @@ public class TestEncryptContent {
                 assertEquals(1, results.size());
                 ValidationResult keyLengthInvalidVR = results.iterator().next();
 
-                String expectedResult = String.format("'key-derivation-function' is invalid because Key Derivation Function is required to be BCRYPT, SCRYPT, PBKDF2, ARGON2, NONE when using " +
-                        "algorithm %s", encryptionMethod.getAlgorithm());
-                String message = "'" + keyLengthInvalidVR.toString() + "' contains '" + expectedResult + "'";
+              String expectedResult = String.format("'key-derivation-function' không hợp lệ vì Hàm Dẫn xuất Khóa được yêu cầu phải là BCRYPT, SCRYPT, PBKDF2, ARGON2, NONE khi sử dụng " +
+                        "thuật toán %s", encryptionMethod.getAlgorithm());
+                String message = "'" + keyLengthInvalidVR.toString() + "' chứa '" + expectedResult + "'";
                 assertTrue(keyLengthInvalidVR.toString().contains(expectedResult), message);
             }
 
@@ -783,9 +783,9 @@ public class TestEncryptContent {
                 assertEquals(1, results.size());
                 ValidationResult keyLengthInvalidVR = results.iterator().next();
 
-                String expectedResult = String.format("'Key Derivation Function' is invalid because Key Derivation Function is required to be NIFI_LEGACY, OPENSSL_EVP_BYTES_TO_KEY when using " +
-                        "algorithm %s", encryptionMethod.getAlgorithm());
-                String message = "'" + keyLengthInvalidVR.toString() + "' contains '" + expectedResult + "'";
+              String expectedResult = String.format("'Hàm dẫn xuất khóa' không hợp lệ vì Hàm dẫn xuất khóa được yêu cầu phải là NIFI_LEGACY, OPENSSL_EVP_BYTES_TO_KEY khi sử dụng " +
+                        "thuật toán %s", encryptionMethod.getAlgorithm());
+                String message = "'" + keyLengthInvalidVR.toString() + "' chứa '" + expectedResult + "'";
                 assertTrue(keyLengthInvalidVR.toString().contains(expectedResult), message);
             }
 
@@ -1024,9 +1024,9 @@ public class TestEncryptContent {
             assertEquals(1, results.size());
             ValidationResult passwordLengthVR = results.iterator().next();
 
-            String expectedResult = String.format("'Password' is invalid because Password length less than %s characters is potentially unsafe. " +
-                    "See Admin Guide.", PasswordBasedEncryptor.getMinimumSafePasswordLength());
-            String message = "'" + passwordLengthVR.toString() + "' contains '" + expectedResult + "'";
+          String expectedResult = String.format("'Mật khẩu' không hợp lệ vì độ dài mật khẩu dưới %s ký tự có thể không an toàn. " +
+                    "Xem Hướng dẫn quản trị.", PasswordBasedEncryptor.getMinimumSafePasswordLength());
+            String message = "'" + passwordLengthVR.toString() + "' chứa '" + expectedResult + "'";
             assertTrue(passwordLengthVR.toString().contains(expectedResult), message);
         }
     }

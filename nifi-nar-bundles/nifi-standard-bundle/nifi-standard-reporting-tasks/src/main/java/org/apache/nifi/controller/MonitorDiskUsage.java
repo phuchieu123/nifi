@@ -33,16 +33,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Tags({"disk", "storage", "warning", "monitoring", "repo"})
-@CapabilityDescription("Checks the amount of storage space available for the specified directory"
-        + " and warns (via a log message and a System-Level Bulletin) if the partition on which it lives exceeds"
-        + " some configurable threshold of storage space")
+@CapabilityDescription("Kiểm tra dung lượng lưu trữ còn trống cho thư mục được chỉ định"
+        + " và cảnh báo (thông qua một thông điệp log và một Thông báo Cấp Hệ thống) nếu phân vùng chứa nó vượt quá"
+        + " một ngưỡng dung lượng lưu trữ có thể cấu hình")
 public class MonitorDiskUsage extends AbstractReportingTask {
 
     private static final Pattern PERCENT_PATTERN = Pattern.compile("(\\d+{1,2})%");
 
     public static final PropertyDescriptor DIR_THRESHOLD = new PropertyDescriptor.Builder()
             .name("Threshold")
-            .description("The threshold at which a bulletin will be generated to indicate that the disk usage of the partition on which the directory found is of concern")
+            .description("Ngưỡng mà tại đó một thông báo sẽ được tạo ra để chỉ ra rằng việc sử dụng đĩa của phân vùng chứa thư mục được tìm thấy là đáng lo ngại")
             .required(true)
             .addValidator(StandardValidators.createRegexMatchingValidator(PERCENT_PATTERN))
             .defaultValue("80%")
@@ -50,19 +50,18 @@ public class MonitorDiskUsage extends AbstractReportingTask {
 
     public static final PropertyDescriptor DIR_LOCATION = new PropertyDescriptor.Builder()
             .name("Directory Location")
-            .description("The directory path of the partition to be monitored.")
+            .description("Đường dẫn thư mục của phân vùng cần được giám sát.")
             .required(true)
             .addValidator(StandardValidators.createDirectoryExistsValidator(false, false))
             .build();
 
     public static final PropertyDescriptor DIR_DISPLAY_NAME = new PropertyDescriptor.Builder()
             .name("Directory Display Name")
-            .description("The name to display for the directory in alerts.")
+            .description("Tên sẽ được hiển thị cho thư mục trong các cảnh báo.")
             .required(false)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
-            .defaultValue("Un-Named")
+            .defaultValue("Chưa được đặt tên")
             .build();
-
     @Override
     protected List<PropertyDescriptor> getSupportedPropertyDescriptors() {
         final List<PropertyDescriptor> descriptors = new ArrayList<>(2);

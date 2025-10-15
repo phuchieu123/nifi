@@ -88,14 +88,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Tags({"elasticsearch", "elasticsearch6", "elasticsearch7", "elasticsearch8", "client"})
-@CapabilityDescription("A controller service for accessing an Elasticsearch client. " +
-        "Uses the Elasticsearch REST Client (7.13.4, the last version before client connections verify" +
-        "the server is Elastic provided, this should allow for connections to compatible alternatives, e.g. AWS OpenSearch)")
+@CapabilityDescription("Một dịch vụ điều khiển (controller service) để truy cập vào client của Elasticsearch. " +
+        "Sử dụng Elasticsearch REST Client (phiên bản 7.13.4 — phiên bản cuối cùng trước khi client bắt đầu xác minh" +
+        " rằng máy chủ là do Elastic cung cấp, điều này cho phép kết nối với các giải pháp tương thích khác, ví dụ: AWS OpenSearch).")
 @DynamicProperty(
-        name = "The name of a Request Header to add",
-        value = "The value of the Header",
+        name = "Tên của Header yêu cầu cần thêm",
+        value = "Giá trị của Header",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Adds the specified property name/value as a Request Header in the Elasticsearch requests.")
+        description = "Thêm cặp tên/giá trị thuộc tính được chỉ định làm Header yêu cầu trong các truy vấn gửi đến Elasticsearch.")
 public class ElasticSearchClientServiceImpl extends AbstractControllerService implements ElasticSearchClientService {
     public static final String VERIFICATION_STEP_CONNECTION = "Elasticsearch Connection";
     public static final String VERIFICATION_STEP_CLIENT_SETUP = "Elasticsearch Rest Client Setup";

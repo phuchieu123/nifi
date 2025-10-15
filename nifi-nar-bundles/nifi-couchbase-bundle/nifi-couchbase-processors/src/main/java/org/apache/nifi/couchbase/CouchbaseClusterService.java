@@ -46,20 +46,20 @@ import org.apache.nifi.util.StringUtils;
 /**
  * Provides a centralized Couchbase connection and bucket passwords management.
  */
-@CapabilityDescription("Provides a centralized Couchbase connection and bucket passwords management."
-        + " Bucket passwords can be specified via dynamic properties.")
+@CapabilityDescription("Cung cấp kết nối Couchbase tập trung và quản lý mật khẩu bucket."
+        + " Mật khẩu bucket có thể được chỉ định thông qua các thuộc tính động.")
 @Tags({ "nosql", "couchbase", "database", "connection" })
-@DynamicProperty(name = "Bucket Password for BUCKET_NAME", value = "bucket password",
-        description = "Specify bucket password if necessary." +
-                " Couchbase Server 5.0 or later should use 'User Name' and 'User Password' instead.")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@DynamicProperty(name = "Mật khẩu Bucket cho BUCKET_NAME", value = "mật khẩu bucket",
+        description = "Chỉ định mật khẩu bucket nếu cần." +
+                " Couchbase Server 5.0 trở lên nên sử dụng 'Tên người dùng' và 'Mật khẩu người dùng' thay thế.")
+@DeprecationNotice(reason = "Thành phần này không được dùng nữa và sẽ bị xóa trong Life 2.x.")
 public class CouchbaseClusterService extends AbstractControllerService implements CouchbaseClusterControllerService {
 
     public static final PropertyDescriptor CONNECTION_STRING = new PropertyDescriptor
             .Builder()
             .name("Connection String")
-            .description("The hostnames or ip addresses of the bootstraping nodes and optional parameters."
-                    + " Syntax) couchbase://node1,node2,nodeN?param1=value1&param2=value2&paramN=valueN")
+            .description("Tên máy chủ hoặc địa chỉ ip của các nút khởi động và các tham số tùy chọn."
+                    + " Cú pháp) couchbase://node1,node2,nodeN?param1=value1&param2=value2&paramN=valueN")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -68,10 +68,10 @@ public class CouchbaseClusterService extends AbstractControllerService implement
     public static final PropertyDescriptor USER_NAME = new PropertyDescriptor
             .Builder()
             .name("user-name")
-            .displayName("User Name")
-            .description("The user name to authenticate NiFi as a Couchbase client." +
-                    " This configuration can be used against Couchbase Server 5.0 or later" +
-                    " supporting Roll-Based Access Control.")
+            .displayName("Tên người dùng")
+            .description("Tên người dùng để xác thực Life với tư cách là một máy khách Couchbase." +
+                    " Cấu hình này có thể được sử dụng với Couchbase Server 5.0 trở lên" +
+                    " hỗ trợ Kiểm soát truy cập dựa trên vai trò.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -80,16 +80,15 @@ public class CouchbaseClusterService extends AbstractControllerService implement
     public static final PropertyDescriptor USER_PASSWORD = new PropertyDescriptor
             .Builder()
             .name("user-password")
-            .displayName("User Password")
-            .description("The user password to authenticate NiFi as a Couchbase client." +
-                    " This configuration can be used against Couchbase Server 5.0 or later" +
-                    " supporting Roll-Based Access Control.")
+            .displayName("Mật khẩu người dùng")
+            .description("Mật khẩu người dùng để xác thực Life với tư cách là một máy khách Couchbase." +
+                    " Cấu hình này có thể được sử dụng với Couchbase Server 5.0 trở lên" +
+                    " hỗ trợ Kiểm soát truy cập dựa trên vai trò.")
             .required(false)
             .sensitive(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
-
     private static final List<PropertyDescriptor> properties;
 
     static {

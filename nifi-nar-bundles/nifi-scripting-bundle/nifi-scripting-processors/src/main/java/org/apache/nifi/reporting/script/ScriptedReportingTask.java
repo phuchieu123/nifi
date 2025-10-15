@@ -57,20 +57,20 @@ import java.util.Map;
  */
 @SupportsSensitiveDynamicProperties
 @Tags({"reporting", "script", "execute", "groovy", "python", "jython", "jruby", "ruby", "javascript", "js", "lua", "luaj"})
-@CapabilityDescription("Provides reporting and status information to a script. ReportingContext, ComponentLog, and VirtualMachineMetrics objects are made available "
-        + "as variables (context, log, and vmMetrics, respectively) to the script for further processing. The context makes various information available such "
-        + "as events, provenance, bulletins, controller services, process groups, Java Virtual Machine metrics, etc.")
+@CapabilityDescription("Cung cấp thông tin báo cáo và trạng thái cho một kịch bản (script). Các đối tượng ReportingContext, ComponentLog, và VirtualMachineMetrics được cung cấp "
+        + "dưới dạng các biến (tương ứng là context, log, và vmMetrics) cho kịch bản để xử lý thêm. Bối cảnh (context) cung cấp nhiều thông tin khác nhau như "
+        + "sự kiện, xuất xứ, bản tin, dịch vụ điều khiển, nhóm quy trình, chỉ số Máy ảo Java, v.v.")
 @DynamicProperty(
-        name = "A script engine property to update",
-        value = "The value to set it to",
+        name = "Một thuộc tính của script engine để cập nhật",
+        value = "Giá trị để đặt cho nó",
         expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY,
-        description = "Updates a script engine property specified by the Dynamic Property's key with the value "
-                + "specified by the Dynamic Property's value")
+        description = "Cập nhật một thuộc tính của script engine được chỉ định bởi khóa của Thuộc tính Động (Dynamic Property) với giá trị "
+                + "được chỉ định bởi giá trị của Thuộc tính Động")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.EXECUTE_CODE,
-                        explanation = "Provides operator the ability to execute arbitrary code assuming all permissions that NiFi has.")
+                        explanation = "Cung cấp cho người vận hành khả năng thực thi mã tùy ý, giả định tất cả các quyền mà Life có.")
         }
 )
 public class ScriptedReportingTask extends AbstractReportingTask {

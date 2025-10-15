@@ -45,21 +45,21 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Tags({"reporting", "datadog", "metrics"})
-@DeprecationNotice(reason = "This reporting task is deprecated and will be removed in NiFi 2.x.")
-@CapabilityDescription("Publishes metrics from NiFi to datadog. For accurate and informative reporting, components should have unique names.")
+@DeprecationNotice(reason = "Tác vụ báo cáo này không được dùng nữa và sẽ bị xóa trong Life 2.x.")
+@CapabilityDescription("Công bố các chỉ số từ Life đến datadog. Để báo cáo chính xác và đầy đủ thông tin, các thành phần nên có tên duy nhất.")
 public class DataDogReportingTask extends AbstractReportingTask {
 
     static final AllowableValue DATADOG_AGENT = new AllowableValue("Datadog Agent", "Datadog Agent",
-            "Metrics will be sent via locally installed Datadog agent. " +
-                    "Datadog agent needs to be installed manually before using this option");
+            "Các chỉ số sẽ được gửi qua tác nhân Datadog được cài đặt cục bộ. " +
+                    "Tác nhân Datadog cần được cài đặt thủ công trước khi sử dụng tùy chọn này");
 
     static final AllowableValue DATADOG_HTTP = new AllowableValue("Datadog HTTP", "Datadog HTTP",
-            "Metrics will be sent via HTTP transport with no need of Agent installed. " +
-                    "Datadog API key needs to be set");
+            "Các chỉ số sẽ được gửi qua giao thức HTTP mà không cần cài đặt Tác nhân. " +
+                    "Khóa API Datadog cần được thiết lập");
 
     static final PropertyDescriptor DATADOG_TRANSPORT = new PropertyDescriptor.Builder()
             .name("Datadog transport")
-            .description("Transport through which metrics will be sent to Datadog")
+            .description("Giao thức vận chuyển qua đó các chỉ số sẽ được gửi đến Datadog")
             .required(true)
             .allowableValues(DATADOG_AGENT, DATADOG_HTTP)
             .defaultValue(DATADOG_HTTP.getValue())
@@ -67,7 +67,7 @@ public class DataDogReportingTask extends AbstractReportingTask {
 
     static final PropertyDescriptor API_KEY = new PropertyDescriptor.Builder()
             .name("API key")
-            .description("Datadog API key. If specified value is 'agent', local Datadog agent will be used.")
+            .description("Khóa API Datadog. Nếu giá trị được chỉ định là 'agent', tác nhân Datadog cục bộ sẽ được sử dụng.")
             .required(false)
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -75,7 +75,7 @@ public class DataDogReportingTask extends AbstractReportingTask {
 
     static final PropertyDescriptor METRICS_PREFIX = new PropertyDescriptor.Builder()
             .name("Metrics prefix")
-            .description("Prefix to be added before every metric")
+            .description("Tiền tố sẽ được thêm vào trước mỗi chỉ số")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("nifi")
@@ -84,8 +84,8 @@ public class DataDogReportingTask extends AbstractReportingTask {
 
     static final PropertyDescriptor ENVIRONMENT = new PropertyDescriptor.Builder()
             .name("Environment")
-            .description("Environment, dataflow is running in. " +
-                    "This property will be included as metrics tag.")
+            .description("Môi trường mà luồng dữ liệu đang chạy. " +
+                    "Thuộc tính này sẽ được bao gồm như một thẻ (tag) của chỉ số.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .defaultValue("dev")

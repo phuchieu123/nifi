@@ -99,7 +99,7 @@ public class PutHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because Directory is required"));
+            assertTrue(vr.toString().contains("không hợp lệ vì Thư mục là bắt buộc"));
         }
 
         results = new HashSet<>();
@@ -121,7 +121,7 @@ public class PutHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because short integer must be greater than zero"));
+            assertTrue(vr.toString().contains("không hợp lệ vì số nguyên ngắn phải lớn hơn 0"));
         }
 
         proc = new TestablePutHDFS(kerberosProperties, mockFileSystem);
@@ -136,7 +136,7 @@ public class PutHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because short integer must be greater than zero"));
+            assertTrue(vr.toString().contains("không hợp lệ vì số nguyên ngắn phải lớn hơn 0"));
         }
 
         proc = new TestablePutHDFS(kerberosProperties, mockFileSystem);
@@ -151,7 +151,7 @@ public class PutHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because octal umask [-1] cannot be negative"));
+            assertTrue(vr.toString().contains("không hợp lệ vì ô bát phân [-1] không thể âm"));
         }
 
         proc = new TestablePutHDFS(kerberosProperties, mockFileSystem);
@@ -166,7 +166,7 @@ public class PutHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because [18] is not a valid short octal number"));
+            assertTrue(vr.toString().contains("không hợp lệ vì [18] không phải là số bát phân ngắn hợp lệ"));
         }
 
         results = new HashSet<>();
@@ -179,7 +179,7 @@ public class PutHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because octal umask [2000] is not a valid umask"));
+            assertTrue(vr.toString().contains("không hợp lệ vì ô bát phân [2000] không phải là ô hợp lệ"));
         }
 
         results = new HashSet<>();
@@ -194,7 +194,7 @@ public class PutHDFSTest {
         }
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because Given value not found in allowed set"));
+            assertTrue(vr.toString().contains("không hợp lệ vì không tìm thấy giá trị đã cho trong tập hợp được phép"));
         }
 
         results = new HashSet<>();
@@ -210,7 +210,7 @@ public class PutHDFSTest {
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
             assertEquals(vr.getSubject(), "Codec");
-            assertEquals(vr.getExplanation(), "Compression codec cannot be set when used in 'append avro' mode");
+            assertEquals(vr.getExplanation(), "Không thể đặt codec nén khi được sử dụng ở chế độ 'nối thêm avro'");
         }
 
         results = new HashSet<>();

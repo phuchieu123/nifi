@@ -53,29 +53,29 @@ import static org.apache.nifi.prometheus.util.PrometheusMetricsUtil.METRICS_STRA
 import static org.apache.nifi.prometheus.util.PrometheusMetricsUtil.METRICS_STRATEGY_ROOT;
 
 @Tags({ "reporting", "prometheus", "metrics", "time series data" })
-@CapabilityDescription("Reports metrics in Prometheus format by creating a /metrics HTTP(S) endpoint which can be used for external monitoring of the application."
-        + " The reporting task reports a set of metrics regarding the JVM (optional) and the NiFi instance. Note that if the underlying Jetty server (i.e. the "
-        + "Prometheus endpoint) cannot be started (for example if two PrometheusReportingTask instances are started on the same port), this may cause a delay in "
-        + "shutting down NiFi while it waits for the server resources to be cleaned up.")
+@CapabilityDescription("Báo cáo các chỉ số theo định dạng Prometheus bằng cách tạo một điểm cuối HTTP(S) /metrics có thể được sử dụng để giám sát ứng dụng từ bên ngoài."
+        + " Tác vụ báo cáo này báo cáo một tập hợp các chỉ số liên quan đến JVM (tùy chọn) và phiên bản Life. Lưu ý rằng nếu máy chủ Jetty cơ bản (tức là "
+        + "điểm cuối Prometheus) không thể khởi động được (ví dụ nếu hai phiên bản PrometheusReportingTask được khởi động trên cùng một cổng), điều này có thể gây ra sự chậm trễ trong "
+        + "việc tắt Life trong khi nó chờ các tài nguyên máy chủ được dọn dẹp.")
 @DefaultSchedule(strategy = SchedulingStrategy.TIMER_DRIVEN, period = "60 sec")
-@DeprecationNotice(reason = "This component is deprecated and will be removed in NiFi 2.x.")
+@DeprecationNotice(reason = "Thành phần này không được dùng nữa và sẽ bị xóa trong Life 2.x.")
 public class PrometheusReportingTask extends AbstractReportingTask {
 
     private PrometheusServer prometheusServer;
 
     public static final PropertyDescriptor SSL_CONTEXT = new PropertyDescriptor.Builder()
             .name("prometheus-reporting-task-ssl-context")
-            .displayName("SSL Context Service")
-            .description("The SSL Context Service to use in order to secure the server. If specified, the server will"
-                    + "accept only HTTPS requests; otherwise, the server will accept only HTTP requests")
+            .displayName("Dịch vụ Ngữ cảnh SSL")
+            .description("Dịch vụ Ngữ cảnh SSL sẽ được sử dụng để bảo mật máy chủ. Nếu được chỉ định, máy chủ sẽ"
+                    + " chỉ chấp nhận các yêu cầu HTTPS; nếu không, máy chủ sẽ chỉ chấp nhận các yêu cầu HTTP")
             .required(false)
             .identifiesControllerService(RestrictedSSLContextService.class)
             .build();
 
     public static final PropertyDescriptor METRICS_STRATEGY = new PropertyDescriptor.Builder()
             .name("prometheus-reporting-task-metrics-strategy")
-            .displayName("Metrics Reporting Strategy")
-            .description("The granularity on which to report metrics. Options include only the root process group, all process groups, or all components")
+            .displayName("Chiến lược Báo cáo Chỉ số")
+            .description("Mức độ chi tiết để báo cáo các chỉ số. Các tùy chọn bao gồm chỉ nhóm quy trình gốc, tất cả các nhóm quy trình, hoặc tất cả các thành phần")
             .allowableValues(METRICS_STRATEGY_ROOT, METRICS_STRATEGY_PG, METRICS_STRATEGY_COMPONENTS)
             .defaultValue(METRICS_STRATEGY_COMPONENTS.getValue())
             .required(true)
@@ -83,13 +83,12 @@ public class PrometheusReportingTask extends AbstractReportingTask {
 
     public static final PropertyDescriptor SEND_JVM_METRICS = new PropertyDescriptor.Builder()
             .name("prometheus-reporting-task-metrics-send-jvm")
-            .displayName("Send JVM metrics")
-            .description("Send JVM metrics in addition to the NiFi metrics")
+            .displayName("Gửi chỉ số JVM")
+            .description("Gửi các chỉ số JVM ngoài các chỉ số của Life")
             .allowableValues("true", "false")
             .defaultValue("false")
             .required(true)
             .build();
-
     private static final List<PropertyDescriptor> properties;
 
     static {
@@ -143,7 +142,7 @@ public class PrometheusReportingTask extends AbstractReportingTask {
                 String metricsStrategy = reportingContext.getProperty(METRICS_STRATEGY).getValue();
                 NiFiMetricsRegistry nifiMetricsRegistry = new NiFiMetricsRegistry();
                 CollectorRegistry collectorRegistry = PrometheusMetricsUtil.createNifiMetrics(nifiMetricsRegistry, rootGroupStatus, instanceId, "", "RootProcessGroup", metricsStrategy);
-                // Add the total byte counts (read/written) to the NiFi metrics registry
+                // Add the total byte counts (read/written) to the Life metrics registry
                 final String rootPGId = StringUtils.isEmpty(rootGroupStatus.getId()) ? "" : rootGroupStatus.getId();
                 final String rootPGName = StringUtils.isEmpty(rootGroupStatus.getName()) ? "" : rootGroupStatus.getName();
                 nifiMetricsRegistry.setDataPoint(eventAccess.getTotalBytesRead(), "TOTAL_BYTES_READ",

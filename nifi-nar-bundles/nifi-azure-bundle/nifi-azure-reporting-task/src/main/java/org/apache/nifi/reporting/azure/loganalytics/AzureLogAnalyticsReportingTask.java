@@ -43,8 +43,8 @@ import org.apache.nifi.scheduling.SchedulingStrategy;
  * ReportingTask to send metrics from Apache NiFi and JVM to Azure Monitor.
  */
 @Tags({ "azure", "metrics", "reporting", "log analytics" })
-@CapabilityDescription("Sends JVM-metrics as well as Apache NiFi-metrics to a Azure Log Analytics workspace."
-        + "Apache NiFi-metrics can be either configured global or on process-group level.")
+@CapabilityDescription("Gửi các chỉ số JVM cũng như các chỉ số của Apache NiFi đến một không gian làm việc Azure Log Analytics."
+        + "Các chỉ số của Apache NiFi có thể được cấu hình ở cấp độ toàn cục hoặc cấp độ nhóm quy trình.")
 @DefaultSchedule(strategy = SchedulingStrategy.TIMER_DRIVEN, period = "1 min")
 public class AzureLogAnalyticsReportingTask extends AbstractAzureLogAnalyticsReportingTask {
 
@@ -52,13 +52,12 @@ public class AzureLogAnalyticsReportingTask extends AbstractAzureLogAnalyticsRep
     private final JvmMetrics virtualMachineMetrics = JmxJvmMetrics.getInstance();
 
     static final PropertyDescriptor SEND_JVM_METRICS = new PropertyDescriptor.Builder().name("Send JVM Metrics")
-            .description("Send JVM Metrics in addition to the NiFi-metrics").allowableValues("true", "false")
+            .description("Gửi các chỉ số JVM ngoài các chỉ số của NiFi").allowableValues("true", "false")
             .defaultValue("false").required(true).build();
     static final PropertyDescriptor LOG_ANALYTICS_CUSTOM_LOG_NAME = new PropertyDescriptor.Builder()
-            .name("Log Analytics Custom Log Name").description("Log Analytics Custom Log Name").required(false)
+            .name("Log Analytics Custom Log Name").description("Tên Log Tùy chỉnh của Log Analytics").required(false)
             .defaultValue("nifimetrics").addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY).build();
-
     @Override
     protected List<PropertyDescriptor> getSupportedPropertyDescriptors() {
         final List<PropertyDescriptor> properties = new ArrayList<>();

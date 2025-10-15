@@ -55,15 +55,15 @@ import java.util.stream.Stream;
 
 @Tags({"lookup", "cache", "enrich", "join", "csv", "reloadable", "key", "value", "record"})
 @CapabilityDescription(
-        "A reloadable CSV file-based lookup service. When the lookup key is found in the CSV file, " +
-        "the columns are returned as a Record. All returned fields will be strings. The first line of the csv file " +
-        "is considered as header."
+        "Một dịch vụ tra cứu dựa trên tệp CSV có thể tải lại. Khi khóa tra cứu được tìm thấy trong tệp CSV, " +
+        "các cột sẽ được trả về dưới dạng một Bản ghi (Record). Tất cả các trường được trả về sẽ là chuỗi. Dòng đầu tiên của tệp csv " +
+        "được coi là tiêu đề."
 )
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.READ_FILESYSTEM,
-                        explanation = "Provides operator the ability to read from any file that NiFi has access to.")
+                        explanation = "Cung cấp cho người vận hành khả năng đọc từ bất kỳ tệp nào mà Life có quyền truy cập.")
         }
 )
 public class CSVRecordLookupService extends AbstractCSVLookupService implements RecordLookupService {

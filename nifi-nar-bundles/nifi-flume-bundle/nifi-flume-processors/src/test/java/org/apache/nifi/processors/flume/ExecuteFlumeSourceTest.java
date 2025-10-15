@@ -62,10 +62,10 @@ public class ExecuteFlumeSourceTest {
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
             logger.debug(vr.toString());
-            assertTrue(vr.toString().contains("is invalid because Source Type is required"));
+            assertTrue(vr.toString().contains("không hợp lệ vì Loại Nguồn là bắt buộc"));
         }
 
-        // non-existent class
+        // lớp không tồn tại
         results = new HashSet<>();
         runner.setProperty(ExecuteFlumeSource.SOURCE_TYPE, "invalid.class.name");
         runner.enqueue(new byte[0]);
@@ -76,10 +76,10 @@ public class ExecuteFlumeSourceTest {
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
             logger.debug(vr.toString());
-            assertTrue(vr.toString().contains("is invalid because unable to load source"));
+            assertTrue(vr.toString().contains("không hợp lệ vì không thể tải nguồn"));
         }
 
-        // class doesn't implement Source
+        // lớp không triển khai Source
         results = new HashSet<>();
         runner.setProperty(ExecuteFlumeSource.SOURCE_TYPE, NullSink.class.getName());
         runner.enqueue(new byte[0]);
@@ -90,7 +90,7 @@ public class ExecuteFlumeSourceTest {
         assertEquals(1, results.size());
         for (ValidationResult vr : results) {
             logger.debug(vr.toString());
-            assertTrue(vr.toString().contains("is invalid because unable to create source"));
+            assertTrue(vr.toString().contains("không hợp lệ vì không thể tạo nguồn"));
         }
 
         results = new HashSet<>();

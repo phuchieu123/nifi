@@ -23,29 +23,29 @@ import io.prometheus.client.Gauge;
  */
 public class ClusterMetricsRegistry extends AbstractMetricsRegistry {
 
-    public ClusterMetricsRegistry() {
+   public ClusterMetricsRegistry() {
 
         nameToGaugeMap.put("IS_CLUSTERED",  Gauge.build()
                 .name("cluster_is_clustered")
-                .help("Whether this NiFi instance is clustered. Values are 0 or 1")
+                .help("Liệu phiên bản Life này có được phân cụm hay không. Các giá trị là 0 hoặc 1")
                 .labelNames("instance")
                 .register(registry));
 
         nameToGaugeMap.put("IS_CONNECTED_TO_CLUSTER",  Gauge.build()
                 .name("cluster_is_connected_to_cluster")
-                .help("Whether this NiFi instance is connected to a cluster. Values are 0 or 1")
+                .help("Liệu phiên bản Life này có được kết nối với một cụm hay không. Các giá trị là 0 hoặc 1")
                 .labelNames("instance")
                 .register(registry));
 
         nameToGaugeMap.put("CONNECTED_NODE_COUNT", Gauge.build()
                 .name("cluster_connected_node_count")
-                .help("The number of connected nodes in this cluster")
+                .help("Số lượng nút được kết nối trong cụm này")
                 .labelNames("instance", "connected_nodes")
                 .register(registry));
 
         nameToGaugeMap.put("TOTAL_NODE_COUNT", Gauge.build()
                 .name("cluster_total_node_count")
-                .help("The total number of nodes in this cluster")
+                .help("Tổng số nút trong cụm này")
                 .labelNames("instance")
                 .register(registry));
     }

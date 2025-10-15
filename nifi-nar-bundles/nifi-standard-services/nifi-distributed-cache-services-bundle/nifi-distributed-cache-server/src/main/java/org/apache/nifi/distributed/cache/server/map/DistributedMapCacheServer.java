@@ -30,8 +30,8 @@ import org.apache.nifi.processor.DataUnit;
 import org.apache.nifi.ssl.SSLContextService;
 
 @Tags({"distributed", "cluster", "map", "cache", "server", "key/value"})
-@CapabilityDescription("Provides a map (key/value) cache that can be accessed over a socket. Interaction with this service"
-        + " is typically accomplished via a DistributedMapCacheClient service.")
+@CapabilityDescription("Cung cấp một bộ đệm cache dạng map (khóa/giá trị) có thể được truy cập qua một socket. Tương tác với dịch vụ này"
+        + " thường được thực hiện thông qua một dịch vụ DistributedMapCacheClient.")
 @SeeAlso(classNames = {"org.apache.nifi.distributed.cache.client.DistributedMapCacheClientService", "org.apache.nifi.ssl.StandardSSLContextService"})
 public class DistributedMapCacheServer extends DistributedCacheServer {
 

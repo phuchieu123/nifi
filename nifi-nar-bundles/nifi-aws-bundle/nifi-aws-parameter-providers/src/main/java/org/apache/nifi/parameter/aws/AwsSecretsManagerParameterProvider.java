@@ -67,35 +67,35 @@ import java.util.regex.Pattern;
  */
 
 @Tags({"aws", "secretsmanager", "secrets", "manager"})
-@CapabilityDescription("Fetches parameters from AWS SecretsManager.  Each secret becomes a Parameter group, which can map to a Parameter Context, with " +
-        "key/value pairs in the secret mapping to Parameters in the group.")
+@CapabilityDescription("Tìm nạp các tham số từ AWS Secrets Manager. Mỗi secret trở thành một nhóm Tham số (Parameter group), có thể được ánh xạ tới một Bối cảnh Tham số (Parameter Context), với " +
+        "các cặp khóa/giá trị trong secret được ánh xạ tới các Tham số trong nhóm.")
 public class AwsSecretsManagerParameterProvider extends AbstractParameterProvider implements VerifiableParameterProvider {
 
     public static final PropertyDescriptor SECRET_NAME_PATTERN = new PropertyDescriptor.Builder()
             .name("secret-name-pattern")
-            .displayName("Secret Name Pattern")
-            .description("A Regular Expression matching on Secret Name that identifies Secrets whose parameters should be fetched. " +
-                    "Any secrets whose names do not match this pattern will not be fetched.")
+            .displayName("Mẫu Tên Secret")
+            .description("Một Biểu thức Chính quy khớp với Tên Secret để xác định các Secret có tham số cần được tìm nạp. " +
+                    "Bất kỳ secret nào có tên không khớp với mẫu này sẽ không được tìm nạp.")
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
             .required(true)
             .defaultValue(".*")
             .build();
     /**
-     * AWS credentials provider service
+     * Dịch vụ cung cấp thông tin xác thực AWS
      *
      * @see  <a href="http://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/auth/AWSCredentialsProvider.html">AWSCredentialsProvider</a>
      */
     public static final PropertyDescriptor AWS_CREDENTIALS_PROVIDER_SERVICE = new PropertyDescriptor.Builder()
             .name("aws-credentials-provider-service")
-            .displayName("AWS Credentials Provider Service")
-            .description("Service used to obtain an Amazon Web Services Credentials Provider")
+            .displayName("Dịch vụ Cung cấp Thông tin xác thực AWS")
+            .description("Dịch vụ được sử dụng để lấy một Nhà cung cấp Thông tin xác thực Amazon Web Services")
             .required(true)
             .identifiesControllerService(AWSCredentialsProviderService.class)
             .build();
 
     public static final PropertyDescriptor REGION = new PropertyDescriptor.Builder()
             .name("aws-region")
-            .displayName("Region")
+            .displayName("Vùng")
             .required(true)
             .allowableValues(getAvailableRegions())
             .defaultValue(createAllowableValue(Regions.DEFAULT_REGION).getValue())
@@ -103,16 +103,16 @@ public class AwsSecretsManagerParameterProvider extends AbstractParameterProvide
 
     public static final PropertyDescriptor TIMEOUT = new PropertyDescriptor.Builder()
             .name("aws-communications-timeout")
-            .displayName("Communications Timeout")
+            .displayName("Thời gian chờ Giao tiếp")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
-            .defaultValue("30 secs")
+            .defaultValue("30 giây")
             .build();
 
     public static final PropertyDescriptor SSL_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
             .name("aws-ssl-context-service")
-            .displayName("SSL Context Service")
-            .description("Specifies an optional SSL Context Service that, if provided, will be used to create connections")
+            .displayName("Dịch vụ Ngữ cảnh SSL")
+            .description("Chỉ định một Dịch vụ Ngữ cảnh SSL tùy chọn, nếu được cung cấp, sẽ được sử dụng để tạo các kết nối")
             .required(false)
             .identifiesControllerService(SSLContextService.class)
             .build();

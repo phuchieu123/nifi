@@ -175,7 +175,7 @@ public static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescripto
             results.add(new ValidationResult.Builder()
                     .subject(KERBEROS_PASSWORD.getDisplayName())
                     .valid(false)
-                    .explanation("a password must be provided for the given principal")
+                    .explanation("một mật khẩu phải được cung cấp cho hiệu trưởng nhất định")
                     .build());
         }
 
@@ -183,7 +183,7 @@ public static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescripto
             results.add(new ValidationResult.Builder()
                     .subject(KERBEROS_PRINCIPAL.getDisplayName())
                     .valid(false)
-                    .explanation("a principal must be provided for the given password")
+                    .explanation("một hiệu trưởng phải được cung cấp cho mật khẩu đã cho")
                     .build());
         }
 
@@ -296,7 +296,7 @@ public static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescripto
         try {
             clazz = Class.forName(driverName);
         } catch (final ClassNotFoundException e) {
-            throw new ProcessException("Driver class " + driverName + " is not found", e);
+            throw new ProcessException("Không tìm thấy lớp Driver " + driverName, e);
         }
 
         try {
@@ -308,9 +308,9 @@ public static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescripto
                 DriverManager.registerDriver(driver);
                 return DriverManager.getDriver(url);
             } catch (final SQLException e2) {
-                throw new ProcessException("No suitable driver for the given Database Connection URL", e2);
+                throw new ProcessException("Không có trình điều khiển phù hợp cho URL kết nối cơ sở dữ liệu nhất định", e2);
             } catch (final IllegalAccessException | InstantiationException e2) {
-                throw new ProcessException("Creating driver instance is failed", e2);
+                throw new ProcessException("Tạo phiên bản trình điều khiển không thành công", e2);
             }
         }
     }

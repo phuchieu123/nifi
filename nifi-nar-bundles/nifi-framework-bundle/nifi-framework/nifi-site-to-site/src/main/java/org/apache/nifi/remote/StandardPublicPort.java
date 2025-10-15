@@ -285,9 +285,9 @@ public class StandardPublicPort extends AbstractPort implements PublicPort {
         final Collection<ValidationResult> validationErrors = new ArrayList<>();
         if (getScheduledState() == ScheduledState.STOPPED) {
             if (!isValid()) {
-                final ValidationResult error = new ValidationResult.Builder()
-                        .explanation(String.format("Output connection for port '%s' is not defined.", getName()))
-                        .subject(String.format("Port '%s'", getName()))
+               final ValidationResult error = new ValidationResult.Builder()
+                        .explanation(String.format("Kết nối đầu ra cho cổng '%s' không được xác định.", getName()))
+                        .subject(String.format("Cổng '%s'", getName()))
                         .valid(false)
                         .build();
                 validationErrors.add(error);

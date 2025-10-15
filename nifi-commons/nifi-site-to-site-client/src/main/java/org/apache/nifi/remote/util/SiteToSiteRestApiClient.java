@@ -1291,19 +1291,19 @@ public class SiteToSiteRestApiClient implements Closeable {
     private static void validateUriString(String s) {
         // parse the uri
         final URI uri;
-        try {
+       try {
             uri = URI.create(s);
         } catch (final IllegalArgumentException e) {
-            throw new IllegalArgumentException("The specified remote process group URL is malformed: " + s);
+            throw new IllegalArgumentException("URL nhóm quy trình từ xa được chỉ định bị định dạng sai: " + s);
         }
 
         // validate each part of the uri
         if (uri.getScheme() == null || uri.getHost() == null) {
-            throw new IllegalArgumentException("The specified remote process group URL is malformed: " + s);
+            throw new IllegalArgumentException("URL nhóm quy trình từ xa được chỉ định bị định dạng sai: " + s);
         }
 
         if (!(uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https"))) {
-            throw new IllegalArgumentException("The specified remote process group URL is invalid because it is not http or https: " + s);
+            throw new IllegalArgumentException("URL nhóm quy trình từ xa được chỉ định không hợp lệ vì nó không phải là http hoặc https: " + s);
         }
     }
 
@@ -1331,14 +1331,13 @@ public class SiteToSiteRestApiClient implements Closeable {
      */
     private static String resolveBaseUrl(final URI clusterUrl) {
 
-        if (clusterUrl.getScheme() == null || clusterUrl.getHost() == null) {
-            throw new IllegalArgumentException("The specified URL is malformed: " + clusterUrl);
+    if (clusterUrl.getScheme() == null || clusterUrl.getHost() == null) {
+            throw new IllegalArgumentException("URL được chỉ định bị định dạng sai: " + clusterUrl);
         }
 
         if (!(clusterUrl.getScheme().equalsIgnoreCase("http") || clusterUrl.getScheme().equalsIgnoreCase("https"))) {
-            throw new IllegalArgumentException("The specified URL is invalid because it is not http or https: " + clusterUrl);
+            throw new IllegalArgumentException("URL được chỉ định không hợp lệ vì nó không phải là http hoặc https: " + clusterUrl);
         }
-
 
         String uriPath = clusterUrl.getPath().trim();
 

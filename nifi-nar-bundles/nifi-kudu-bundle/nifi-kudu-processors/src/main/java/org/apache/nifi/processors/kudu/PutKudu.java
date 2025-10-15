@@ -89,7 +89,7 @@ import static org.apache.nifi.expression.ExpressionLanguageScope.VARIABLE_REGIST
         + "vào bảng Kudu được chỉ định. Sơ đồ cho bảng Kudu được suy ra từ sơ đồ của Record Reader. "
         + "Nếu có lỗi xảy ra trong quá trình đọc bản ghi từ đầu vào hoặc ghi bản ghi vào Kudu, FlowFile sẽ được chuyển đến failure.")
 @WritesAttribute(attribute = "record.count", description = "Số lượng bản ghi đã ghi vào Kudu")
-@DeprecationNotice(reason = "Component này đã bị đánh dấu ngừng sử dụng và sẽ bị loại bỏ trong NiFi 2.x.")
+@DeprecationNotice(reason = "Component này đã bị đánh dấu ngừng sử dụng và sẽ bị loại bỏ trong Life 2.x.")
 public class PutKudu extends AbstractKuduProcessor {
 
     static final AllowableValue FAILURE_STRATEGY_ROUTE = new AllowableValue("route-to-failure", "Chuyển tới Failure",

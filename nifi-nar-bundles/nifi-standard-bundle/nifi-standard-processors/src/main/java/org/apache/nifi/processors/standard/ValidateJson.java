@@ -73,30 +73,30 @@ import java.util.stream.Collectors;
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @Tags({"JSON", "schema", "validation"})
 @WritesAttributes({
-        @WritesAttribute(attribute = ValidateJson.ERROR_ATTRIBUTE_KEY, description = "If the flow file is routed to the invalid relationship "
-                + ", this attribute will contain the error message resulting from the validation failure.")
+        @WritesAttribute(attribute = ValidateJson.ERROR_ATTRIBUTE_KEY, description = "Nếu flow file được chuyển đến mối quan hệ không hợp lệ "
+                + ", thuộc tính này sẽ chứa thông báo lỗi do xác thực thất bại.")
 })
-@CapabilityDescription("Validates the contents of FlowFiles against a configurable JSON Schema. See json-schema.org for specification standards. " +
-        "This Processor does not support input containing multiple JSON objects, such as newline-delimited JSON. If the input FlowFile contains " +
-        "newline-delimited JSON, only the first line will be validated."
+@CapabilityDescription("Xác thực nội dung của FlowFiles dựa trên một Lược đồ JSON có thể cấu hình. Xem json-schema.org để biết các tiêu chuẩn đặc tả. " +
+        "Bộ xử lý này không hỗ trợ đầu vào chứa nhiều đối tượng JSON, chẳng hạn như JSON được phân tách bằng dòng mới. Nếu FlowFile đầu vào chứa " +
+        "JSON được phân tách bằng dòng mới, chỉ dòng đầu tiên sẽ được xác thực."
 )
-@SystemResourceConsideration(resource = SystemResource.MEMORY, description = "Validating JSON requires reading FlowFile content into memory")
+@SystemResourceConsideration(resource = SystemResource.MEMORY, description = "Việc xác thực JSON yêu cầu đọc nội dung FlowFile vào bộ nhớ")
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.REFERENCE_REMOTE_RESOURCES,
-                        explanation = "Schema configuration can reference resources over HTTP"
+                        explanation = "Cấu hình lược đồ có thể tham chiếu đến các tài nguyên qua HTTP"
                 )
         }
 )
 public class ValidateJson extends AbstractProcessor {
     public enum JsonSchemaStrategy implements DescribedValue {
-        SCHEMA_NAME_PROPERTY(SCHEMA_NAME_PROPERTY_NAME + " Property",
-                "The name of the Schema to use is specified by the '" + SCHEMA_NAME_PROPERTY_NAME +
-                        "' Property. The value of this property is used to lookup the Schema in the configured JSON Schema Registry Service."),
-        SCHEMA_CONTENT_PROPERTY(SCHEMA_CONTENT_PROPERTY_NAME + " Property",
-                "A URL or file path to the JSON schema or the actual JSON schema is specified by the '" + SCHEMA_CONTENT_PROPERTY_NAME + "' Property. " +
-                        "No matter how the JSON schema is specified, it must be a valid JSON schema");
+        SCHEMA_NAME_PROPERTY("Thuộc tính " + SCHEMA_NAME_PROPERTY_NAME,
+                "Tên của Lược đồ sẽ được sử dụng được chỉ định bởi Thuộc tính '" + SCHEMA_NAME_PROPERTY_NAME +
+                        "'. Giá trị của thuộc tính này được sử dụng để tra cứu Lược đồ trong Dịch vụ JSON Schema Registry đã được cấu hình."),
+        SCHEMA_CONTENT_PROPERTY("Thuộc tính " + SCHEMA_CONTENT_PROPERTY_NAME,
+                "Một URL hoặc đường dẫn tệp đến lược đồ JSON hoặc chính lược đồ JSON thực tế được chỉ định bởi Thuộc tính '" + SCHEMA_CONTENT_PROPERTY_NAME + "'. " +
+                        "Bất kể lược đồ JSON được chỉ định như thế nào, nó phải là một lược đồ JSON hợp lệ");
 
         JsonSchemaStrategy(String displayName, String description) {
             this.displayName = displayName;
@@ -123,13 +123,13 @@ public class ValidateJson extends AbstractProcessor {
     }
 
     protected static final String ERROR_ATTRIBUTE_KEY = "json.validation.errors";
-    private static final String SCHEMA_NAME_PROPERTY_NAME = "Schema Name";
-    private static final String SCHEMA_CONTENT_PROPERTY_NAME = "JSON Schema";
+    private static final String SCHEMA_NAME_PROPERTY_NAME = "Tên Lược đồ";
+    private static final String SCHEMA_CONTENT_PROPERTY_NAME = "Lược đồ JSON";
 
     public static final PropertyDescriptor SCHEMA_ACCESS_STRATEGY = new PropertyDescriptor.Builder()
             .name("Schema Access Strategy")
-            .displayName("Schema Access Strategy")
-            .description("Specifies how to obtain the schema that is to be used for interpreting the data.")
+            .displayName("Chiến lược Truy cập Lược đồ")
+            .description("Chỉ định cách để lấy được lược đồ sẽ được sử dụng để diễn giải dữ liệu.")
             .allowableValues(JsonSchemaStrategy.class)
             .defaultValue(JsonSchemaStrategy.SCHEMA_CONTENT_PROPERTY.getValue())
             .required(true)
@@ -138,7 +138,7 @@ public class ValidateJson extends AbstractProcessor {
     public static final PropertyDescriptor SCHEMA_NAME = new PropertyDescriptor.Builder()
             .name(SCHEMA_NAME_PROPERTY_NAME)
             .displayName(SCHEMA_NAME_PROPERTY_NAME)
-            .description("Specifies the name of the schema to lookup in the Schema Registry property")
+            .description("Chỉ định tên của lược đồ để tra cứu trong thuộc tính Schema Registry")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -149,7 +149,7 @@ public class ValidateJson extends AbstractProcessor {
     public static final PropertyDescriptor SCHEMA_REGISTRY = new PropertyDescriptor.Builder()
             .name("JSON Schema Registry")
             .displayName("JSON Schema Registry")
-            .description("Specifies the Controller Service to use for the JSON Schema Registry")
+            .description("Chỉ định Controller Service sẽ được sử dụng cho JSON Schema Registry")
             .identifiesControllerService(JsonSchemaRegistry.class)
             .required(true)
             .dependsOn(SCHEMA_ACCESS_STRATEGY, JsonSchemaStrategy.SCHEMA_NAME_PROPERTY)
@@ -158,7 +158,7 @@ public class ValidateJson extends AbstractProcessor {
     public static final PropertyDescriptor SCHEMA_CONTENT = new PropertyDescriptor.Builder()
             .name(SCHEMA_CONTENT_PROPERTY_NAME)
             .displayName(SCHEMA_CONTENT_PROPERTY_NAME)
-            .description("A URL or file path to the JSON schema or the actual JSON schema content")
+            .description("Một URL hoặc đường dẫn tệp đến lược đồ JSON hoặc nội dung lược đồ JSON thực tế")
             .required(true)
             .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE, ResourceType.URL, ResourceType.TEXT)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -180,19 +180,18 @@ public class ValidateJson extends AbstractProcessor {
 
     public static final Relationship REL_VALID = new Relationship.Builder()
             .name("valid")
-            .description("FlowFiles that are successfully validated against the schema are routed to this relationship")
+            .description("Các FlowFiles được xác thực thành công dựa trên lược đồ sẽ được chuyển đến mối quan hệ này")
             .build();
 
     public static final Relationship REL_INVALID = new Relationship.Builder()
             .name("invalid")
-            .description("FlowFiles that are not valid according to the specified schema are routed to this relationship")
+            .description("Các FlowFiles không hợp lệ theo lược đồ đã chỉ định sẽ được chuyển đến mối quan hệ này")
             .build();
 
     public static final Relationship REL_FAILURE = new Relationship.Builder()
             .name("failure")
-            .description("FlowFiles that cannot be read as JSON are routed to this relationship")
+            .description("Các FlowFiles không thể đọc được dưới dạng JSON sẽ được chuyển đến mối quan hệ này")
             .build();
-
     private static final Set<Relationship> RELATIONSHIPS = new HashSet<>(Arrays.asList(
             REL_VALID,
             REL_INVALID,

@@ -48,41 +48,40 @@ import java.util.concurrent.TimeUnit;
 
 @Tags({"distributed", "cache", "state", "map", "cluster"})
 @SeeAlso(classNames = {"org.apache.nifi.distributed.cache.server.map.DistributedMapCacheServer", "org.apache.nifi.ssl.StandardSSLContextService"})
-@CapabilityDescription("Provides the ability to communicate with a DistributedMapCacheServer. This can be used in order to share a Map "
-    + "between nodes in a NiFi cluster")
+@CapabilityDescription("Cung cấp khả năng giao tiếp với DistributedMapCacheServer. Điều này có thể được sử dụng để chia sẻ một Map "
+    + "giữa các nút trong một cụm Life")
 public class DistributedMapCacheClientService extends AbstractControllerService implements AtomicDistributedMapCacheClient<Long> {
 
     private static final long DEFAULT_CACHE_REVISION = 0L;
 
     public static final PropertyDescriptor HOSTNAME = new PropertyDescriptor.Builder()
         .name("Server Hostname")
-        .description("The name of the server that is running the DistributedMapCacheServer service")
+        .description("Tên của máy chủ đang chạy dịch vụ DistributedMapCacheServer")
         .required(true)
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .build();
     public static final PropertyDescriptor PORT = new PropertyDescriptor.Builder()
         .name("Server Port")
-        .description("The port on the remote server that is to be used when communicating with the DistributedMapCacheServer service")
+        .description("Cổng trên máy chủ từ xa sẽ được sử dụng khi giao tiếp với dịch vụ DistributedMapCacheServer")
         .required(true)
         .addValidator(StandardValidators.PORT_VALIDATOR)
         .defaultValue("4557")
         .build();
     public static final PropertyDescriptor SSL_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
         .name("SSL Context Service")
-        .description("If specified, indicates the SSL Context Service that is used to communicate with the "
-                + "remote server. If not specified, communications will not be encrypted")
+        .description("Nếu được chỉ định, cho biết SSL Context Service được sử dụng để giao tiếp với "
+                + "máy chủ từ xa. Nếu không được chỉ định, các giao tiếp sẽ không được mã hóa")
         .required(false)
         .identifiesControllerService(SSLContextService.class)
         .build();
     public static final PropertyDescriptor COMMUNICATIONS_TIMEOUT = new PropertyDescriptor.Builder()
         .name("Communications Timeout")
-        .description("Specifies how long to wait when communicating with the remote server before determining that "
-                + "there is a communications failure if data cannot be sent or received")
+        .description("Chỉ định thời gian chờ khi giao tiếp với máy chủ từ xa trước khi xác định rằng "
+                + "có lỗi giao tiếp nếu không thể gửi hoặc nhận dữ liệu")
         .required(true)
         .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
         .defaultValue("30 secs")
         .build();
-
     /**
      * The implementation of the business logic for {@link DistributedMapCacheClientService}.
      */

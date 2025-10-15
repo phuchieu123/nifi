@@ -95,9 +95,9 @@ public abstract class AbstractDatabaseFetchProcessor extends AbstractSessionFact
     public static final String FRAGMENT_COUNT = FragmentAttributes.FRAGMENT_COUNT.key();
 
     // Relationships
-    public static final Relationship REL_SUCCESS = new Relationship.Builder()
+   public static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("Successfully created FlowFile from SQL query result set.")
+            .description("Tạo FlowFile từ tập kết quả truy vấn SQL thành công.")
             .build();
 
     protected Set<Relationship> relationships;
@@ -105,14 +105,14 @@ public abstract class AbstractDatabaseFetchProcessor extends AbstractSessionFact
     // Properties
     public static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name("Database Connection Pooling Service")
-            .description("The Controller Service that is used to obtain a connection to the database.")
+            .description("Controller Service được sử dụng để lấy kết nối đến cơ sở dữ liệu.")
             .required(true)
             .identifiesControllerService(DBCPService.class)
             .build();
 
     public static final PropertyDescriptor TABLE_NAME = new PropertyDescriptor.Builder()
             .name("Table Name")
-            .description("The name of the database table to be queried.")
+            .description("Tên của bảng cơ sở dữ liệu sẽ được truy vấn.")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -120,10 +120,10 @@ public abstract class AbstractDatabaseFetchProcessor extends AbstractSessionFact
 
     public static final PropertyDescriptor COLUMN_NAMES = new PropertyDescriptor.Builder()
             .name("Columns to Return")
-            .description("A comma-separated list of column names to be used in the query. If your database requires "
-                    + "special treatment of the names (quoting, e.g.), each name should include such treatment. If no "
-                    + "column names are supplied, all columns in the specified table will be returned. NOTE: It is important "
-                    + "to use consistent column names for a given table for incremental fetch to work properly.")
+            .description("Một danh sách tên cột được phân tách bằng dấu phẩy sẽ được sử dụng trong truy vấn. Nếu cơ sở dữ liệu của bạn yêu cầu "
+                    + "xử lý đặc biệt cho các tên (ví dụ: đặt trong dấu ngoặc kép), mỗi tên nên bao gồm cách xử lý đó. Nếu không có "
+                    + "tên cột nào được cung cấp, tất cả các cột trong bảng đã chỉ định sẽ được trả về. LƯU Ý: Điều quan trọng "
+                    + "là phải sử dụng tên cột nhất quán cho một bảng nhất định để việc tìm nạp tăng dần hoạt động chính xác.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -131,15 +131,15 @@ public abstract class AbstractDatabaseFetchProcessor extends AbstractSessionFact
 
     public static final PropertyDescriptor MAX_VALUE_COLUMN_NAMES = new PropertyDescriptor.Builder()
             .name("Maximum-value Columns")
-            .description("A comma-separated list of column names. The processor will keep track of the maximum value "
-                    + "for each column that has been returned since the processor started running. Using multiple columns implies an order "
-                    + "to the column list, and each column's values are expected to increase more slowly than the previous columns' values. Thus, "
-                    + "using multiple columns implies a hierarchical structure of columns, which is usually used for partitioning tables. This processor "
-                    + "can be used to retrieve only those rows that have been added/updated since the last retrieval. Note that some "
-                    + "JDBC types such as bit/boolean are not conducive to maintaining maximum value, so columns of these "
-                    + "types should not be listed in this property, and will result in error(s) during processing. If no columns "
-                    + "are provided, all rows from the table will be considered, which could have a performance impact. NOTE: It is important "
-                    + "to use consistent max-value column names for a given table for incremental fetch to work properly.")
+            .description("Một danh sách tên cột được phân tách bằng dấu phẩy. Bộ xử lý sẽ theo dõi giá trị tối đa "
+                    + "cho mỗi cột đã được trả về kể từ khi bộ xử lý bắt đầu chạy. Việc sử dụng nhiều cột ngụ ý một thứ tự "
+                    + "trong danh sách cột, và giá trị của mỗi cột được cho là sẽ tăng chậm hơn so với giá trị của các cột trước đó. Do đó, "
+                    + "việc sử dụng nhiều cột ngụ ý một cấu trúc phân cấp của các cột, thường được sử dụng để phân vùng bảng. Bộ xử lý này "
+                    + "có thể được sử dụng để chỉ truy xuất những hàng đã được thêm/cập nhật kể từ lần truy xuất cuối cùng. Lưu ý rằng một số "
+                    + "kiểu JDBC như bit/boolean không phù hợp để duy trì giá trị tối đa, vì vậy các cột thuộc các kiểu này "
+                    + "không nên được liệt kê trong thuộc tính này, và sẽ dẫn đến lỗi trong quá trình xử lý. Nếu không có cột "
+                    + "nào được cung cấp, tất cả các hàng từ bảng sẽ được xem xét, điều này có thể ảnh hưởng đến hiệu suất. LƯU Ý: Điều quan trọng "
+                    + "là phải sử dụng tên cột giá trị tối đa nhất quán cho một bảng nhất định để việc tìm nạp tăng dần hoạt động chính xác.")
             .required(false)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -147,8 +147,8 @@ public abstract class AbstractDatabaseFetchProcessor extends AbstractSessionFact
 
     public static final PropertyDescriptor QUERY_TIMEOUT = new PropertyDescriptor.Builder()
             .name("Max Wait Time")
-            .description("The maximum amount of time allowed for a running SQL select query "
-                    + ", zero means there is no limit. Max time less than 1 second will be equal to zero.")
+            .description("Khoảng thời gian tối đa cho phép đối với một truy vấn SQL select đang chạy "
+                    + ", số không có nghĩa là không có giới hạn. Thời gian tối đa nhỏ hơn 1 giây sẽ được coi là bằng không.")
             .defaultValue("0 seconds")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -157,8 +157,8 @@ public abstract class AbstractDatabaseFetchProcessor extends AbstractSessionFact
 
     public static final PropertyDescriptor WHERE_CLAUSE = new PropertyDescriptor.Builder()
             .name("db-fetch-where-clause")
-            .displayName("Additional WHERE clause")
-            .description("A custom clause to be added in the WHERE condition when building SQL queries.")
+            .displayName("Mệnh đề WHERE bổ sung")
+            .description("Một mệnh đề tùy chỉnh sẽ được thêm vào điều kiện WHERE khi xây dựng các truy vấn SQL.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -166,9 +166,9 @@ public abstract class AbstractDatabaseFetchProcessor extends AbstractSessionFact
 
     public static final PropertyDescriptor SQL_QUERY = new PropertyDescriptor.Builder()
             .name("db-fetch-sql-query")
-            .displayName("Custom Query")
-            .description("A custom SQL query used to retrieve data. Instead of building a SQL query from "
-                    + "other properties, this query will be wrapped as a sub-query. Query must have no ORDER BY statement.")
+            .displayName("Truy vấn tùy chỉnh")
+            .description("Một truy vấn SQL tùy chỉnh được sử dụng để truy xuất dữ liệu. Thay vì xây dựng một truy vấn SQL từ "
+                    + "các thuộc tính khác, truy vấn này sẽ được bao bọc như một truy vấn con. Truy vấn không được có mệnh đề ORDER BY.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)

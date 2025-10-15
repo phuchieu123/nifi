@@ -59,11 +59,11 @@ import org.apache.nifi.serialization.record.SchemaIdentifier;
 import org.apache.nifi.ssl.SSLContextService;
 
 @Tags({"schema", "registry", "confluent", "avro", "kafka"})
-@CapabilityDescription("Provides a Schema Registry that interacts with the Confluent Schema Registry so that those Schemas that are stored in the Confluent Schema "
-    + "Registry can be used in NiFi. The Confluent Schema Registry has a notion of a \"subject\" for schemas, which is their terminology for a schema name. When a Schema "
-    + "is looked up by name by this registry, it will find a Schema in the Confluent Schema Registry with that subject.")
-@DynamicProperty(name = "request.header.*", value = "String literal, may not be empty", description = "Properties that begin with 'request.header.' " +
-        "are populated into a map and passed as http headers in REST requests to the Confluent Schema Registry")
+@CapabilityDescription("Cung cấp một Schema Registry tương tác với Confluent Schema Registry để các Lược đồ được lưu trữ trong Confluent Schema Registry "
+    + "có thể được sử dụng trong NiFi. Confluent Schema Registry có một khái niệm về \"chủ đề\" (subject) cho các lược đồ, đó là thuật ngữ của họ cho một tên lược đồ. Khi một Lược đồ "
+    + "được tra cứu theo tên bởi registry này, nó sẽ tìm thấy một Lược đồ trong Confluent Schema Registry với chủ đề đó.")
+@DynamicProperty(name = "request.header.*", value = "String literal, may not be empty", description = "Các thuộc tính bắt đầu bằng 'request.header.' " +
+        "được điền vào một map và được chuyển dưới dạng tiêu đề http trong các yêu cầu REST đến Confluent Schema Registry")
 public class ConfluentSchemaRegistry extends AbstractControllerService implements SchemaRegistry {
 
     private static final Set<SchemaField> schemaFields = EnumSet.of(SchemaField.SCHEMA_NAME, SchemaField.SCHEMA_TEXT,
@@ -74,8 +74,8 @@ public class ConfluentSchemaRegistry extends AbstractControllerService implement
 
     static final PropertyDescriptor SCHEMA_REGISTRY_URLS = new PropertyDescriptor.Builder()
         .name("url")
-        .displayName("Schema Registry URLs")
-        .description("A comma-separated list of URLs of the Schema Registry to interact with")
+        .displayName("URL của Schema Registry")
+        .description("Danh sách các URL của Schema Registry được phân tách bằng dấu phẩy để tương tác")
         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
         .defaultValue("http://localhost:8081")
         .required(true)
@@ -84,16 +84,16 @@ public class ConfluentSchemaRegistry extends AbstractControllerService implement
 
     static final PropertyDescriptor SSL_CONTEXT = new PropertyDescriptor.Builder()
         .name("ssl-context")
-        .displayName("SSL Context Service")
-        .description("Specifies the SSL Context Service to use for interacting with the Confluent Schema Registry")
+        .displayName("Dịch vụ Ngữ cảnh SSL")
+        .description("Chỉ định Dịch vụ Ngữ cảnh SSL sẽ sử dụng để tương tác với Confluent Schema Registry")
         .identifiesControllerService(SSLContextService.class)
         .required(false)
         .build();
 
     static final PropertyDescriptor CACHE_SIZE = new PropertyDescriptor.Builder()
         .name("cache-size")
-        .displayName("Cache Size")
-        .description("Specifies how many Schemas should be cached from the Schema Registry")
+        .displayName("Kích thước Bộ đệm")
+        .description("Chỉ định số lượng Lược đồ sẽ được lưu vào bộ đệm từ Schema Registry")
         .addValidator(StandardValidators.NON_NEGATIVE_INTEGER_VALIDATOR)
         .defaultValue("1000")
         .required(true)
@@ -101,10 +101,10 @@ public class ConfluentSchemaRegistry extends AbstractControllerService implement
 
     static final PropertyDescriptor CACHE_EXPIRATION = new PropertyDescriptor.Builder()
         .name("cache-expiration")
-        .displayName("Cache Expiration")
-        .description("Specifies how long a Schema that is cached should remain in the cache. Once this time period elapses, a "
-            + "cached version of a schema will no longer be used, and the service will have to communicate with the "
-            + "Schema Registry again in order to obtain the schema.")
+        .displayName("Thời hạn Bộ đệm")
+        .description("Chỉ định thời gian một Lược đồ được lưu trong bộ đệm sẽ tồn tại. Sau khi khoảng thời gian này trôi qua, một "
+            + "phiên bản đã lưu trong bộ đệm của một lược đồ sẽ không còn được sử dụng, và dịch vụ sẽ phải giao tiếp với "
+            + "Schema Registry một lần nữa để lấy được lược đồ.")
         .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
         .defaultValue("1 hour")
         .required(true)
@@ -112,8 +112,8 @@ public class ConfluentSchemaRegistry extends AbstractControllerService implement
 
     static final PropertyDescriptor TIMEOUT = new PropertyDescriptor.Builder()
         .name("timeout")
-        .displayName("Communications Timeout")
-        .description("Specifies how long to wait to receive data from the Schema Registry before considering the communications a failure")
+        .displayName("Thời gian chờ Giao tiếp")
+        .description("Chỉ định thời gian chờ để nhận dữ liệu từ Schema Registry trước khi coi giao tiếp là một thất bại")
         .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .defaultValue("30 secs")
@@ -122,8 +122,8 @@ public class ConfluentSchemaRegistry extends AbstractControllerService implement
 
     static final PropertyDescriptor AUTHENTICATION_TYPE = new PropertyDescriptor.Builder()
             .name("authentication-type")
-            .displayName("Authentication Type")
-            .description("HTTP Client Authentication Type for Confluent Schema Registry")
+            .displayName("Loại Xác thực")
+            .description("Loại Xác thực Máy khách HTTP cho Confluent Schema Registry")
             .required(false)
             .allowableValues(AuthenticationType.values())
             .defaultValue(AuthenticationType.NONE.toString())
@@ -131,8 +131,8 @@ public class ConfluentSchemaRegistry extends AbstractControllerService implement
 
     static final PropertyDescriptor USERNAME = new PropertyDescriptor.Builder()
             .name("username")
-            .displayName("Username")
-            .description("Username for authentication to Confluent Schema Registry")
+            .displayName("Tên người dùng")
+            .description("Tên người dùng để xác thực với Confluent Schema Registry")
             .addValidator(StandardValidators.createRegexMatchingValidator(Pattern.compile("^[\\x20-\\x39\\x3b-\\x7e\\x80-\\xff]+$")))
             .required(false)
             .dependsOn(AUTHENTICATION_TYPE, AuthenticationType.BASIC.toString())
@@ -140,14 +140,13 @@ public class ConfluentSchemaRegistry extends AbstractControllerService implement
 
     static final PropertyDescriptor PASSWORD = new PropertyDescriptor.Builder()
             .name("password")
-            .displayName("Password")
-            .description("Password for authentication to Confluent Schema Registry")
+            .displayName("Mật khẩu")
+            .description("Mật khẩu để xác thực với Confluent Schema Registry")
             .addValidator(StandardValidators.createRegexMatchingValidator(Pattern.compile("^[\\x20-\\x7e\\x80-\\xff]+$")))
             .required(false)
             .dependsOn(AUTHENTICATION_TYPE, AuthenticationType.BASIC.toString())
             .sensitive(true)
             .build();
-
     private volatile SchemaRegistryClient client;
 
 

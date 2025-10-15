@@ -161,13 +161,13 @@ public class JndiJmsConnectionFactoryProperties {
             final String url = context.newPropertyValue(input).evaluateAttributeExpressions().getValue();
             if (url == null || url.isEmpty()) {
                 builder.valid(false);
-                builder.explanation("URL is required");
+                builder.explanation("URL là bắt buộc");
             } else if (isUrlAllowed(url)) {
                 builder.valid(true);
-                builder.explanation("URL scheme allowed");
+                builder.explanation("Cho phép lược đồ URL");
             } else {
                 builder.valid(false);
-                final String explanation = String.format("URL scheme not allowed. Allowed URL schemes include %s", allowedSchemes);
+                final String explanation = String.format("Lược đồ URL không được phép. Lược đồ URL được phép bao gồm %s", allowedSchemes);
                 builder.explanation(explanation);
             }
 

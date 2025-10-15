@@ -85,9 +85,9 @@ import java.util.regex.Pattern;
  * </ul>
  */
 @Tags({"monitor", "memory", "heap", "jvm", "gc", "garbage collection", "warning"})
-@CapabilityDescription("Checks the amount of Java Heap available in the JVM for a particular JVM Memory Pool. If the"
-        + " amount of space used exceeds some configurable threshold, will warn (via a log message and System-Level Bulletin)"
-        + " that the memory pool is exceeding this threshold.")
+@CapabilityDescription("Kiểm tra dung lượng Java Heap có sẵn trong JVM cho một Vùng nhớ JVM (JVM Memory Pool) cụ thể. Nếu"
+        + " dung lượng đã sử dụng vượt quá một ngưỡng có thể cấu hình, sẽ cảnh báo (thông qua một thông điệp log và Thông báo Cấp Hệ thống)"
+        + " rằng vùng nhớ đó đang vượt quá ngưỡng này.")
 public class MonitorMemory extends AbstractReportingTask {
 
     private static final List<String> GC_OLD_GEN_POOLS = Collections.unmodifiableList(Arrays.asList("Tenured Gen", "PS Old Gen", "G1 Old Gen", "CMS Old Gen", "ZHeap"));
@@ -95,7 +95,7 @@ public class MonitorMemory extends AbstractReportingTask {
     private static String defaultMemoryPool;
 
     static {
-        // Only allow memory pool beans that support usage thresholds, otherwise we wouldn't report anything anyway
+        // Chỉ cho phép các bean vùng nhớ hỗ trợ ngưỡng sử dụng, nếu không chúng ta sẽ không báo cáo bất cứ điều gì
         memPoolAllowableValues = ManagementFactory.getMemoryPoolMXBeans()
                 .stream()
                 .filter(MemoryPoolMXBean::isCollectionUsageThresholdSupported)
@@ -111,32 +111,31 @@ public class MonitorMemory extends AbstractReportingTask {
 
     public static final PropertyDescriptor MEMORY_POOL_PROPERTY = new PropertyDescriptor.Builder()
             .name("Memory Pool")
-            .displayName("Memory Pool")
-            .description("The name of the JVM Memory Pool to monitor. The allowed values for Memory Pools are platform and JVM"
-                    + " dependent and may vary for different versions of Java and from published documentation. This reporting"
-                    + " task will become invalidated if configured to use a Memory Pool that is not available on the currently"
-                    + " running host platform and JVM")
+            .displayName("Vùng Nhớ")
+            .description("Tên của Vùng nhớ JVM cần giám sát. Các giá trị được phép cho Vùng nhớ phụ thuộc vào nền tảng và JVM"
+                    + " và có thể khác nhau đối với các phiên bản Java khác nhau và so với tài liệu đã công bố. Tác vụ báo cáo"
+                    + " này sẽ trở nên không hợp lệ nếu được cấu hình để sử dụng một Vùng nhớ không có sẵn trên nền tảng máy chủ"
+                    + " và JVM đang chạy hiện tại")
             .required(true)
             .allowableValues(memPoolAllowableValues)
             .defaultValue(defaultMemoryPool)
             .build();
     public static final PropertyDescriptor THRESHOLD_PROPERTY = new PropertyDescriptor.Builder()
             .name("Usage Threshold")
-            .displayName("Usage Threshold")
-            .description("Indicates the threshold at which warnings should be generated. This can be a percentage or a Data Size")
+            .displayName("Ngưỡng Sử dụng")
+            .description("Cho biết ngưỡng mà tại đó các cảnh báo sẽ được tạo ra. Đây có thể là một tỷ lệ phần trăm hoặc một Kích thước Dữ liệu (Data Size)")
             .required(true)
             .addValidator(new ThresholdValidator())
             .defaultValue("65%")
             .build();
     public static final PropertyDescriptor REPORTING_INTERVAL = new PropertyDescriptor.Builder()
             .name("Reporting Interval")
-            .displayName("Reporting Interval")
-            .description("Indicates how often this reporting task should report bulletins while the memory utilization exceeds the configured threshold")
+            .displayName("Khoảng thời gian Báo cáo")
+            .description("Cho biết tần suất tác vụ báo cáo này sẽ báo cáo các thông báo trong khi việc sử dụng bộ nhớ vượt quá ngưỡng đã được cấu hình")
             .required(false)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
             .defaultValue(null)
             .build();
-
     public static final Pattern PERCENTAGE_PATTERN = Pattern.compile("\\d{1,2}%");
     public static final Pattern DATA_SIZE_PATTERN = DataUnit.DATA_SIZE_PATTERN;
     public static final Pattern TIME_PERIOD_PATTERN = FormatUtils.TIME_DURATION_PATTERN;
@@ -226,7 +225,7 @@ public class MonitorMemory extends AbstractReportingTask {
 
             lastReportTime = System.currentTimeMillis();
             lastValueWasExceeded = true;
-            final String message = String.format("Memory Pool '%1$s' has exceeded the configured Threshold of %2$s, having used %3$s / %4$s (%5$.2f%%)",
+            final String message = String.format("Vùng nhớ '%1$s' đã vượt quá Ngưỡng đã cấu hình là %2$s, đã sử dụng %3$s / %4$s (%5$.2f%%)",
                     bean.getName(), threshold, FormatUtils.formatDataSize(usage.getUsed()),
                     FormatUtils.formatDataSize(usage.getMax()), percentageUsed);
 
@@ -234,7 +233,7 @@ public class MonitorMemory extends AbstractReportingTask {
         } else if (lastValueWasExceeded) {
             lastValueWasExceeded = false;
             lastReportTime = System.currentTimeMillis();
-            final String message = String.format("Memory Pool '%1$s' is no longer exceeding the configured Threshold of %2$s; currently using %3$s / %4$s (%5$.2f%%)",
+            final String message = String.format("Vùng nhớ '%1$s' không còn vượt quá Ngưỡng đã cấu hình là %2$s; hiện đang sử dụng %3$s / %4$s (%5$.2f%%)",
                     bean.getName(), threshold, FormatUtils.formatDataSize(usage.getUsed()),
                     FormatUtils.formatDataSize(usage.getMax()), percentageUsed);
 
@@ -254,7 +253,7 @@ public class MonitorMemory extends AbstractReportingTask {
 
             if (!PERCENTAGE_PATTERN.matcher(input).matches() && !DATA_SIZE_PATTERN.matcher(input).matches()) {
                 return new ValidationResult.Builder().input(input).subject(subject).valid(false)
-                        .explanation("Valid value is a number in the range of 0-99 followed by a percent sign (e.g. 65%) or a Data Size (e.g. 100 MB)").build();
+                       .explanation("Giá trị hợp lệ là một số trong khoảng từ 0-99 theo sau là dấu phần trăm (ví dụ: 65%) hoặc một Kích thước Dữ liệu (ví dụ: 100 MB)").build();
             }
 
             return new ValidationResult.Builder().input(input).subject(subject).valid(true).build();

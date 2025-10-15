@@ -97,10 +97,9 @@ public class PutMongoRecordIT extends MongoWriteTestBase {
         }
         assertEquals(3, results.size());
         Iterator<ValidationResult> it = results.iterator();
-        assertTrue(it.next().toString().contains("is invalid because Mongo Database Name is required"));
-        assertTrue(it.next().toString().contains("is invalid because Mongo Collection Name is required"));
-        assertTrue(it.next().toString().contains("is invalid because Record Reader is required"));
-
+        assertTrue(it.next().toString().contains("không hợp lệ vì Tên cơ sở dữ liệu Mongo là bắt buộc"));
+        assertTrue(it.next().toString().contains("không hợp lệ vì Tên bộ sưu tập Mongo là bắt buộc"));
+        assertTrue(it.next().toString().contains("không hợp lệ vì Trình đọc bản ghi là bắt buộc"));
         // invalid write concern
         runner.setProperty(AbstractMongoProcessor.URI, MONGO_CONTAINER.getConnectionString());
         runner.setProperty(AbstractMongoProcessor.DATABASE_NAME, DATABASE_NAME);
@@ -114,7 +113,7 @@ public class PutMongoRecordIT extends MongoWriteTestBase {
             results = ((MockProcessContext) pc).validate();
         }
         assertEquals(1, results.size());
-        assertTrue(results.iterator().next().toString().matches("'Write Concern' .* is invalid because Given value not found in allowed set .*"));
+        assertTrue(results.iterator().next().toString().matches("'Mối quan tâm ghi' .* không hợp lệ vì Giá trị đã cho không được tìm thấy trong tập hợp được phép .*"));
 
         // valid write concern
         runner.setProperty(PutMongoRecord.WRITE_CONCERN, PutMongoRecord.WRITE_CONCERN_UNACKNOWLEDGED);

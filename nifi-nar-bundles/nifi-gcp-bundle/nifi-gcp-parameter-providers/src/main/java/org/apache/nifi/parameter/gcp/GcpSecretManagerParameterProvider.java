@@ -56,16 +56,16 @@ import java.util.regex.Pattern;
  */
 
 @Tags({"gcp", "secret", "manager"})
-@CapabilityDescription("Fetches parameters from GCP Secret Manager.  Each secret becomes a Parameter, which can be mapped to a Parameter Group " +
-        "by adding a GCP label named 'group-name'.")
+@CapabilityDescription("Tìm nạp các tham số từ GCP Secret Manager. Mỗi secret trở thành một Tham số (Parameter), có thể được ánh xạ tới một Nhóm Tham số (Parameter Group) " +
+        "bằng cách thêm một nhãn (label) GCP có tên là 'group-name'.")
 public class GcpSecretManagerParameterProvider extends AbstractParameterProvider implements VerifiableParameterProvider {
     private static final Logger logger = LoggerFactory.getLogger(GcpSecretManagerParameterProvider.class);
 
     public static final PropertyDescriptor GROUP_NAME_PATTERN = new PropertyDescriptor.Builder()
             .name("group-name-pattern")
-            .displayName("Group Name Pattern")
-            .description("A Regular Expression matching on the 'group-name' label value that identifies Secrets whose parameters should be fetched. " +
-                    "Any secrets without a 'group-name' label value that matches this Regex will not be fetched.")
+            .displayName("Mẫu Tên Nhóm")
+            .description("Một Biểu thức Chính quy khớp với giá trị nhãn 'group-name' để xác định các Secret có tham số cần được tìm nạp. " +
+                    "Bất kỳ secret nào không có giá trị nhãn 'group-name' khớp với Regex này sẽ không được tìm nạp.")
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
             .required(true)
             .defaultValue(".*")
@@ -73,19 +73,19 @@ public class GcpSecretManagerParameterProvider extends AbstractParameterProvider
 
     public static final PropertyDescriptor PROJECT_ID = new PropertyDescriptor
             .Builder().name("gcp-project-id")
-            .displayName("Project ID")
-            .description("Google Cloud Project ID")
+            .displayName("ID Dự án")
+            .description("ID Dự án của Google Cloud")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .required(true)
             .build();
 
     /**
-     * Links to the {@link GCPCredentialsService} which provides credentials for this particular processor.
+     * Liên kết đến {@link GCPCredentialsService} cung cấp thông tin xác thực cho bộ xử lý cụ thể này.
      */
     public static final PropertyDescriptor GCP_CREDENTIALS_PROVIDER_SERVICE = new PropertyDescriptor.Builder()
             .name("gcp-credentials-provider-service")
-            .displayName("GCP Credentials Provider Service")
-            .description("The Controller Service used to obtain Google Cloud Platform credentials.")
+            .displayName("Dịch vụ Cung cấp Thông tin xác thực GCP")
+            .description("Controller Service được sử dụng để lấy thông tin xác thực của Google Cloud Platform.")
             .required(true)
             .identifiesControllerService(GCPCredentialsService.class)
             .build();

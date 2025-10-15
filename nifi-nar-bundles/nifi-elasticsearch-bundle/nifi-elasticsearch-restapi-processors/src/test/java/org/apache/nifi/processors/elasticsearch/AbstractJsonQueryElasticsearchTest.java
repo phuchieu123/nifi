@@ -99,7 +99,7 @@ public abstract class AbstractJsonQueryElasticsearchTest<P extends AbstractJsonQ
         runner.removeProperty(AbstractJsonQueryElasticsearch.OUTPUT_NO_HITS);
 
         final AssertionError assertionError = assertThrows(AssertionError.class, runner::run);
-        final String expected = String.format("Processor has 2 validation failures:\n" + "'%s' is invalid because %s is required\n" + "'%s' is invalid because %s is required\n",
+        final String expected = String.format("Bộ xử lý có 2 lỗi xác thực:\n" + "'%s' không hợp lệ vì %s là bắt buộc\n" + "'%s' không hợp lệ vì %s là bắt buộc\n",
                 ElasticsearchRestProcessor.INDEX.getDisplayName(), ElasticsearchRestProcessor.INDEX.getDisplayName(),
                 ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName(), ElasticsearchRestProcessor.CLIENT_SERVICE.getDisplayName());
         assertEquals(expected, assertionError.getMessage());

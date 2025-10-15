@@ -49,28 +49,28 @@ import java.util.regex.Pattern;
  * @see <a href="https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-cli">Azure Key Vault Secrets</a>
  */
 @Tags({"azure", "keyvault", "key", "vault", "secrets"})
-@CapabilityDescription("Fetches parameters from Azure Key Vault Secrets.  Each secret becomes a Parameter, which map to a Parameter Group by" +
-        "adding a secret tag named 'group-name'.")
+@CapabilityDescription("Tìm nạp các tham số từ Azure Key Vault Secrets. Mỗi secret trở thành một Tham số (Parameter), được ánh xạ tới một Nhóm Tham số (Parameter Group) bằng" +
+        "cách thêm một thẻ (tag) secret có tên là 'group-name'.")
 public class AzureKeyVaultSecretsParameterProvider extends AbstractParameterProvider implements VerifiableParameterProvider {
     public static final PropertyDescriptor AZURE_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("azure-credentials-service")
-            .displayName("Azure Credentials Service")
-            .description("Controller service used to obtain Azure credentials to be used with Key Vault client.")
+            .displayName("Dịch vụ Thông tin xác thực Azure")
+            .description("Dịch vụ điều khiển (Controller service) được sử dụng để lấy thông tin xác thực Azure sẽ được dùng với máy khách Key Vault.")
             .required(true)
             .identifiesControllerService(AzureCredentialsService.class)
             .build();
     public static final PropertyDescriptor KEY_VAULT_URI = new PropertyDescriptor.Builder()
             .name("key-vault-uri")
-            .displayName("Key Vault URI")
-            .description("Vault URI of the Key Vault that contains the secrets")
+            .displayName("URI của Key Vault")
+            .description("URI của Key Vault chứa các secret")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
     public static final PropertyDescriptor GROUP_NAME_PATTERN = new PropertyDescriptor.Builder()
             .name("group-name-pattern")
-            .displayName("Group Name Pattern")
-            .description("A Regular Expression matching on the 'group-name' tag value that identifies Secrets whose parameters should be fetched. " +
-                    "Any secrets without a 'group-name' tag value that matches this Regex will not be fetched.")
+            .displayName("Mẫu Tên Nhóm")
+            .description("Một Biểu thức Chính quy khớp với giá trị thẻ 'group-name' để xác định các Secret có tham số cần được tìm nạp. " +
+                    "Bất kỳ secret nào không có giá trị thẻ 'group-name' khớp với Regex này sẽ không được tìm nạp.")
             .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR)
             .required(true)
             .defaultValue(".*")

@@ -57,12 +57,12 @@ public class KnoxService {
             // ensure the url is provided
             knoxUrl = configuration.getKnoxUrl();
             if (StringUtils.isBlank(knoxUrl)) {
-                throw new RuntimeException("Knox URL is required when Apache Knox SSO support is enabled.");
+                throw new RuntimeException("URL Knox là bắt buộc khi hỗ trợ Apache Knox SSO được bật.");
             }
 
             // ensure the cookie name is set
             if (StringUtils.isBlank(configuration.getKnoxCookieName())) {
-                throw new RuntimeException("Knox Cookie Name is required when Apache Knox SSO support is enabled.");
+                throw new RuntimeException("Tên cookie Knox là bắt buộc khi hỗ trợ Apache Knox SSO được bật.");
             }
 
             // create the verifier

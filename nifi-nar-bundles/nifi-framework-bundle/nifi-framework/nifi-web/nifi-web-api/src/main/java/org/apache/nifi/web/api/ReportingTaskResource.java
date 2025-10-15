@@ -889,7 +889,7 @@ public class ReportingTaskResource extends ApplicationResource {
 
         final VerifyConfigRequestDTO requestDto = configRequest.getRequest();
         final String taskId = requestDto.getComponentId();
-        final List<UpdateStep> updateSteps = Collections.singletonList(new StandardUpdateStep("Verify Reporting Task Configuration"));
+        final List<UpdateStep> updateSteps = Collections.singletonList(new StandardUpdateStep("Xác minh Cấu hình Nhiệm vụ Báo cáo"));
 
         final AsynchronousWebRequest<VerifyConfigRequestEntity, List<ConfigVerificationResultDTO>> request =
             new StandardAsynchronousWebRequest<>(requestId, configRequest, taskId, user, updateSteps);
@@ -900,8 +900,8 @@ public class ReportingTaskResource extends ApplicationResource {
                 final List<ConfigVerificationResultDTO> results = serviceFacade.performReportingTaskConfigVerification(taskId, requestDto.getProperties());
                 asyncRequest.markStepComplete(results);
             } catch (final Exception e) {
-                logger.error("Failed to verify Reporting Task configuration", e);
-                asyncRequest.fail("Failed to verify Reporting Task configuration due to " + e);
+                logger.error("Không thể xác minh cấu hình Nhiệm-vụ Báo-cáo", e);
+                asyncRequest.fail("Không thể xác minh cấu hình Nhiệm-vụ Báo-cáo do " + e);
             }
         };
 

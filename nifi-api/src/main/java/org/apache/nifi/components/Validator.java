@@ -28,7 +28,7 @@ public interface Validator {
     Validator INVALID = new Validator() {
         @Override
         public ValidationResult validate(final String subject, final String input, final ValidationContext context) {
-            return new ValidationResult.Builder().subject(subject).explanation(String.format("'%s' is not a supported property or has no Validator associated with it", subject)).input(input).build();
+            return new ValidationResult.Builder().subject(subject).explanation(String.format("'%s' không phải là thuộc tính được hỗ trợ hoặc không có Trình xác thực nào được liên kết với nó", subject)).input(input).build();
         }
     };
 

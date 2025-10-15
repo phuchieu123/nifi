@@ -626,7 +626,7 @@ public class PutElasticsearchRecordTest extends AbstractPutElasticsearchTest<Put
         runner.setProperty(PutElasticsearchRecord.INDEX_OP, "not-valid");
         runner.assertNotValid();
         final AssertionError ae = assertThrows(AssertionError.class, runner::run);
-        assertEquals(String.format("Processor has 1 validation failures:\n'%s' validated against 'not-valid' is invalid because %s must be Expression Language or one of %s\n",
+        assertEquals(String.format("Bộ xử lý có 1 lỗi xác thực:\n'%s' được xác thực với 'not-valid' không hợp lệ vì %s phải là Ngôn ngữ Biểu thức hoặc một trong %s\n",
                 PutElasticsearchRecord.INDEX_OP.getName(), PutElasticsearchRecord.INDEX_OP.getDisplayName(), PutElasticsearchRecord.ALLOWED_INDEX_OPERATIONS), ae.getMessage());
 
         runner.setProperty(PutElasticsearchRecord.INDEX_OP, "${operation}");

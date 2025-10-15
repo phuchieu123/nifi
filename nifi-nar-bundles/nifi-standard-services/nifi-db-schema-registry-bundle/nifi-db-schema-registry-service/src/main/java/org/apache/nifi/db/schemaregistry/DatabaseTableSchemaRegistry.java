@@ -48,26 +48,26 @@ import java.util.Optional;
 import java.util.Set;
 
 @Tags({"schema", "registry", "database", "table"})
-@CapabilityDescription("Provides a service for generating a record schema from a database table definition. The service is configured "
-        + "to use a table name and a database connection fetches the table metadata (i.e. table definition) such as column names, data types, "
-        + "nullability, etc.")
+@CapabilityDescription("Cung cấp một dịch vụ để tạo lược đồ bản ghi từ định nghĩa bảng cơ sở dữ liệu. Dịch vụ được cấu hình "
+        + "để sử dụng tên bảng và kết nối cơ sở dữ liệu để tìm nạp siêu dữ liệu của bảng (tức là định nghĩa bảng) chẳng hạn như tên cột, kiểu dữ liệu, "
+        + "khả năng null, v.v.")
 public class DatabaseTableSchemaRegistry extends AbstractControllerService implements SchemaRegistry {
 
     private static final Set<SchemaField> schemaFields = EnumSet.of(SchemaField.SCHEMA_NAME);
 
     static final PropertyDescriptor DBCP_SERVICE = new PropertyDescriptor.Builder()
             .name("Database Connection Pooling Service")
-            .displayName("Database Connection Pooling Service")
-            .description("The Controller Service that is used to obtain a connection to the database for retrieving table information.")
+            .displayName("Dịch vụ Gộp kết nối Cơ sở dữ liệu")
+            .description("Dịch vụ Điều khiển (Controller Service) được sử dụng để lấy kết nối đến cơ sở dữ liệu nhằm truy xuất thông tin bảng.")
             .required(true)
             .identifiesControllerService(DBCPService.class)
             .build();
 
     static final PropertyDescriptor CATALOG_NAME = new PropertyDescriptor.Builder()
             .name("Catalog Name")
-            .displayName("Catalog Name")
-            .description("The name of the catalog used to locate the desired table. This may not apply for the database that you are querying. In this case, leave the field empty. Note that if the "
-                    + "property is set and the database is case-sensitive, the catalog name must match the database's catalog name exactly.")
+            .displayName("Tên Catalog")
+            .description("Tên của catalog được sử dụng để xác định vị trí bảng mong muốn. Điều này có thể không áp dụng cho cơ sở dữ liệu bạn đang truy vấn. Trong trường hợp này, hãy để trống trường. Lưu ý rằng nếu "
+                    + "thuộc tính được đặt và cơ sở dữ liệu phân biệt chữ hoa chữ thường, tên catalog phải khớp chính xác với tên catalog của cơ sở dữ liệu.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -75,10 +75,10 @@ public class DatabaseTableSchemaRegistry extends AbstractControllerService imple
 
     static final PropertyDescriptor SCHEMA_NAME = new PropertyDescriptor.Builder()
             .name("Schema Name")
-            .displayName("Schema Name")
-            .description("The name of the schema that the table belongs to. This may not apply for the database that you are updating. In this case, leave the field empty. Note that if the "
-                    + "property is set and the database is case-sensitive, the schema name must match the database's schema name exactly. Also notice that if the same table name exists in multiple "
-                    + "schemas and Schema Name is not specified, the service will find those tables and give an error if the different tables have the same column name(s).")
+            .displayName("Tên Lược đồ")
+            .description("Tên của lược đồ mà bảng thuộc về. Điều này có thể không áp dụng cho cơ sở dữ liệu bạn đang cập nhật. Trong trường hợp này, hãy để trống trường. Lưu ý rằng nếu "
+                    + "thuộc tính được đặt và cơ sở dữ liệu phân biệt chữ hoa chữ thường, tên lược đồ phải khớp chính xác với tên lược đồ của cơ sở dữ liệu. Cũng lưu ý rằng nếu cùng một tên bảng tồn tại trong nhiều "
+                    + "lược đồ và Tên lược đồ không được chỉ định, dịch vụ sẽ tìm thấy các bảng đó và báo lỗi nếu các bảng khác nhau có cùng (các) tên cột.")
             .required(false)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)

@@ -60,10 +60,10 @@ import java.util.Properties;
  * Justification: Centralizes the configuration of the connecting accumulo code. This also will be used
  * for any kerberos integration.
  */
-@DeprecationNotice(reason = "Planned for removal in version 2.0")
+@DeprecationNotice(reason = "Dự kiến sẽ bị loại bỏ trong phiên bản 2.0")
 @RequiresInstanceClassLoading
 @Tags({"accumulo", "client", "service"})
-@CapabilityDescription("A controller service for accessing an Accumulo Client.")
+@CapabilityDescription("Một dịch vụ điều khiển (controller service) dùng để truy cập vào Accumulo Client.")
 public class AccumuloService extends AbstractControllerService implements BaseAccumuloService {
 
     private enum AuthenticationType {
@@ -74,24 +74,24 @@ public class AccumuloService extends AbstractControllerService implements BaseAc
 
     protected static final PropertyDescriptor ZOOKEEPER_QUORUM = new PropertyDescriptor.Builder()
             .name("ZooKeeper Quorum")
-            .displayName("ZooKeeper Quorum")
-            .description("Comma-separated list of ZooKeeper hosts for Accumulo.")
+            .displayName("Danh sách ZooKeeper")
+            .description("Danh sách các máy chủ ZooKeeper cho Accumulo, được phân tách bằng dấu phẩy.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
 
     protected static final PropertyDescriptor INSTANCE_NAME = new PropertyDescriptor.Builder()
             .name("Instance Name")
-            .displayName("Instance Name")
-            .description("Instance name of the Accumulo cluster")
+            .displayName("Tên Instance")
+            .description("Tên instance của cụm Accumulo")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .build();
 
     protected static final PropertyDescriptor AUTHENTICATION_TYPE = new PropertyDescriptor.Builder()
             .name("accumulo-authentication-type")
-            .displayName("Authentication Type")
-            .description("Authentication Type")
+            .displayName("Loại xác thực")
+            .description("Chọn loại xác thực được sử dụng cho Accumulo")
             .allowableValues(AuthenticationType.values())
             .defaultValue(AuthenticationType.PASSWORD.toString())
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
@@ -99,8 +99,8 @@ public class AccumuloService extends AbstractControllerService implements BaseAc
 
     protected static final PropertyDescriptor ACCUMULO_USER = new PropertyDescriptor.Builder()
             .name("Accumulo User")
-            .displayName("Accumulo User")
-            .description("Connecting user for Accumulo")
+            .displayName("Người dùng Accumulo")
+            .description("Tên người dùng được sử dụng để kết nối đến Accumulo")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .dependsOn(AUTHENTICATION_TYPE, AuthenticationType.PASSWORD.toString())
@@ -108,8 +108,8 @@ public class AccumuloService extends AbstractControllerService implements BaseAc
 
     protected static final PropertyDescriptor ACCUMULO_PASSWORD = new PropertyDescriptor.Builder()
             .name("Accumulo Password")
-            .displayName("Accumulo Password")
-            .description("Connecting user's password")
+            .displayName("Mật khẩu Accumulo")
+            .description("Mật khẩu của người dùng kết nối đến Accumulo")
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -118,24 +118,24 @@ public class AccumuloService extends AbstractControllerService implements BaseAc
 
     protected static final PropertyDescriptor KERBEROS_USER_SERVICE = new PropertyDescriptor.Builder()
             .name("kerberos-user-service")
-            .displayName("Kerberos User Service")
-            .description("Specifies the Kerberos User Controller Service that should be used for authenticating with Kerberos")
+            .displayName("Dịch vụ người dùng Kerberos")
+            .description("Chỉ định Kerberos User Controller Service được sử dụng để xác thực với Kerberos")
             .identifiesControllerService(KerberosUserService.class)
             .required(false)
             .build();
 
     protected static final PropertyDescriptor KERBEROS_CREDENTIALS_SERVICE = new PropertyDescriptor.Builder()
             .name("kerberos-credentials-service")
-            .displayName("Dịch vụ chứng thực Kerberos")
-            .description("Specifies the Kerberos Credentials Controller Service that should be used for principal + keytab Kerberos authentication")
+            .displayName("Dịch vụ thông tin xác thực Kerberos")
+            .description("Chỉ định Kerberos Credentials Controller Service được sử dụng cho xác thực Kerberos bằng principal + keytab")
             .identifiesControllerService(KerberosCredentialsService.class)
             .dependsOn(AUTHENTICATION_TYPE, AuthenticationType.KERBEROS.toString())
             .build();
 
     protected static final PropertyDescriptor KERBEROS_PRINCIPAL = new PropertyDescriptor.Builder()
             .name("kerberos-principal")
-            .displayName("Kerberos Principal")
-            .description("Kerberos Principal")
+            .displayName("Principal Kerberos")
+            .description("Principal được sử dụng cho xác thực Kerberos")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .dependsOn(AUTHENTICATION_TYPE, AuthenticationType.KERBEROS.toString())
@@ -143,8 +143,8 @@ public class AccumuloService extends AbstractControllerService implements BaseAc
 
     protected static final PropertyDescriptor KERBEROS_PASSWORD = new PropertyDescriptor.Builder()
             .name("kerberos-password")
-            .displayName("Kerberos Password")
-            .description("Kerberos Password")
+            .displayName("Mật khẩu Kerberos")
+            .description("Mật khẩu được sử dụng cho xác thực Kerberos")
             .sensitive(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -153,13 +153,14 @@ public class AccumuloService extends AbstractControllerService implements BaseAc
 
     protected static final PropertyDescriptor ACCUMULO_SASL_QOP = new PropertyDescriptor.Builder()
             .name("accumulo-sasl-qop")
-            .displayName("Accumulo SASL quality of protection")
-            .description("Accumulo SASL quality of protection for KERBEROS Authentication type")
+            .displayName("Chất lượng bảo vệ (QoP) của Accumulo SASL")
+            .description("Chất lượng bảo vệ (QoP) của Accumulo SASL được sử dụng cho loại xác thực KERBEROS")
             .allowableValues("auth", "auth-int", "auth-conf")
             .defaultValue("auth-conf")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .dependsOn(AUTHENTICATION_TYPE, AuthenticationType.KERBEROS.toString())
             .build();
+
 
     /**
      * Reference to the accumulo client.

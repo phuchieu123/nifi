@@ -73,25 +73,25 @@ import org.apache.nifi.web.client.provider.api.WebClientServiceProvider;
 @TriggerSerially
 @TriggerWhenEmpty
 @Tags({"airtable", "query", "database"})
-@CapabilityDescription("Query records from an Airtable table. Records are incrementally retrieved based on the last modified time of the records."
-        + " Records can also be further filtered by setting the 'Custom Filter' property which supports the formulas provided by the Airtable API."
-        + " This processor is intended to be run on the Primary Node only.")
-@Stateful(scopes = Scope.CLUSTER, description = "The last successful query's time is stored in order to enable incremental loading."
-        + " The initial query returns all the records in the table and each subsequent query filters the records by their last modified time."
-        + " In other words, if a record is updated after the last successful query only the updated records will be returned in the next query."
-        + " State is stored across the cluster, so this Processor can run only on the Primary Node and if a new Primary Node is selected,"
-        + " the new node can pick up where the previous one left off without duplicating the data.")
+@CapabilityDescription("Truy vấn các bản ghi từ một bảng Airtable. Các bản ghi được truy xuất tăng dần dựa trên thời gian sửa đổi cuối cùng của các bản ghi."
+        + " Các bản ghi cũng có thể được lọc thêm bằng cách đặt thuộc tính 'Bộ lọc tùy chỉnh' hỗ trợ các công thức do API Airtable cung cấp."
+        + " Bộ xử lý này chỉ được thiết kế để chạy trên Nút chính.")
+@Stateful(scopes = Scope.CLUSTER, description = "Thời gian của truy vấn thành công cuối cùng được lưu trữ để cho phép tải tăng dần."
+        + " Truy vấn ban đầu trả về tất cả các bản ghi trong bảng và mỗi truy vấn tiếp theo sẽ lọc các bản ghi theo thời gian sửa đổi cuối cùng của chúng."
+        + " Nói cách khác, nếu một bản ghi được cập nhật sau truy vấn thành công cuối cùng, chỉ những bản ghi được cập nhật mới được trả về trong truy vấn tiếp theo."
+        + " Trạng thái được lưu trữ trên toàn cụm, vì vậy Bộ xử lý này chỉ có thể chạy trên Nút chính và nếu một Nút chính mới được chọn,"
+        + " nút mới có thể tiếp tục từ nơi nút trước đó đã dừng lại mà không sao chép dữ liệu.")
 @WritesAttributes({
-        @WritesAttribute(attribute = "record.count", description = "Sets the number of records in the FlowFile."),
-        @WritesAttribute(attribute = "fragment.identifier", description = "If 'Max Records Per FlowFile' is set then all FlowFiles from the same query result set "
-                + "will have the same value for the fragment.identifier attribute. This can then be used to correlate the results."),
-        @WritesAttribute(attribute = "fragment.count", description = "If 'Max Records Per FlowFile' is set then this is the total number of "
-                + "FlowFiles produced by a single ResultSet. This can be used in conjunction with the "
-                + "fragment.identifier attribute in order to know how many FlowFiles belonged to the same incoming ResultSet."),
-        @WritesAttribute(attribute = "fragment.index", description = "If 'Max Records Per FlowFile' is set then the position of this FlowFile in the list of "
-                + "outgoing FlowFiles that were all derived from the same result set FlowFile. This can be "
-                + "used in conjunction with the fragment.identifier attribute to know which FlowFiles originated from the same query result set and in what order "
-                + "FlowFiles were produced"),
+        @WritesAttribute(attribute = "record.count", description = "Đặt số lượng bản ghi trong FlowFile."),
+        @WritesAttribute(attribute = "fragment.identifier", description = "Nếu 'Số bản ghi tối đa mỗi FlowFile' được đặt thì tất cả các FlowFile từ cùng một tập kết quả truy vấn "
+                + "sẽ có cùng giá trị cho thuộc tính fragment.identifier. Điều này sau đó có thể được sử dụng để tương quan các kết quả."),
+        @WritesAttribute(attribute = "fragment.count", description = "Nếu 'Số bản ghi tối đa mỗi FlowFile' được đặt thì đây là tổng số "
+                + "FlowFile được tạo ra bởi một ResultSet duy nhất. Điều này có thể được sử dụng kết hợp với "
+                + "thuộc tính fragment.identifier để biết có bao nhiêu FlowFile thuộc cùng một ResultSet đến."),
+        @WritesAttribute(attribute = "fragment.index", description = "Nếu 'Số bản ghi tối đa mỗi FlowFile' được đặt thì vị trí của FlowFile này trong danh sách các "
+                + "FlowFile đi ra mà tất cả đều được lấy từ cùng một FlowFile tập kết quả. Điều này có thể "
+                + "được sử dụng kết hợp với thuộc tính fragment.identifier để biết FlowFile nào bắt nguồn từ cùng một tập kết quả truy vấn và theo thứ tự "
+                + "FlowFile nào đã được tạo ra"),
 })
 @DefaultSettings(yieldDuration = "15 sec")
 @DefaultSchedule(strategy = SchedulingStrategy.TIMER_DRIVEN, period = "1 min")
@@ -99,8 +99,8 @@ public class QueryAirtableTable extends AbstractProcessor {
 
     static final PropertyDescriptor API_URL = new PropertyDescriptor.Builder()
             .name("api-url")
-            .displayName("API URL")
-            .description("The URL for the Airtable REST API including the domain and the path to the API (e.g. https://api.airtable.com/v0).")
+            .displayName("URL API")
+            .description("URL cho API REST của Airtable bao gồm tên miền và đường dẫn đến API (ví dụ: https://api.airtable.com/v0).")
             .defaultValue(API_V0_BASE_URL)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .addValidator(StandardValidators.URL_VALIDATOR)
@@ -108,11 +108,11 @@ public class QueryAirtableTable extends AbstractProcessor {
             .required(true)
             .build();
 
-    // API Keys are deprecated, Airtable now provides Personal Access Tokens instead.
+    // Các khóa API đã không còn được dùng nữa, Airtable hiện cung cấp Token Truy cập Cá nhân thay thế.
     static final PropertyDescriptor PAT = new PropertyDescriptor.Builder()
             .name("api-key")
-            .displayName("Personal Access Token")
-            .description("The Personal Access Token (PAT) to use in queries. Should be generated on Airtable's account page.")
+            .displayName("Token Truy cập Cá nhân")
+            .description("Token Truy cập Cá nhân (PAT) để sử dụng trong các truy vấn. Nên được tạo trên trang tài khoản của Airtable.")
             .required(true)
             .sensitive(true)
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
@@ -121,8 +121,8 @@ public class QueryAirtableTable extends AbstractProcessor {
 
     static final PropertyDescriptor BASE_ID = new PropertyDescriptor.Builder()
             .name("base-id")
-            .displayName("Base ID")
-            .description("The ID of the Airtable base to be queried.")
+            .displayName("ID Base")
+            .description("ID của base Airtable cần được truy vấn.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -130,8 +130,8 @@ public class QueryAirtableTable extends AbstractProcessor {
 
     static final PropertyDescriptor TABLE_ID = new PropertyDescriptor.Builder()
             .name("table-id")
-            .displayName("Table ID")
-            .description("The name or the ID of the Airtable table to be queried.")
+            .displayName("ID Bảng")
+            .description("Tên hoặc ID của bảng Airtable cần được truy vấn.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -139,25 +139,25 @@ public class QueryAirtableTable extends AbstractProcessor {
 
     static final PropertyDescriptor FIELDS = new PropertyDescriptor.Builder()
             .name("fields")
-            .displayName("Fields")
-            .description("Comma-separated list of fields to query from the table. Both the field's name and ID can be used.")
+            .displayName("Các trường")
+            .description("Danh sách các trường được phân tách bằng dấu phẩy để truy vấn từ bảng. Cả tên và ID của trường đều có thể được sử dụng.")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .build();
 
     static final PropertyDescriptor CUSTOM_FILTER = new PropertyDescriptor.Builder()
             .name("custom-filter")
-            .displayName("Custom Filter")
-            .description("Filter records by Airtable's formulas.")
+            .displayName("Bộ lọc tùy chỉnh")
+            .description("Lọc các bản ghi bằng các công thức của Airtable.")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .build();
 
     static final PropertyDescriptor QUERY_TIME_WINDOW_LAG = new PropertyDescriptor.Builder()
             .name("query-time-window-lag")
-            .displayName("Query Time Window Lag")
-            .description("The amount of lag to be applied to the query time window's end point. Set this property to avoid missing records when the clock of your local machines"
-                    + " and Airtable servers' clock are not in sync. Must be greater than or equal to 1 second.")
+            .displayName("Độ trễ cửa sổ thời gian truy vấn")
+            .description("Lượng độ trễ được áp dụng cho điểm cuối của cửa sổ thời gian truy vấn. Đặt thuộc tính này để tránh bỏ lỡ các bản ghi khi đồng hồ của máy cục bộ"
+                    + " và đồng hồ của máy chủ Airtable không đồng bộ. Phải lớn hơn hoặc bằng 1 giây.")
             .defaultValue("3 s")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -166,32 +166,32 @@ public class QueryAirtableTable extends AbstractProcessor {
 
     static final PropertyDescriptor WEB_CLIENT_SERVICE_PROVIDER = new PropertyDescriptor.Builder()
             .name("web-client-service-provider")
-            .displayName("Web Client Service Provider")
-            .description("Web Client Service Provider to use for Airtable REST API requests")
+            .displayName("Nhà cung cấp dịch vụ Web Client")
+            .description("Nhà cung cấp dịch vụ Web Client để sử dụng cho các yêu cầu API REST của Airtable")
             .identifiesControllerService(WebClientServiceProvider.class)
             .required(true)
             .build();
 
     static final PropertyDescriptor QUERY_PAGE_SIZE = new PropertyDescriptor.Builder()
             .name("query-page-size")
-            .displayName("Query Page Size")
-            .description("Number of records to be fetched in a page. Should be between 1 and 100 inclusively.")
+            .displayName("Kích thước trang truy vấn")
+            .description("Số lượng bản ghi được lấy trong một trang. Nên nằm trong khoảng từ 1 đến 100 (bao gồm).")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.createLongValidator(1, 100, true))
             .build();
 
     static final PropertyDescriptor MAX_RECORDS_PER_FLOWFILE = new PropertyDescriptor.Builder()
             .name("max-records-per-flowfile")
-            .displayName("Max Records Per FlowFile")
-            .description("The maximum number of result records that will be included in a single FlowFile. This will allow you to break up very large"
-                    + " result sets into multiple FlowFiles. If no value specified, then all records are returned in a single FlowFile.")
+            .displayName("Số bản ghi tối đa mỗi FlowFile")
+            .description("Số lượng bản ghi kết quả tối đa sẽ được bao gồm trong một FlowFile duy nhất. Điều này sẽ cho phép bạn chia nhỏ các tập kết quả rất lớn"
+                    + " thành nhiều FlowFile. Nếu không có giá trị nào được chỉ định, thì tất cả các bản ghi sẽ được trả về trong một FlowFile duy nhất.")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
             .build();
 
     static final Relationship REL_SUCCESS = new Relationship.Builder()
             .name("success")
-            .description("For FlowFiles created as a result of a successful query.")
+            .description("Đối với các FlowFile được tạo ra từ một truy vấn thành công.")
             .build();
 
     private static final List<PropertyDescriptor> PROPERTIES = Collections.unmodifiableList(Arrays.asList(

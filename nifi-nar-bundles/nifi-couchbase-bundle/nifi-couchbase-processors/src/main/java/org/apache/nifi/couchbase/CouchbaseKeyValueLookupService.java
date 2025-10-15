@@ -39,7 +39,7 @@ import static org.apache.nifi.couchbase.CouchbaseConfigurationProperties.LOOKUP_
 @Tags({"lookup", "enrich", "key", "value", "couchbase"})
 @CapabilityDescription("Tìm kiếm một giá trị chuỗi từ Couchbase Server liên kết với khóa được chỉ định."
         + " Các tọa độ được truyền đến tìm kiếm phải chứa khóa 'key'.")
-@DeprecationNotice(reason = "Thành phần này đã bị loại bỏ và sẽ bị xóa trong NiFi 2.x.")
+@DeprecationNotice(reason = "Thành phần này đã bị loại bỏ và sẽ bị xóa trong Life 2.x.")
 public class CouchbaseKeyValueLookupService extends AbstractCouchbaseLookupService implements StringLookupService {
 
     private volatile String subDocPath;

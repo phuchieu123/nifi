@@ -81,55 +81,55 @@ import java.util.Set;
 @SupportsBatching
 @InputRequirement(Requirement.INPUT_REQUIRED)
 @Tags({"record", "schema", "validate"})
-@CapabilityDescription("Validates the Records of an incoming FlowFile against a given schema. All records that adhere to the schema are routed to the \"valid\" relationship while "
-    + "records that do not adhere to the schema are routed to the \"invalid\" relationship. It is therefore possible for a single incoming FlowFile to be split into two individual "
-    + "FlowFiles if some records are valid according to the schema and others are not. Any FlowFile that is routed to the \"invalid\" relationship will emit a ROUTE Provenance Event "
-    + "with the Details field populated to explain why records were invalid. In addition, to gain further explanation of why records were invalid, DEBUG-level logging can be enabled "
-    + "for the \"org.apache.nifi.processors.standard.ValidateRecord\" logger.")
+@CapabilityDescription("Xác thực các Bản ghi (Records) của một FlowFile đến dựa trên một lược đồ đã cho. Tất cả các bản ghi tuân thủ lược đồ sẽ được chuyển đến mối quan hệ \"valid\" trong khi "
+    + "các bản ghi không tuân thủ lược đồ sẽ được chuyển đến mối quan hệ \"invalid\". Do đó, một FlowFile đến duy nhất có thể được chia thành hai FlowFile riêng lẻ "
+    + "nếu một số bản ghi hợp lệ theo lược đồ và những bản ghi khác thì không. Bất kỳ FlowFile nào được chuyển đến mối quan hệ \"invalid\" sẽ phát ra một Sự kiện Xuất xứ (Provenance Event) loại ROUTE "
+    + "với trường Chi tiết (Details) được điền để giải thích tại sao các bản ghi không hợp lệ. Ngoài ra, để có thêm giải thích về lý do tại sao các bản ghi không hợp lệ, có thể bật ghi nhật ký (logging) ở cấp độ DEBUG "
+    + "cho logger \"org.apache.nifi.processors.standard.ValidateRecord\".")
 @WritesAttributes({
-    @WritesAttribute(attribute = "mime.type", description = "Sets the mime.type attribute to the MIME Type specified by the Record Writer"),
-    @WritesAttribute(attribute = "record.count", description = "The number of records in the FlowFile routed to a relationship")
+    @WritesAttribute(attribute = "mime.type", description = "Đặt thuộc tính mime.type thành Loại MIME được chỉ định bởi Record Writer"),
+    @WritesAttribute(attribute = "record.count", description = "Số lượng bản ghi trong FlowFile được chuyển đến một mối quan hệ")
 })
 public class ValidateRecord extends AbstractProcessor {
 
-    static final AllowableValue SCHEMA_NAME_PROPERTY = new AllowableValue("schema-name-property", "Use Schema Name Property",
-        "The schema to validate the data against is determined by looking at the 'Schema Name' Property and looking up the schema in the configured Schema Registry");
-    static final AllowableValue SCHEMA_TEXT_PROPERTY = new AllowableValue("schema-text-property", "Use Schema Text Property",
-        "The schema to validate the data against is determined by looking at the 'Schema Text' Property and parsing the schema as an Avro schema");
-    static final AllowableValue READER_SCHEMA = new AllowableValue("reader-schema", "Use Reader's Schema",
-        "The schema to validate the data against is determined by asking the configured Record Reader for its schema");
+    static final AllowableValue SCHEMA_NAME_PROPERTY = new AllowableValue("schema-name-property", "Sử dụng Thuộc tính Tên Lược đồ",
+        "Lược đồ để xác thực dữ liệu được xác định bằng cách xem xét thuộc tính 'Tên Lược đồ' (Schema Name) và tra cứu lược đồ trong Schema Registry đã được cấu hình");
+    static final AllowableValue SCHEMA_TEXT_PROPERTY = new AllowableValue("schema-text-property", "Sử dụng Thuộc tính Văn bản Lược đồ",
+        "Lược đồ để xác thực dữ liệu được xác định bằng cách xem xét thuộc tính 'Văn bản Lược đồ' (Schema Text) và phân tích cú pháp lược đồ dưới dạng lược đồ Avro");
+    static final AllowableValue READER_SCHEMA = new AllowableValue("reader-schema", "Sử dụng Lược đồ của Reader",
+        "Lược đồ để xác thực dữ liệu được xác định bằng cách yêu cầu lược đồ từ Record Reader đã được cấu hình");
 
     static final PropertyDescriptor RECORD_READER = new PropertyDescriptor.Builder()
         .name("record-reader")
         .displayName("Record Reader")
-        .description("Specifies the Controller Service to use for reading incoming data")
+        .description("Chỉ định Controller Service sẽ được sử dụng để đọc dữ liệu đến")
         .identifiesControllerService(RecordReaderFactory.class)
         .required(true)
         .build();
     static final PropertyDescriptor RECORD_WRITER = new PropertyDescriptor.Builder()
         .name("record-writer")
         .displayName("Record Writer")
-        .description("Specifies the Controller Service to use for writing out the records. "
-            + "Regardless of the Controller Service schema access configuration, "
-            + "the schema that is used to validate record is used to write the valid results.")
+        .description("Chỉ định Controller Service sẽ được sử dụng để ghi ra các bản ghi. "
+            + "Bất kể cấu hình truy cập lược đồ của Controller Service là gì, "
+            + "lược đồ được sử dụng để xác thực bản ghi sẽ được dùng để ghi các kết quả hợp lệ.")
         .identifiesControllerService(RecordSetWriterFactory.class)
         .required(true)
         .build();
     static final PropertyDescriptor INVALID_RECORD_WRITER = new PropertyDescriptor.Builder()
         .name("invalid-record-writer")
-        .displayName("Record Writer for Invalid Records")
-        .description("If specified, this Controller Service will be used to write out any records that are invalid. "
-            + "If not specified, the writer specified by the \"Record Writer\" property will be used with the schema used to read the input records. "
-            + "This is useful, for example, when the configured "
-            + "Record Writer cannot write data that does not adhere to its schema (as is the case with Avro) or when it is desirable to keep invalid records "
-            + "in their original format while converting valid records to another format.")
+        .displayName("Record Writer cho các Bản ghi không hợp lệ")
+        .description("Nếu được chỉ định, Controller Service này sẽ được sử dụng để ghi ra bất kỳ bản ghi nào không hợp lệ. "
+            + "Nếu không được chỉ định, writer được chỉ định bởi thuộc tính \"Record Writer\" sẽ được sử dụng với lược đồ dùng để đọc các bản ghi đầu vào. "
+            + "Điều này hữu ích, ví dụ, khi Record Writer được cấu hình "
+            + "không thể ghi dữ liệu không tuân thủ lược đồ của nó (như trong trường hợp của Avro) hoặc khi mong muốn giữ lại các bản ghi không hợp lệ "
+            + "ở định dạng ban đầu trong khi chuyển đổi các bản ghi hợp lệ sang một định dạng khác.")
         .identifiesControllerService(RecordSetWriterFactory.class)
         .required(false)
         .build();
     static final PropertyDescriptor SCHEMA_ACCESS_STRATEGY = new PropertyDescriptor.Builder()
         .name("schema-access-strategy")
-        .displayName("Schema Access Strategy")
-        .description("Specifies how to obtain the schema that should be used to validate records")
+        .displayName("Chiến lược Truy cập Lược đồ")
+        .description("Chỉ định cách để lấy được lược đồ sẽ được sử dụng để xác thực các bản ghi")
         .allowableValues(READER_SCHEMA, SCHEMA_NAME_PROPERTY, SCHEMA_TEXT_PROPERTY)
         .defaultValue(READER_SCHEMA.getValue())
         .required(true)
@@ -137,14 +137,14 @@ public class ValidateRecord extends AbstractProcessor {
     public static final PropertyDescriptor SCHEMA_REGISTRY = new PropertyDescriptor.Builder()
         .name("schema-registry")
         .displayName("Schema Registry")
-        .description("Specifies the Controller Service to use for the Schema Registry. This is necessary only if the Schema Access Strategy is set to \"Use 'Schema Name' Property\".")
+        .description("Chỉ định Controller Service sẽ được sử dụng cho Schema Registry. Điều này chỉ cần thiết nếu Chiến lược Truy cập Lược đồ được đặt thành \"Sử dụng Thuộc tính 'Tên Lược đồ'\".")
         .identifiesControllerService(SchemaRegistry.class)
         .required(false)
         .build();
     static final PropertyDescriptor SCHEMA_NAME = new PropertyDescriptor.Builder()
         .name("schema-name")
-        .displayName("Schema Name")
-        .description("Specifies the name of the schema to lookup in the Schema Registry property")
+        .displayName("Tên Lược đồ")
+        .description("Chỉ định tên của lược đồ để tra cứu trong thuộc tính Schema Registry")
         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .defaultValue("${schema.name}")
@@ -152,8 +152,8 @@ public class ValidateRecord extends AbstractProcessor {
         .build();
     static final PropertyDescriptor SCHEMA_TEXT = new PropertyDescriptor.Builder()
         .name("schema-text")
-        .displayName("Schema Text")
-        .description("The text of an Avro-formatted Schema")
+        .displayName("Văn bản Lược đồ")
+        .description("Văn bản của một Lược đồ có định dạng Avro")
         .addValidator(new AvroSchemaValidator())
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .defaultValue("${avro.schema}")
@@ -161,9 +161,9 @@ public class ValidateRecord extends AbstractProcessor {
         .build();
     static final PropertyDescriptor ALLOW_EXTRA_FIELDS = new PropertyDescriptor.Builder()
         .name("allow-extra-fields")
-        .displayName("Allow Extra Fields")
-        .description("If the incoming data has fields that are not present in the schema, this property determines whether or not the Record is valid. "
-            + "If true, the Record is still valid. If false, the Record will be invalid due to the extra fields.")
+        .displayName("Cho phép các Trường Thừa")
+        .description("Nếu dữ liệu đến có các trường không có trong lược đồ, thuộc tính này xác định liệu Bản ghi có hợp lệ hay không. "
+            + "Nếu là true, Bản ghi vẫn hợp lệ. Nếu là false, Bản ghi sẽ không hợp lệ do có các trường thừa.")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .allowableValues("true", "false")
         .defaultValue("true")
@@ -171,11 +171,11 @@ public class ValidateRecord extends AbstractProcessor {
         .build();
     static final PropertyDescriptor STRICT_TYPE_CHECKING = new PropertyDescriptor.Builder()
         .name("strict-type-checking")
-        .displayName("Strict Type Checking")
-        .description("If the incoming data has a Record where a field is not of the correct type, this property determines how to handle the Record. "
-            + "If true, the Record will be considered invalid. If false, the Record will be considered valid and the field will be coerced into the "
-            + "correct type (if possible, according to the type coercion supported by the Record Writer). "
-            + "This property controls how the data is validated against the validation schema.")
+        .displayName("Kiểm tra Kiểu Nghiêm ngặt")
+        .description("Nếu dữ liệu đến có một Bản ghi mà một trường không đúng kiểu, thuộc tính này xác định cách xử lý Bản ghi đó. "
+            + "Nếu là true, Bản ghi sẽ được coi là không hợp lệ. Nếu là false, Bản ghi sẽ được coi là hợp lệ và trường đó sẽ được ép kiểu thành "
+            + "kiểu đúng (nếu có thể, theo cơ chế ép kiểu được hỗ trợ bởi Record Writer). "
+            + "Thuộc tính này kiểm soát cách dữ liệu được xác thực so với lược đồ xác thực.")
         .expressionLanguageSupported(ExpressionLanguageScope.NONE)
         .allowableValues("true", "false")
         .defaultValue("true")
@@ -183,13 +183,13 @@ public class ValidateRecord extends AbstractProcessor {
         .build();
     static final PropertyDescriptor COERCE_TYPES = new PropertyDescriptor.Builder()
             .name("coerce-types")
-            .displayName("Force Types From Reader's Schema")
-            .description("If enabled, the processor will coerce every field to the type specified in the Reader's schema. "
-                + "If the value of a field cannot be coerced to the type, the field will be skipped (will not be read from the input data), "
-                + "thus will not appear in the output. "
-                + "If not enabled, then every field will appear in the output but their types may differ from what is "
-                + "specified in the schema. For details please see the Additional Details page of the processor's Help. "
-                + "This property controls how the data is read by the specified Record Reader.")
+            .displayName("Ép Kiểu từ Lược đồ của Reader")
+            .description("Nếu được bật, bộ xử lý sẽ ép kiểu mọi trường về kiểu được chỉ định trong lược đồ của Reader. "
+                + "Nếu giá trị của một trường không thể được ép về kiểu đó, trường đó sẽ bị bỏ qua (sẽ không được đọc từ dữ liệu đầu vào), "
+                + "do đó sẽ không xuất hiện trong đầu ra. "
+                + "Nếu không được bật, thì mọi trường sẽ xuất hiện trong đầu ra nhưng kiểu của chúng có thể khác với những gì "
+                + "được chỉ định trong lược đồ. Để biết chi tiết, vui lòng xem trang Chi tiết Bổ sung trong phần Trợ giúp của bộ xử lý. "
+                + "Thuộc tính này kiểm soát cách dữ liệu được đọc bởi Record Reader đã chỉ định.")
             .expressionLanguageSupported(ExpressionLanguageScope.NONE)
             .allowableValues("true", "false")
             .defaultValue("false")
@@ -197,9 +197,9 @@ public class ValidateRecord extends AbstractProcessor {
             .build();
     static final PropertyDescriptor VALIDATION_DETAILS_ATTRIBUTE_NAME = new PropertyDescriptor.Builder()
         .name("validation-details-attribute-name")
-        .displayName("Validation Details Attribute Name")
-        .description("If specified, when a validation error occurs, this attribute name will be used to leave the details. The number of characters will be limited "
-            + "by the property 'Maximum Validation Details Length'.")
+        .displayName("Tên Thuộc tính Chi tiết Xác thực")
+        .description("Nếu được chỉ định, khi có lỗi xác thực xảy ra, tên thuộc tính này sẽ được sử dụng để lưu lại chi tiết. Số lượng ký tự sẽ bị giới hạn "
+            + "bởi thuộc tính 'Độ dài Tối đa của Chi tiết Xác thực'.")
         .required(false)
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
         .addValidator(StandardValidators.ATTRIBUTE_KEY_VALIDATOR)
@@ -207,9 +207,9 @@ public class ValidateRecord extends AbstractProcessor {
         .build();
     static final PropertyDescriptor MAX_VALIDATION_DETAILS_LENGTH = new PropertyDescriptor.Builder()
         .name("maximum-validation-details-length")
-        .displayName("Maximum Validation Details Length")
-        .description("Specifies the maximum number of characters that validation details value can have. Any characters beyond the max will be truncated. "
-            + "This property is only used if 'Validation Details Attribute Name' is set")
+        .displayName("Độ dài Tối đa của Chi tiết Xác thực")
+        .description("Chỉ định số lượng ký tự tối đa mà giá trị chi tiết xác thực có thể có. Bất kỳ ký tự nào vượt quá giới hạn sẽ bị cắt bỏ. "
+            + "Thuộc tính này chỉ được sử dụng nếu 'Tên Thuộc tính Chi tiết Xác thực' được đặt")
         .required(false)
         .defaultValue("1024")
         .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -218,15 +218,15 @@ public class ValidateRecord extends AbstractProcessor {
 
     static final Relationship REL_VALID = new Relationship.Builder()
         .name("valid")
-        .description("Records that are valid according to the schema will be routed to this relationship")
+        .description("Các bản ghi hợp lệ theo lược đồ sẽ được chuyển đến mối quan hệ này")
         .build();
     static final Relationship REL_INVALID = new Relationship.Builder()
         .name("invalid")
-        .description("Records that are not valid according to the schema will be routed to this relationship")
+        .description("Các bản ghi không hợp lệ theo lược đồ sẽ được chuyển đến mối quan hệ này")
         .build();
     static final Relationship REL_FAILURE = new Relationship.Builder()
         .name("failure")
-        .description("If the records cannot be read, validated, or written, for any reason, the original FlowFile will be routed to this relationship")
+        .description("Nếu các bản ghi không thể được đọc, xác thực hoặc ghi vì bất kỳ lý do gì, FlowFile gốc sẽ được chuyển đến mối quan hệ này")
         .build();
 
 

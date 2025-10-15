@@ -53,14 +53,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Tags({"file"})
-@CapabilityDescription("Fetches parameters from files.  Parameter groups are indicated by a set of directories, and files within the directories map to parameter names. " +
-        "The content of the file becomes the parameter value.")
+@CapabilityDescription("Tìm nạp các tham số từ các tệp. Các nhóm tham số được chỉ định bởi một tập hợp các thư mục, và các tệp trong các thư mục đó sẽ được ánh xạ tới tên các tham số. " +
+        "Nội dung của tệp sẽ trở thành giá trị của tham số.")
 
 @Restricted(
         restrictions = {
                 @Restriction(
                         requiredPermission = RequiredPermission.READ_FILESYSTEM,
-                        explanation = "Provides operator the ability to read from any file that NiFi has access to.")
+                        explanation = "Cung cấp cho người vận hành khả năng đọc từ bất kỳ tệp nào mà NiFi có quyền truy cập.")
         }
 )
 public class FileParameterProvider extends AbstractParameterProvider implements VerifiableParameterProvider  {
@@ -72,38 +72,37 @@ public class FileParameterProvider extends AbstractParameterProvider implements 
         PLAINTEXT
     }
 
-    private static final AllowableValue BASE64_ENCODING = new AllowableValue("base64", "Base64", "File content is Base64-encoded, " +
-            "and will be decoded before providing the value as a Parameter.");
-    private static final AllowableValue PLAIN_TEXT = new AllowableValue("plaintext", "Plain text", "File content is not encoded, " +
-            "and will be provided directly as a Parameter value.");
+    private static final AllowableValue BASE64_ENCODING = new AllowableValue("base64", "Base64", "Nội dung tệp được mã hóa Base64, " +
+            "và sẽ được giải mã trước khi cung cấp giá trị dưới dạng một Tham số.");
+    private static final AllowableValue PLAIN_TEXT = new AllowableValue("plaintext", "Văn bản Thuần", "Nội dung tệp không được mã hóa, " +
+            "và sẽ được cung cấp trực tiếp dưới dạng giá trị của một Tham số.");
 
     public static final PropertyDescriptor PARAMETER_GROUP_DIRECTORIES = new PropertyDescriptor.Builder()
             .name("parameter-group-directories")
-            .displayName("Parameter Group Directories")
-            .description("A comma-separated list of directory absolute paths that will map to named parameter groups.  Each directory that contains " +
-                    "files will map to a parameter group, named after the innermost directory in the path.  Files inside the directory will map to " +
-                    "parameter names, whose values are the content of each respective file.")
+            .displayName("Các Thư mục Nhóm Tham số")
+            .description("Một danh sách các đường dẫn tuyệt đối của thư mục được phân tách bằng dấu phẩy, sẽ được ánh xạ tới các nhóm tham số có tên. Mỗi thư mục chứa " +
+                    "các tệp sẽ được ánh xạ tới một nhóm tham số, được đặt tên theo thư mục trong cùng của đường dẫn. Các tệp bên trong thư mục sẽ được ánh xạ tới " +
+                    "tên các tham số, với giá trị là nội dung của mỗi tệp tương ứng.")
             .addValidator(new MultiDirectoryExistsValidator())
             .required(true)
             .build();
     public static final PropertyDescriptor PARAMETER_VALUE_BYTE_LIMIT = new PropertyDescriptor.Builder()
             .name("parameter-value-byte-limit")
-            .displayName("Parameter Value Byte Limit")
-            .description("The maximum byte size of a parameter value.  Since parameter values are pulled from the contents of files, this is a safeguard that can " +
-                    "prevent memory issues if large files are included.")
+            .displayName("Giới hạn Byte của Giá trị Tham số")
+            .description("Kích thước byte tối đa của một giá trị tham số. Vì các giá trị tham số được lấy từ nội dung của các tệp, đây là một biện pháp bảo vệ có thể " +
+                    "ngăn ngừa các vấn đề về bộ nhớ nếu các tệp lớn được bao gồm.")
             .addValidator(StandardValidators.createDataSizeBoundsValidator(1, MAX_SIZE_LIMIT))
             .defaultValue("256 B")
             .required(true)
             .build();
     public static final PropertyDescriptor PARAMETER_VALUE_ENCODING = new PropertyDescriptor.Builder()
             .name("parameter-value-encoding")
-            .displayName("Parameter Value Encoding")
-            .description("Indicates how parameter values are encoded inside Parameter files.")
+            .displayName("Mã hóa Giá trị Tham số")
+            .description("Cho biết cách các giá trị tham số được mã hóa bên trong các tệp Tham số.")
             .allowableValues(BASE64_ENCODING, PLAIN_TEXT)
             .defaultValue(BASE64_ENCODING.getValue())
             .required(true)
             .build();
-
     private List<PropertyDescriptor> properties;
 
     @Override

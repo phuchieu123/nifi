@@ -69,7 +69,7 @@ public class TestGetHDFSEvents {
             runner.run();
         });
 
-        assertTrue(error.getMessage().contains("'HDFS Path to Watch' is invalid because HDFS Path to Watch is required"));
+        assertTrue(error.getMessage().contains("'Đường dẫn để xem HDFS' không hợp lệ vì bắt buộc phải có Đường dẫn để xem HDFS"));
     }
 
     @Test

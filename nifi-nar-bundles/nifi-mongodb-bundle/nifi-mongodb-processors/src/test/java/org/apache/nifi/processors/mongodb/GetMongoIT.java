@@ -115,8 +115,8 @@ public class GetMongoIT extends AbstractMongoIT {
         }
         assertEquals(2, results.size());
         Iterator<ValidationResult> it = results.iterator();
-        assertTrue(it.next().toString().contains("is invalid because Mongo Database Name is required"));
-        assertTrue(it.next().toString().contains("is invalid because Mongo Collection Name is required"));
+        assertTrue(it.next().toString().contains("không hợp lệ vì Tên cơ sở dữ liệu Mongo là bắt buộc"));
+        assertTrue(it.next().toString().contains("không hợp lệ vì Tên bộ sưu tập Mongo là bắt buộc"));
 
         // missing query - is ok
         runner.setProperty(AbstractMongoProcessor.URI, MONGO_CONTAINER.getConnectionString());
@@ -139,7 +139,7 @@ public class GetMongoIT extends AbstractMongoIT {
             results = ((MockProcessContext) pc).validate();
         }
         assertEquals(1, results.size());
-        assertTrue(results.iterator().next().toString().contains("is invalid because"));
+        assertTrue(results.iterator().next().toString().contains("không hợp lệ vì"));
 
         // invalid projection
         runner.setVariable("projection", "{a: x,y,z}");
@@ -152,7 +152,7 @@ public class GetMongoIT extends AbstractMongoIT {
             results = ((MockProcessContext) pc).validate();
         }
         assertEquals(1, results.size());
-        assertTrue(results.iterator().next().toString().contains("is invalid"));
+        assertTrue(results.iterator().next().toString().contains("không hợp lệ"));
 
         // invalid sort
         runner.removeProperty(GetMongo.PROJECTION);
@@ -164,7 +164,7 @@ public class GetMongoIT extends AbstractMongoIT {
             results = ((MockProcessContext) pc).validate();
         }
         assertEquals(1, results.size());
-        assertTrue(results.iterator().next().toString().contains("is invalid"));
+        assertTrue(results.iterator().next().toString().contains("không hợp lệ"));
     }
 
     @Test
@@ -257,7 +257,7 @@ public class GetMongoIT extends AbstractMongoIT {
         runner.assertTransferCount(GetMongo.REL_ORIGINAL, 1);
         List<MockFlowFile> results = runner.getFlowFilesForRelationship(GetMongo.REL_SUCCESS);
         assertTrue(results.get(0).getSize() > 0, "Flowfile was empty");
-        assertEquals(results.get(0).getAttribute(CoreAttributes.MIME_TYPE.key()), "application/json", "Wrong mime type");
+        assertEquals(results.get(0).getAttribute(CoreAttributes.MIME_TYPE.key()), "application/json", "Loại mime sai");
     }
 
     @Test
@@ -272,7 +272,7 @@ public class GetMongoIT extends AbstractMongoIT {
         runner.assertTransferCount(GetMongo.REL_ORIGINAL, 1);
         List<MockFlowFile> results = runner.getFlowFilesForRelationship(GetMongo.REL_SUCCESS);
         assertTrue(results.get(0).getSize() > 0, "Flowfile was empty");
-        assertEquals(results.get(0).getAttribute(CoreAttributes.MIME_TYPE.key()), "application/json", "Wrong mime type");
+        assertEquals(results.get(0).getAttribute(CoreAttributes.MIME_TYPE.key()), "application/json", "Loại mime sai");
     }
 
     @Test

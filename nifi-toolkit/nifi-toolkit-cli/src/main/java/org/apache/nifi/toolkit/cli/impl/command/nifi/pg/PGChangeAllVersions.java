@@ -46,14 +46,14 @@ public class PGChangeAllVersions extends AbstractNiFiCommand<ProcessGroupsVersio
         super("pg-change-all-versions", ProcessGroupsVersionChangeResult.class);
     }
 
-    @Override
+  @Override
     public String getDescription() {
-        return "Changes the version for all of the controlled process group instances for a given flow ID. "
-                + "This can be used to upgrade all the instances of a versioned flow to a new version, or "
-                + "revert to a previous version. If no version is specified, the latest version will be used. "
-                + "If no process group ID is provided, the root process group will be used to recursively "
-                + "search for all instances of the Flow ID. It is possible to force the recursive operation "
-                + "and not stop the operation in case the upgrade of a process group fails.";
+        return "Thay đổi phiên bản cho tất cả các phiên bản nhóm quy trình được kiểm soát cho một ID luồng nhất định. "
+                + "Điều này có thể được sử dụng để nâng cấp tất cả các phiên bản của một luồng đã được phiên bản lên phiên bản mới, hoặc "
+                + "hoàn nguyên về phiên bản trước đó. Nếu không có phiên bản nào được chỉ định, phiên bản mới nhất sẽ được sử dụng. "
+                + "Nếu không có ID nhóm quy trình nào được cung cấp, nhóm quy trình gốc sẽ được sử dụng để đệ quy "
+                + "tìm kiếm tất cả các phiên bản của ID Luồng. Có thể buộc hoạt động đệ quy "
+                + "và không dừng hoạt động trong trường hợp việc nâng cấp một nhóm quy trình không thành công.";
     }
 
     @Override

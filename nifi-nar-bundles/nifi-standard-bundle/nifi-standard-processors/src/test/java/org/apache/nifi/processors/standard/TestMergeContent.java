@@ -661,8 +661,8 @@ public class TestMergeContent {
         }
 
         assertEquals(3, results.size());
-        for (ValidationResult vr : results) {
-            assertTrue(vr.toString().contains("is invalid because File " + new File(doesNotExistFile).toString() + " does not exist"));
+       for (ValidationResult vr : results) {
+            assertTrue(vr.toString().contains("không hợp lệ vì Tệp " + new File(doesNotExistFile).toString() + " không tồn tại"));
         }
     }
 

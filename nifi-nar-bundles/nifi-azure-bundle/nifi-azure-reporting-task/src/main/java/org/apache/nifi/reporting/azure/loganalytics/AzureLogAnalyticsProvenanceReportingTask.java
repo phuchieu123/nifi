@@ -55,7 +55,7 @@ import org.apache.nifi.reporting.ReportingContext;
 import org.apache.nifi.reporting.util.provenance.ProvenanceEventConsumer;
 
 @Tags({ "azure", "provenace", "reporting", "log analytics" })
-@CapabilityDescription("Publishes Provenance events to to a Azure Log Analytics workspace.")
+@CapabilityDescription("Công bố các sự kiện Provenance đến một không gian làm việc Azure Log Analytics.")
 public class AzureLogAnalyticsProvenanceReportingTask extends AbstractAzureLogAnalyticsReportingTask {
 
         protected static final String LAST_EVENT_ID_KEY = "last_event_id";
@@ -63,112 +63,111 @@ public class AzureLogAnalyticsProvenanceReportingTask extends AbstractAzureLogAn
         protected static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
         static final PropertyDescriptor LOG_ANALYTICS_CUSTOM_LOG_NAME = new PropertyDescriptor.Builder()
-                        .name("Log Analytics Custom Log Name").description("Log Analytics Custom Log Name").required(false)
+                        .name("Log Analytics Custom Log Name").description("Tên Log Tùy chỉnh của Log Analytics").required(false)
                         .defaultValue("nifiprovenance").addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
                         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY).build();
 
         static final AllowableValue BEGINNING_OF_STREAM = new AllowableValue("beginning-of-stream",
-                        "Beginning of Stream",
-                        "Start reading provenance Events from the beginning of the stream (the oldest event first)");
+                        "Bắt đầu Luồng",
+                        "Bắt đầu đọc các Sự kiện Provenance từ đầu luồng (sự kiện cũ nhất trước tiên)");
 
         static final AllowableValue END_OF_STREAM = new AllowableValue("end-of-stream", "End of Stream",
-                        "Start reading provenance Events from the end of the stream, ignoring old events");
+                        "Bắt đầu đọc các Sự kiện Provenance từ cuối luồng, bỏ qua các sự kiện cũ");
 
         static final PropertyDescriptor FILTER_EVENT_TYPE = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-event-filter").displayName("Event Type to Include")
-                        .description("Comma-separated list of event types that will be used to filter the provenance events sent by the reporting task. "
-                                        + "Available event types are "
+                        .name("s2s-prov-task-event-filter").displayName("Loại Sự kiện cần Bao gồm")
+                        .description("Danh sách các loại sự kiện được phân tách bằng dấu phẩy sẽ được sử dụng để lọc các sự kiện provenance được gửi bởi tác vụ báo cáo. "
+                                        + "Các loại sự kiện có sẵn là "
                                         + Arrays.deepToString(ProvenanceEventType.values())
-                                        + ". If no filter is set, all the events are sent. If "
-                                        + "multiple filters are set, the filters are cumulative.")
+                                        + ". Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu "
+                                        + "nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR).build();
 
         static final PropertyDescriptor FILTER_EVENT_TYPE_EXCLUDE = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-event-filter-exclude").displayName("Event Type to Exclude")
-                        .description("Comma-separated list of event types that will be used to exclude the provenance events sent by the reporting task. "
-                                        + "Available event types are "
+                        .name("s2s-prov-task-event-filter-exclude").displayName("Loại Sự kiện cần Loại trừ")
+                        .description("Danh sách các loại sự kiện được phân tách bằng dấu phẩy sẽ được sử dụng để loại trừ các sự kiện provenance được gửi bởi tác vụ báo cáo. "
+                                        + "Các loại sự kiện có sẵn là "
                                         + Arrays.deepToString(ProvenanceEventType.values())
-                                        + ". If no filter is set, all the events are sent. If "
-                                        + "multiple filters are set, the filters are cumulative. If an event type is included in Event Type to Include and excluded here, then the "
-                                        + "exclusion takes precedence and the event will not be sent.")
+                                        + ". Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu "
+                                        + "nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. Nếu một loại sự kiện được bao gồm trong Loại Sự kiện cần Bao gồm và bị loại trừ ở đây, thì "
+                                        + "việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR).build();
 
         static final PropertyDescriptor FILTER_COMPONENT_TYPE = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-type-filter").displayName("Component Type to Include")
-                        .description("Regular expression to filter the provenance events based on the component type. Only the events matching the regular "
-                                        + "expression will be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative.")
+                        .name("s2s-prov-task-type-filter").displayName("Loại Thành phần cần Bao gồm")
+                        .description("Biểu thức chính quy để lọc các sự kiện provenance dựa trên loại thành phần. Chỉ những sự kiện khớp với biểu thức chính quy "
+                                        + "mới được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR).build();
 
         static final PropertyDescriptor FILTER_COMPONENT_TYPE_EXCLUDE = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-type-filter-exclude").displayName("Component Type to Exclude")
-                        .description("Regular expression to exclude the provenance events based on the component type. The events matching the regular "
-                                        + "expression will not be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative. "
-                                        + "If a component type is included in Component Type to Include and excluded here, then the exclusion takes precedence and the event will not be sent.")
+                        .name("s2s-prov-task-type-filter-exclude").displayName("Loại Thành phần cần Loại trừ")
+                        .description("Biểu thức chính quy để loại trừ các sự kiện provenance dựa trên loại thành phần. Các sự kiện khớp với biểu thức chính quy "
+                                        + "sẽ không được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. "
+                                        + "Nếu một loại thành phần được bao gồm trong Loại Thành phần cần Bao gồm và bị loại trừ ở đây, thì việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR).build();
 
         static final PropertyDescriptor FILTER_COMPONENT_ID = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-id-filter").displayName("Component ID to Include")
-                        .description("Comma-separated list of component UUID that will be used to filter the provenance events sent by the reporting task. If no "
-                                        + "filter is set, all the events are sent. If multiple filters are set, the filters are cumulative.")
+                        .name("s2s-prov-task-id-filter").displayName("ID Thành phần cần Bao gồm")
+                        .description("Danh sách các UUID của thành phần được phân tách bằng dấu phẩy sẽ được sử dụng để lọc các sự kiện provenance được gửi bởi tác vụ báo cáo. Nếu không có "
+                                        + "bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR).build();
 
         static final PropertyDescriptor FILTER_COMPONENT_ID_EXCLUDE = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-id-filter-exclude").displayName("Component ID to Exclude")
-                        .description("Comma-separated list of component UUID that will be used to exclude the provenance events sent by the reporting task. If no "
-                                        + "filter is set, all the events are sent. If multiple filters are set, the filters are cumulative. If a component UUID is included in "
-                                        + "Component ID to Include and excluded here, then the exclusion takes precedence and the event will not be sent.")
+                        .name("s2s-prov-task-id-filter-exclude").displayName("ID Thành phần cần Loại trừ")
+                        .description("Danh sách các UUID của thành phần được phân tách bằng dấu phẩy sẽ được sử dụng để loại trừ các sự kiện provenance được gửi bởi tác vụ báo cáo. Nếu không có "
+                                        + "bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. Nếu một UUID của thành phần được bao gồm trong "
+                                        + "ID Thành phần cần Bao gồm và bị loại trừ ở đây, thì việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR).build();
 
         static final PropertyDescriptor FILTER_COMPONENT_NAME = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-name-filter").displayName("Component Name to Include")
-                        .description("Regular expression to filter the provenance events based on the component name. Only the events matching the regular "
-                                        + "expression will be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative.")
+                        .name("s2s-prov-task-name-filter").displayName("Tên Thành phần cần Bao gồm")
+                        .description("Biểu thức chính quy để lọc các sự kiện provenance dựa trên tên thành phần. Chỉ những sự kiện khớp với biểu thức chính quy "
+                                        + "mới được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR).build();
 
         static final PropertyDescriptor FILTER_COMPONENT_NAME_EXCLUDE = new PropertyDescriptor.Builder()
-                        .name("s2s-prov-task-name-filter-exclude").displayName("Component Name to Exclude")
-                        .description("Regular expression to exclude the provenance events based on the component name. The events matching the regular "
-                                        + "expression will not be sent. If no filter is set, all the events are sent. If multiple filters are set, the filters are cumulative. "
-                                        + "If a component name is included in Component Name to Include and excluded here, then the exclusion takes precedence and the event will not be sent.")
+                        .name("s2s-prov-task-name-filter-exclude").displayName("Tên Thành phần cần Loại trừ")
+                        .description("Biểu thức chính quy để loại trừ các sự kiện provenance dựa trên tên thành phần. Các sự kiện khớp với biểu thức chính quy "
+                                        + "sẽ không được gửi. Nếu không có bộ lọc nào được đặt, tất cả các sự kiện sẽ được gửi. Nếu nhiều bộ lọc được đặt, các bộ lọc sẽ được cộng dồn. "
+                                        + "Nếu một tên thành phần được bao gồm trong Tên Thành phần cần Bao gồm và bị loại trừ ở đây, thì việc loại trừ sẽ được ưu tiên và sự kiện đó sẽ không được gửi.")
                         .required(false).expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .addValidator(StandardValidators.REGULAR_EXPRESSION_VALIDATOR).build();
 
         static final PropertyDescriptor START_POSITION = new PropertyDescriptor.Builder().name("start-position")
-                        .displayName("Start Position")
-                        .description("If the Reporting Task has never been run, or if its state has been reset by a user, "
-                                        + "specifies where in the stream of Provenance Events the Reporting Task should start")
+                        .displayName("Vị trí Bắt đầu")
+                        .description("Nếu Tác vụ Báo cáo chưa từng được chạy, hoặc nếu trạng thái của nó đã được người dùng đặt lại, "
+                                        + "chỉ định nơi trong luồng Sự kiện Provenance mà Tác vụ Báo cáo nên bắt đầu")
                         .allowableValues(BEGINNING_OF_STREAM, END_OF_STREAM)
                         .defaultValue(BEGINNING_OF_STREAM.getValue()).required(true).build();
 
         static final PropertyDescriptor ALLOW_NULL_VALUES = new PropertyDescriptor.Builder().name("include-null-values")
-                        .displayName("Include Null Values")
-                        .description("Indicate if null values should be included in records. Default will be false")
+                        .displayName("Bao gồm các Giá trị Null")
+                        .description("Cho biết liệu các giá trị null có nên được bao gồm trong các bản ghi hay không. Mặc định sẽ là false")
                         .required(true).allowableValues("true", "false").defaultValue("false").build();
 
         static final PropertyDescriptor PLATFORM = new PropertyDescriptor.Builder().name("Platform")
-                        .description("The value to use for the platform field in each event.").required(true)
+                        .description("Giá trị sẽ được sử dụng cho trường platform trong mỗi sự kiện.").required(true)
                         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY).defaultValue("nifi")
                         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR).build();
 
         static final PropertyDescriptor INSTANCE_URL = new PropertyDescriptor.Builder().name("Instance URL")
-                        .displayName("Instance URL")
-                        .description("The URL of this instance to use in the Content URI of each event.").required(true)
+                        .displayName("URL của Phiên bản")
+                        .description("URL của phiên bản này sẽ được sử dụng trong Content URI của mỗi sự kiện.").required(true)
                         .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
                         .defaultValue("http://${hostname(true)}:8080/nifi")
                         .addValidator(StandardValidators.NON_EMPTY_VALIDATOR).build();
 
         static final PropertyDescriptor BATCH_SIZE = new PropertyDescriptor.Builder().name("Batch Size")
-                        .displayName("Batch Size")
-                        .description("Specifies how many records to send in a single batch, at most.").required(true)
+                        .displayName("Kích thước Lô")
+                        .description("Chỉ định số lượng bản ghi tối đa sẽ được gửi trong một lô duy nhất.").required(true)
                         .defaultValue("1000").addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR).build();
-
         private volatile ProvenanceEventConsumer consumer;
 
         @Override
