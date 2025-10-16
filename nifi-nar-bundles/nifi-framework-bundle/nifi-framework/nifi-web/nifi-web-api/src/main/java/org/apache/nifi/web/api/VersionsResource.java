@@ -489,7 +489,7 @@ public class VersionsResource extends FlowUpdateResource<VersionControlInformati
             throw new IllegalArgumentException("Version Control Information must be supplied.");
         }
         if (StringUtils.isEmpty(versionedFlowDto.getBucketId())) {
-            throw new IllegalArgumentException("The Bucket ID must be supplied.");
+            throw new IllegalArgumentException("ID nhóm phải được cung cấp");
         }
         if (StringUtils.isEmpty(versionedFlowDto.getFlowName()) && StringUtils.isEmpty(versionedFlowDto.getFlowId())) {
             throw new IllegalArgumentException("The Flow Name or Flow ID must be supplied.");
@@ -816,7 +816,7 @@ public class VersionsResource extends FlowUpdateResource<VersionControlInformati
             throw new IllegalArgumentException("Snapshot Metadata must be supplied.");
         }
         if (requestSnapshotMetadata.getBucketIdentifier() == null) {
-            throw new IllegalArgumentException("The Bucket ID must be supplied.");
+            throw new IllegalArgumentException("ID nhóm phải được cung cấp");
         }
         if (requestSnapshotMetadata.getFlowIdentifier() == null) {
             throw new IllegalArgumentException("The Flow ID must be supplied.");
@@ -1034,7 +1034,7 @@ public class VersionsResource extends FlowUpdateResource<VersionControlInformati
             throw new IllegalArgumentException("The Process Group ID in the request body does not match the Process Group ID of the requested resource.");
         }
         if (requestVersionControlInfoDto.getBucketId() == null) {
-            throw new IllegalArgumentException("The Bucket ID must be supplied.");
+            throw new IllegalArgumentException("ID nhóm phải được cung cấp");
         }
         if (requestVersionControlInfoDto.getFlowId() == null) {
             throw new IllegalArgumentException("The Flow ID must be supplied.");
@@ -1107,7 +1107,7 @@ public class VersionsResource extends FlowUpdateResource<VersionControlInformati
             throw new IllegalArgumentException("The Process Group ID in the request body does not match the Process Group ID of the requested resource.");
         }
         if (requestVersionControlInfoDto.getBucketId() == null) {
-            throw new IllegalArgumentException("The Bucket ID must be supplied.");
+            throw new IllegalArgumentException("ID nhóm phải được cung cấp");
         }
         if (requestVersionControlInfoDto.getFlowId() == null) {
             throw new IllegalArgumentException("The Flow ID must be supplied.");

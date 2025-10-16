@@ -66,20 +66,20 @@ public abstract class AbstractSingleAttributeBasedControllerServiceLookup<S exte
      * @return the chosen ControllerService
      */
     public S lookupService(Map<String, String> attributes) {
-        if (attributes == null) {
-            throw new ProcessException("Attributes map is null");
+            if (attributes == null) {
+            throw new ProcessException("Bản đồ thuộc tính (attributes) bị null");
         } else if (!attributes.containsKey(getLookupAttribute())) {
-            throw new ProcessException("Attributes must contain an attribute name '" + getLookupAttribute() + "'");
+            throw new ProcessException("Bản đồ thuộc tính phải chứa một khóa có tên '" + getLookupAttribute() + "'");
         }
 
         Object lookupKey = Optional.of(getLookupAttribute())
                 .map(attributes::get)
-                .orElseThrow(() -> new ProcessException(getLookupAttribute() + " cannot be null or blank"));
+                .orElseThrow(() -> new ProcessException(getLookupAttribute() + " không được null hoặc rỗng"));
 
         S service = serviceMap.get(lookupKey);
 
         if (service == null) {
-            throw new ProcessException("No " + getServiceName() + " found for " + getLookupAttribute());
+            throw new ProcessException("Không tìm thấy " + getServiceName() + " cho " + getLookupAttribute());
         }
 
         return service;
@@ -118,7 +118,8 @@ public abstract class AbstractSingleAttributeBasedControllerServiceLookup<S exte
     protected PropertyDescriptor lookupKeyPropertyDescriptor(String propertyDescriptorName) {
         return new PropertyDescriptor.Builder()
                 .name(propertyDescriptorName)
-                .description("The " + getServiceName() + " to return when " + getLookupAttribute() + " = '" + propertyDescriptorName + "'")
+                // .description("The " + getServiceName() + " to return when " + getLookupAttribute() + " = '" + propertyDescriptorName + "'")
+                .description(getServiceName() + " sẽ được trả về khi " + getLookupAttribute() + " = '" + propertyDescriptorName + "'")
                 .identifiesControllerService(getServiceType())
                 .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
                 .build();
@@ -139,7 +140,7 @@ public abstract class AbstractSingleAttributeBasedControllerServiceLookup<S exte
 
                 results.add(new ValidationResult.Builder()
                         .subject(descriptor.getDisplayName())
-                        .explanation("the current service cannot be registered as a " + getServiceName() + " to lookup")
+                        .explanation("dịch vụ hiện tại không thể được đăng ký làm " + getServiceName() + " để tra cứu")
                         .valid(false)
                         .build());
             }
@@ -148,7 +149,7 @@ public abstract class AbstractSingleAttributeBasedControllerServiceLookup<S exte
         if (numDefinedServices == 0) {
             results.add(new ValidationResult.Builder()
                     .subject(this.getClass().getSimpleName())
-                    .explanation("at least one " + getServiceName() + " must be defined via dynamic properties")
+                   .explanation("ít nhất một " + getServiceName() + " phải được định nghĩa thông qua các thuộc tính động")
                     .valid(false)
                     .build());
         }

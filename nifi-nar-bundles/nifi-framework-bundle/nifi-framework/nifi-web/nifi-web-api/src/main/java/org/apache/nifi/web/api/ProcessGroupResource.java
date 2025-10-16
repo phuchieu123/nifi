@@ -194,7 +194,7 @@ import java.util.stream.Collectors;
 @Path("/process-groups")
 @Api(
         value = "/process-groups",
-        description = "Endpoint for managing a Process Group."
+        description = "Điểm cuối để quản lý một Process Group."
 )
 public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportEntity, ProcessGroupReplaceRequestEntity> {
 
@@ -289,7 +289,7 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")
     @ApiOperation(
-            value = "Gets a process group",
+            value = "Lấy một process group",
             response = ProcessGroupEntity.class,
             authorizations = {
                     @Authorization(value = "Read - /process-groups/{uuid}")
@@ -297,16 +297,16 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
-                    @ApiResponse(code = 401, message = "Client could not be authenticated."),
-                    @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-                    @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 400, message = "NiFi không thể hoàn thành yêu cầu vì nó không hợp lệ. Yêu cầu không nên được thử lại mà không sửa đổi."),
+                    @ApiResponse(code = 401, message = "Không thể xác thực client."),
+                    @ApiResponse(code = 403, message = "Client không được phép thực hiện yêu cầu này."),
+                    @ApiResponse(code = 404, message = "Không tìm thấy tài nguyên được chỉ định."),
+                    @ApiResponse(code = 409, message = "Yêu cầu hợp lệ nhưng NiFi không ở trong trạng thái thích hợp để xử lý. Thử lại cùng một yêu cầu sau có thể thành công.")
             }
     )
     public Response getProcessGroup(
             @ApiParam(
-                    value = "The process group id.",
+                    value = "ID của process group.",
                     required = false
             )
             @PathParam("id") final String groupId) {
@@ -343,27 +343,27 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/download")
     @ApiOperation(
-        value = "Gets a process group for download",
+        value = "Lấy một process group để tải xuống",
         response = String.class,
         authorizations = {
             @Authorization(value = "Read - /process-groups/{uuid}")
         }
     )
-    @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
-        @ApiResponse(code = 401, message = "Client could not be authenticated."),
-        @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-        @ApiResponse(code = 404, message = "The specified resource could not be found."),
-        @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+      @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "NiFi không thể hoàn thành yêu cầu vì nó không hợp lệ. Yêu cầu không nên được thử lại mà không sửa đổi."),
+        @ApiResponse(code = 401, message = "Không thể xác thực client."),
+        @ApiResponse(code = 403, message = "Client không được phép thực hiện yêu cầu này."),
+        @ApiResponse(code = 404, message = "Không tìm thấy tài nguyên được chỉ định."),
+        @ApiResponse(code = 409, message = "Yêu cầu hợp lệ nhưng NiFi không ở trong trạng thái thích hợp để xử lý. Thử lại cùng một yêu cầu sau có thể thành công.")
     })
     public Response exportProcessGroup(
             @ApiParam(
-                    value = "The process group id.",
+                    value = "ID của process group.",
                     required = true
             )
             @PathParam("id") final String groupId,
             @ApiParam(
-                    value = "If referenced services from outside the target group should be included",
+                    value = "Nếu các dịch vụ được tham chiếu từ bên ngoài nhóm mục tiêu nên được bao gồm",
                     required = false
             )
             @QueryParam("includeReferencedServices")
@@ -400,25 +400,25 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/local-modifications")
     @ApiOperation(
-            value = "Gets a list of local modifications to the Process Group since it was last synchronized with the Flow Registry",
+            value = "Lấy danh sách các sửa đổi cục bộ cho Process Group kể từ lần cuối đồng bộ hóa với Flow Registry",
             response = FlowComparisonEntity.class,
             authorizations = {
             @Authorization(value = "Read - /process-groups/{uuid}"),
-            @Authorization(value = "Read - /{component-type}/{uuid} - For all encapsulated components")
+            @Authorization(value = "Read - /{component-type}/{uuid} - Cho tất cả các thành phần được đóng gói")
             }
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
-                    @ApiResponse(code = 401, message = "Client could not be authenticated."),
-                    @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-                    @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 400, message = "NiFi không thể hoàn thành yêu cầu vì nó không hợp lệ. Yêu cầu không nên được thử lại mà không sửa đổi."),
+                    @ApiResponse(code = 401, message = "Không thể xác thực client."),
+                    @ApiResponse(code = 403, message = "Client không được phép thực hiện yêu cầu này."),
+                    @ApiResponse(code = 404, message = "Không tìm thấy tài nguyên được chỉ định."),
+                    @ApiResponse(code = 409, message = "Yêu cầu hợp lệ nhưng NiFi không ở trong trạng thái thích hợp để xử lý. Thử lại cùng một yêu cầu sau có thể thành công.")
             }
     )
     public Response getLocalModifications(
             @ApiParam(
-                    value = "The process group id.",
+                    value = "ID của process group.",
                     required = false
             )
             @PathParam("id") final String groupId) throws IOException, NiFiRegistryException {
@@ -444,22 +444,22 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     @Consumes(MediaType.WILDCARD)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/variable-registry")
-    @ApiOperation(value = "Gets a process group's variable registry",
+    @ApiOperation(value = "Lấy sổ đăng ký biến của một process group",
         response = VariableRegistryEntity.class,
         notes = NON_GUARANTEED_ENDPOINT,
         authorizations = {
             @Authorization(value = "Read - /process-groups/{uuid}")
         })
     @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
-        @ApiResponse(code = 401, message = "Client could not be authenticated."),
-        @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-        @ApiResponse(code = 404, message = "The specified resource could not be found."),
-        @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+        @ApiResponse(code = 400, message = "NiFi không thể hoàn thành yêu cầu vì nó không hợp lệ. Yêu cầu không nên được thử lại mà không sửa đổi."),
+        @ApiResponse(code = 401, message = "Không thể xác thực client."),
+        @ApiResponse(code = 403, message = "Client không được phép thực hiện yêu cầu này."),
+        @ApiResponse(code = 404, message = "Không tìm thấy tài nguyên được chỉ định."),
+        @ApiResponse(code = 409, message = "Yêu cầu hợp lệ nhưng NiFi không ở trong trạng thái thích hợp để xử lý. Thử lại cùng một yêu cầu sau có thể thành công.")
     })
     public Response getVariableRegistry(
-        @ApiParam(value = "The process group id.", required = true) @PathParam("id") final String groupId,
-        @ApiParam(value = "Whether or not to include ancestor groups", required = false) @QueryParam("includeAncestorGroups") @DefaultValue("true") final boolean includeAncestorGroups) {
+        @ApiParam(value = "ID của process group.", required = true) @PathParam("id") final String groupId,
+        @ApiParam(value = "Có bao gồm các nhóm cha hay không", required = false) @QueryParam("includeAncestorGroups") @DefaultValue("true") final boolean includeAncestorGroups) {
 
         if (isReplicateRequest()) {
             return replicate(HttpMethod.GET);
@@ -497,11 +497,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response updateProcessGroup(
@@ -664,11 +664,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
             @Authorization(value = "Read - /process-groups/{uuid}")
         })
     @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+        @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
         @ApiResponse(code = 401, message = "Client could not be authenticated."),
         @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
         @ApiResponse(code = 404, message = "The specified resource could not be found."),
-        @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+        @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response getVariableRegistryUpdateRequest(
         @ApiParam(value = "The process group id.", required = true) @PathParam("groupId") final String groupId,
@@ -718,11 +718,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
             @Authorization(value = "Read - /process-groups/{uuid}")
         })
     @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+        @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
         @ApiResponse(code = 401, message = "Client could not be authenticated."),
         @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
         @ApiResponse(code = 404, message = "The specified resource could not be found."),
-        @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+        @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response deleteVariableRegistryUpdateRequest(
         @ApiParam(
@@ -788,11 +788,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
         @Authorization(value = "Write - /process-groups/{uuid}")
     })
     @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+        @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
         @ApiResponse(code = 401, message = "Client could not be authenticated."),
         @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
         @ApiResponse(code = 404, message = "The specified resource could not be found."),
-        @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+        @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response updateVariableRegistry(
         @Context final HttpServletRequest httpServletRequest,
@@ -860,11 +860,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
             @Authorization(value = "Write - /process-groups/{uuid}")
         })
     @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+        @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
         @ApiResponse(code = 401, message = "Client could not be authenticated."),
         @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
         @ApiResponse(code = 404, message = "The specified resource could not be found."),
-        @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+        @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response submitUpdateVariableRegistryRequest(
         @Context final HttpServletRequest httpServletRequest,
@@ -1693,11 +1693,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     @ApiResponses(
         value = {
             @ApiResponse(code = 202, message = "The request has been accepted. An HTTP response header will contain the URI where the status can be polled."),
-            @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+            @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
             @ApiResponse(code = 401, message = "Client could not be authenticated."),
             @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
             @ApiResponse(code = 404, message = "The specified resource could not be found."),
-            @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+            @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
         }
     )
     public Response createEmptyAllConnectionsRequest(
@@ -1760,11 +1760,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+            @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
             @ApiResponse(code = 401, message = "Client could not be authenticated."),
             @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
             @ApiResponse(code = 404, message = "The specified resource could not be found."),
-            @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+            @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
         }
     )
     public Response getDropAllFlowfilesRequest(
@@ -1819,11 +1819,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+            @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
             @ApiResponse(code = 401, message = "Client could not be authenticated."),
             @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
             @ApiResponse(code = 404, message = "The specified resource could not be found."),
-            @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+            @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
         }
     )
     public Response removeDropRequest(
@@ -1900,11 +1900,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response removeProcessGroup(
@@ -1990,7 +1990,7 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/process-groups")
     @ApiOperation(
-            value = "Creates a process group",
+            value = "Cập nhật một process group",
             response = ProcessGroupEntity.class,
             authorizations = {
                     @Authorization(value = "Write - /process-groups/{uuid}")
@@ -1998,27 +1998,27 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
-                    @ApiResponse(code = 401, message = "Client could not be authenticated."),
-                    @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-                    @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 400, message = "NiFi không thể hoàn thành yêu cầu vì nó không hợp lệ. Yêu cầu không nên được thử lại mà không sửa đổi."),
+                    @ApiResponse(code = 401, message = "Không thể xác thực client."),
+                    @ApiResponse(code = 403, message = "Client không được phép thực hiện yêu cầu này."),
+                    @ApiResponse(code = 404, message = "Không tìm thấy tài nguyên được chỉ định."),
+                    @ApiResponse(code = 409, message = "Yêu cầu hợp lệ nhưng NiFi không ở trong trạng thái thích hợp để xử lý. Thử lại cùng một yêu cầu sau có thể thành công.")
             }
     )
     public Response createProcessGroup(
             @Context final HttpServletRequest httpServletRequest,
             @ApiParam(
-                    value = "The process group id.",
+                    value = "Id nhóm quy trình.",
                     required = true
             )
             @PathParam("id") final String groupId,
             @ApiParam(
-                    value = "The process group configuration details.",
+                    value = "Chi tiết cấu hình nhóm quy trình.",
                     required = true
             )
             final ProcessGroupEntity requestProcessGroupEntity,
             @ApiParam(
-                    value = "Handling Strategy controls whether to keep or replace Parameter Contexts",
+                    value = "Chiến lược xử lý kiểm soát việc giữ hay thay thế Bối cảnh tham số",
                     defaultValue = "KEEP_EXISTING"
             )
             @QueryParam("parameterContextHandlingStrategy")
@@ -2026,11 +2026,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
             final ParameterContextHandlingStrategy parameterContextHandlingStrategy
     ) {
         if (requestProcessGroupEntity == null || requestProcessGroupEntity.getComponent() == null) {
-            throw new IllegalArgumentException("Process group details must be specified.");
+            throw new IllegalArgumentException("Chi tiết nhóm quy trình phải được chỉ định.");
         }
 
         if (requestProcessGroupEntity.getRevision() == null || (requestProcessGroupEntity.getRevision().getVersion() == null || requestProcessGroupEntity.getRevision().getVersion() != 0)) {
-            throw new IllegalArgumentException("A revision of 0 must be specified when creating a new Process group.");
+            throw new IllegalArgumentException("Bản sửa đổi 0 phải được chỉ định khi tạo nhóm Quy trình mới");
         }
 
         if (requestProcessGroupEntity.getComponent().getId() != null) {
@@ -2040,17 +2040,17 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
         final PositionDTO proposedPosition = requestProcessGroupEntity.getComponent().getPosition();
         if (proposedPosition != null) {
             if (proposedPosition.getX() == null || proposedPosition.getY() == null) {
-                throw new IllegalArgumentException("The x and y coordinate of the proposed position must be specified.");
+                throw new IllegalArgumentException("Tọa độ x và y của vị trí đề xuất phải được chỉ định.");
             }
         }
 
         // if the group name isn't specified, ensure the group is being imported from version control
         if (StringUtils.isBlank(requestProcessGroupEntity.getComponent().getName()) && requestProcessGroupEntity.getComponent().getVersionControlInformation() == null) {
-            throw new IllegalArgumentException("The group name is required when the group is not imported from version control.");
+            throw new IllegalArgumentException("Tên nhóm là bắt buộc khi nhóm không được nhập từ kiểm soát phiên bản.");
         }
 
         if (requestProcessGroupEntity.getComponent().getParentGroupId() != null && !groupId.equals(requestProcessGroupEntity.getComponent().getParentGroupId())) {
-            throw new IllegalArgumentException(String.format("If specified, the parent process group id %s must be the same as specified in the URI %s",
+            throw new IllegalArgumentException(String.format("Nếu được chỉ định, id nhóm quy trình cha %s phải giống như được chỉ định trong URI %s",
                     requestProcessGroupEntity.getComponent().getParentGroupId(), groupId));
         }
         requestProcessGroupEntity.getComponent().setParentGroupId(groupId);
@@ -2193,11 +2193,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getProcessGroups(
@@ -2262,11 +2262,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createProcessor(
@@ -2389,11 +2389,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getProcessors(
@@ -2450,11 +2450,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createInputPort(
@@ -2541,11 +2541,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getInputPorts(
@@ -2600,11 +2600,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createOutputPort(
@@ -2691,11 +2691,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getOutputPorts(
@@ -2751,11 +2751,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createFunnel(
@@ -2842,11 +2842,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getFunnels(
@@ -2902,11 +2902,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createLabel(
@@ -2993,11 +2993,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getLabels(
@@ -3053,11 +3053,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createRemoteProcessGroup(
@@ -3159,11 +3159,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getRemoteProcessGroups(
@@ -3228,11 +3228,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createConnection(
@@ -3389,11 +3389,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response getConnections(
@@ -3454,11 +3454,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response copySnippet(
@@ -3603,11 +3603,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response instantiateTemplate(
@@ -3751,8 +3751,8 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     }
 
     private IllegalStateException toPublicPortUniqueConstraintViolationException(final String portType, final PortDTO portDTO) {
-        return new IllegalStateException(String.format("The %s port [%s] named '%s' will violate the public port unique constraint." +
-            " Rename the existing port name, or the one in the template to instantiate the template in this flow.", portType, portDTO.getId(), portDTO.getName()));
+        return new IllegalStateException(String.format("Cổng %s [%s] có tên '%s' sẽ vi phạm ràng buộc duy nhất của cổng công khai." +
+            " Hãy đổi tên cổng hiện có hoặc cổng trong mẫu để có thể khởi tạo mẫu này trong luồng.", portType, portDTO.getId(), portDTO.getName()));
     }
 
     // ---------
@@ -3794,11 +3794,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createTemplate(
@@ -3884,10 +3884,10 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response uploadTemplate(
@@ -3992,10 +3992,10 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response importTemplate(
@@ -4078,10 +4078,10 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response createControllerService(
@@ -4206,11 +4206,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
             }
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+            @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
             @ApiResponse(code = 401, message = "Client could not be authenticated."),
             @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
             @ApiResponse(code = 404, message = "The specified resource could not be found."),
-            @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+            @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response initiateReplaceProcessGroup(@ApiParam(value = "The process group id.", required = true) @PathParam("id") final String groupId,
                                                 @ApiParam(value = "The process group replace request entity", required = true) final ProcessGroupImportEntity importEntity) {
@@ -4314,11 +4314,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
                     @ApiResponse(code = 404, message = "The specified resource could not be found."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response uploadProcessGroup(
@@ -4445,10 +4445,10 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+                    @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
                     @ApiResponse(code = 401, message = "Client could not be authenticated."),
                     @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
-                    @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+                    @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
             }
     )
     public Response importProcessGroup(
@@ -4565,11 +4565,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
                     @Authorization(value = "Write - /process-groups/{uuid}")
             })
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+            @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
             @ApiResponse(code = 401, message = "Client could not be authenticated."),
             @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
             @ApiResponse(code = 404, message = "The specified resource could not be found."),
-            @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+            @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response replaceProcessGroup(@ApiParam(value = "The process group id.", required = true) @PathParam("id") final String groupId,
                                         @ApiParam(value = "The process group replace request entity.", required = true) final ProcessGroupImportEntity importEntity) {
@@ -4647,11 +4647,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
                     @Authorization(value = "Only the user that submitted the request can get it")
             })
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+            @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
             @ApiResponse(code = 401, message = "Client could not be authenticated."),
             @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
             @ApiResponse(code = 404, message = "The specified resource could not be found."),
-            @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+            @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response getReplaceProcessGroupRequest(
             @ApiParam("The ID of the Replace Request") @PathParam("id") final String replaceRequestId) {
@@ -4673,11 +4673,11 @@ public class ProcessGroupResource extends FlowUpdateResource<ProcessGroupImportE
                     @Authorization(value = "Only the user that submitted the request can remove it")
             })
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "NiFi was unable to complete the request because it was invalid. The request should not be retried without modification."),
+            @ApiResponse(code = 400, message = "Life was unable to complete the request because it was invalid. The request should not be retried without modification."),
             @ApiResponse(code = 401, message = "Client could not be authenticated."),
             @ApiResponse(code = 403, message = "Client is not authorized to make this request."),
             @ApiResponse(code = 404, message = "The specified resource could not be found."),
-            @ApiResponse(code = 409, message = "The request was valid but NiFi was not in the appropriate state to process it. Retrying the same request later may be successful.")
+            @ApiResponse(code = 409, message = "The request was valid but Life was not in the appropriate state to process it. Retrying the same request later may be successful.")
     })
     public Response deleteReplaceProcessGroupRequest(
             @ApiParam(value = "Acknowledges that this node is disconnected to allow for mutable requests to proceed.", required = false)

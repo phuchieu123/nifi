@@ -158,7 +158,7 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
         this.processGroup = new AtomicReference<>(processGroup);
         this.sslContext = sslContext;
         this.scheduler = processScheduler;
-        this.authorizationIssue = "Establishing connection to " + targetUris;
+        this.authorizationIssue = "Thiết lập kết nối tới " + targetUris;
         this.remoteContentsCacheExpiration = remoteContentsCacheExpirationMillis;
 
         eventReporter = new EventReporter() {
@@ -663,10 +663,10 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
         writeLock.lock();
         try {
             if (requireNonNull(port).getTargetExists()) {
-                throw new IllegalStateException("Cannot remove Remote Port " + port.getIdentifier() + " because it still exists on the Remote Instance");
+                throw new IllegalStateException("Không thể xóa Cổng từ xa " + port.getIdentifier() + " bởi vì nó vẫn tồn tại trên Remote Instance");
             }
             if (!port.getConnections().isEmpty() || port.hasIncomingConnection()) {
-                throw new IllegalStateException("Cannot remove Remote Port because it is connected to other components");
+                throw new IllegalStateException("Không thể xóa Cổng từ xa bởi vì nó được kết nối với các thành phần khác");
             }
 
             scheduler.stopPort(port);
@@ -675,7 +675,7 @@ public class StandardRemoteProcessGroup implements RemoteProcessGroup {
                 outputPorts.remove(port.getIdentifier());
             } else {
                 if (!inputPorts.containsKey(port.getIdentifier())) {
-                    throw new IllegalStateException("Cannot remove Remote Port because it does not belong to this Remote Process Group");
+                    throw new IllegalStateException("Không thể xóa Cổng từ xa bởi vì nó không thuộc Nhóm quy trình từ xa này");
                 }
 
                 inputPorts.remove(port.getIdentifier());

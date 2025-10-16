@@ -41,11 +41,17 @@ import java.util.List;
 import java.util.Map;
 
 @Tags({"rules", "rules engine", "action", "action handler","lookup"})
-@CapabilityDescription("Provides an Action Handler that can be used to dynamically select another Action Handler. " +
-"This service will allow multiple ActionHandlers to be defined and registered by action type.  When actions are provided the handlers can " +
-"be dynamically determined and executed at runtime.")
-@DynamicProperty(name = "actionType ", value = "Action Handler Service", expressionLanguageScope = ExpressionLanguageScope.NONE, description = "")
-@DeprecationNotice(reason = "Unmaintained and planned for removal in version 2.0")
+@CapabilityDescription("Cung cấp một Action Handler có thể được sử dụng để chọn động một Action Handler khác. " +
+"Dịch vụ này cho phép định nghĩa và đăng ký nhiều ActionHandler theo loại hành động. Khi các hành động được cung cấp, " +
+"các handler có thể được xác định và thực thi động trong thời gian chạy.")
+@DynamicProperty(
+    name = "actionType",
+    value = "Dịch vụ Action Handler",
+    expressionLanguageScope = ExpressionLanguageScope.NONE,
+    description = "Xác định Action Handler tương ứng với loại hành động (actionType) cụ thể."
+)
+@DeprecationNotice(reason = "Không còn được bảo trì và dự kiến sẽ bị loại bỏ trong phiên bản 2.0")
+
 public class ActionHandlerLookup extends AbstractActionHandlerService{
 
     private volatile Map<String, PropertyContextActionHandler> actionHandlerMap;
@@ -54,7 +60,7 @@ public class ActionHandlerLookup extends AbstractActionHandlerService{
     protected PropertyDescriptor getSupportedDynamicPropertyDescriptor(final String propertyDescriptorName) {
         return new PropertyDescriptor.Builder()
                 .name(propertyDescriptorName)
-                .description("The Action handler to return when action type = '" + propertyDescriptorName + "'")
+                .description("Trình xử lý hành động sẽ trả về khi loại hành động = '" + propertyDescriptorName + "'")
                 .identifiesControllerService(PropertyContextActionHandler.class)
                 .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
                 .build();
@@ -74,7 +80,7 @@ public class ActionHandlerLookup extends AbstractActionHandlerService{
             if (this.getIdentifier().equals(referencedId)) {
                 results.add(new ValidationResult.Builder()
                         .subject(descriptor.getDisplayName())
-                        .explanation("the current service cannot be registered as an ActionHandler to lookup")
+                        .explanation("dịch vụ hiện tại không thể được đăng ký làm ActionHandler để tra cứu")
                         .valid(false)
                         .build());
             }
@@ -83,7 +89,7 @@ public class ActionHandlerLookup extends AbstractActionHandlerService{
         if (numDefinedServices == 0) {
             results.add(new ValidationResult.Builder()
                     .subject(this.getClass().getSimpleName())
-                    .explanation("at least one Action Handler must be defined via dynamic properties")
+                    .explanation("ít nhất một Action Handler phải được định nghĩa thông qua các thuộc tính động")
                     .valid(false)
                     .build());
         }

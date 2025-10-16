@@ -109,7 +109,7 @@ public class StandardFlowRegistryDAO extends ComponentDAO implements FlowRegistr
             final FlowRegistryClientNode flowRegistry = flowController.getFlowManager().getFlowRegistryClient(registryId);
 
             if (flowRegistry == null) {
-                throw new IllegalArgumentException("The specified registry id is unknown to this NiFi.");
+                throw new IllegalArgumentException("Life này không xác định id đăng ký được chỉ định.");
             }
 
             final Set<FlowRegistryBucket> buckets = flowRegistry.getBuckets(context);
@@ -119,7 +119,7 @@ public class StandardFlowRegistryDAO extends ComponentDAO implements FlowRegistr
         } catch (final FlowRegistryException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (final IOException ioe) {
-            throw new NiFiCoreException("Unable to obtain listing of buckets: " + ioe, ioe);
+            throw new NiFiCoreException("Không thể có được danh sách các nhóm: " + ioe, ioe);
         }
     }
 
@@ -128,7 +128,7 @@ public class StandardFlowRegistryDAO extends ComponentDAO implements FlowRegistr
         try {
             final FlowRegistryClientNode flowRegistry = flowController.getFlowManager().getFlowRegistryClient(registryId);
             if (flowRegistry == null) {
-                throw new IllegalArgumentException("The specified registry id is unknown to this NiFi.");
+                throw new IllegalArgumentException("Life này không xác định id đăng ký được chỉ định.");
             }
 
             final Set<RegisteredFlow> flows = flowRegistry.getFlows(context, bucketId);
@@ -145,7 +145,7 @@ public class StandardFlowRegistryDAO extends ComponentDAO implements FlowRegistr
         try {
             final FlowRegistryClientNode flowRegistry = flowController.getFlowManager().getFlowRegistryClient(registryId);
             if (flowRegistry == null) {
-                throw new IllegalArgumentException("The specified registry id is unknown to this NiFi.");
+                throw new IllegalArgumentException("Life này không xác định id đăng ký được chỉ định.");
             }
 
             return flowRegistry.getFlow(context, bucketId, flowId);
@@ -159,7 +159,7 @@ public class StandardFlowRegistryDAO extends ComponentDAO implements FlowRegistr
         try {
             final FlowRegistryClientNode flowRegistry = flowController.getFlowManager().getFlowRegistryClient(registryId);
             if (flowRegistry == null) {
-                throw new IllegalArgumentException("The specified registry id is unknown to this NiFi.");
+                throw new IllegalArgumentException("Life này không xác định id đăng ký được chỉ định.");
             }
 
             final Set<RegisteredFlowSnapshotMetadata> flowVersions = flowRegistry.getFlowVersions(context, bucketId, flowId);
@@ -175,7 +175,7 @@ public class StandardFlowRegistryDAO extends ComponentDAO implements FlowRegistr
     public FlowRegistryClientNode removeFlowRegistry(final String registryId) {
         final FlowRegistryClientNode flowRegistry = flowController.getFlowManager().getFlowRegistryClient(registryId);
         if (flowRegistry == null) {
-            throw new IllegalArgumentException("The specified registry id is unknown to this NiFi.");
+            throw new IllegalArgumentException("Life này không xác định id đăng ký được chỉ định.");
         }
 
         flowController.getFlowManager().removeFlowRegistryClientNode(flowRegistry);

@@ -3192,9 +3192,13 @@ public final class DtoFactory {
      */
     public BundleDTO createBundleDto(final BundleCoordinate coordinate) {
         final BundleDTO dto = new BundleDTO();
+            // Đây là nơi giá trị được gán
         dto.setGroup(coordinate.getGroup());
         dto.setArtifact(coordinate.getId());
         dto.setVersion(coordinate.getVersion());
+         if ("org.apache.nifi".equals(dto.getGroup())) {
+         dto.setGroup("Hệ thống Mặc định");
+            }
         return dto;
     }
 

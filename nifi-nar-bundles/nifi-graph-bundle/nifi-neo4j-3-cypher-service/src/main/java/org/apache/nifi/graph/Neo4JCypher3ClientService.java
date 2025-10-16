@@ -51,14 +51,14 @@ import java.util.concurrent.TimeUnit;
 
 @Deprecated
 @Tags({ "graph", "neo4j", "cypher" })
-@CapabilityDescription("Provides a client service for managing connections to a Neo4J 3.X database. Configuration information for " +
-        "the Neo4J driver that corresponds to most of the settings for this service can be found here: " +
+@CapabilityDescription("Cung cấp một dịch vụ máy khách để quản lý các kết nối đến cơ sở dữ liệu Neo4J 3.X. Thông tin cấu hình cho " +
+        "trình điều khiển Neo4J tương ứng với hầu hết các cài đặt cho dịch vụ này có thể được tìm thấy tại đây: " +
         "https://neo4j.com/docs/driver-manual/current/client-applications/#driver-configuration")
 public class Neo4JCypher3ClientService extends AbstractControllerService implements GraphClientService {
     public static final PropertyDescriptor CONNECTION_URL = new PropertyDescriptor.Builder()
             .name("neo4j-connection-url")
-            .displayName("Neo4j Connection URL")
-            .description("Neo4J endpoing to connect to.")
+            .displayName("URL Kết nối Neo4j")
+            .description("Điểm cuối Neo4J để kết nối.")
             .required(true)
             .defaultValue("bolt://localhost:7687")
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
@@ -67,8 +67,8 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor USERNAME = new PropertyDescriptor.Builder()
             .name("neo4j-username")
-            .displayName("Username")
-            .description("Username for accessing Neo4J")
+            .displayName("Tên người dùng")
+            .description("Tên người dùng để truy cập Neo4J.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.VARIABLE_REGISTRY)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
@@ -76,20 +76,20 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor PASSWORD = new PropertyDescriptor.Builder()
             .name("neo4j-password")
-            .displayName("Password")
-            .description("Password for Neo4J user. A dummy non-blank password is required even if it disabled on the server.")
+            .displayName("Mật khẩu")
+            .description("Mật khẩu cho người dùng Neo4J. Yêu cầu một mật khẩu giả không trống ngay cả khi tính năng này bị vô hiệu hóa trên máy chủ.")
             .required(true)
             .sensitive(true)
             .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
             .build();
-    public static AllowableValue LOAD_BALANCING_STRATEGY_ROUND_ROBIN = new AllowableValue(Config.LoadBalancingStrategy.ROUND_ROBIN.name(), "Round Robin", "Round Robin Strategy");
+    public static AllowableValue LOAD_BALANCING_STRATEGY_ROUND_ROBIN = new AllowableValue(Config.LoadBalancingStrategy.ROUND_ROBIN.name(), "Round Robin", "Chiến lược Round Robin");
 
-    public static AllowableValue LOAD_BALANCING_STRATEGY_LEAST_CONNECTED = new AllowableValue(Config.LoadBalancingStrategy.LEAST_CONNECTED.name(), "Least Connected", "Least Connected Strategy");
+    public static AllowableValue LOAD_BALANCING_STRATEGY_LEAST_CONNECTED = new AllowableValue(Config.LoadBalancingStrategy.LEAST_CONNECTED.name(), "Ít kết nối nhất", "Chiến lược Ít kết nối nhất");
 
     protected static final PropertyDescriptor LOAD_BALANCING_STRATEGY = new PropertyDescriptor.Builder()
             .name("neo4j-load-balancing-strategy")
-            .displayName("Load Balancing Strategy")
-            .description("Load Balancing Strategy (Round Robin or Least Connected)")
+            .displayName("Chiến lược Cân bằng tải")
+            .description("Chiến lược Cân bằng tải (Round Robin hoặc Ít kết nối nhất).")
             .required(false)
             .defaultValue(LOAD_BALANCING_STRATEGY_ROUND_ROBIN.getValue())
             .allowableValues(LOAD_BALANCING_STRATEGY_ROUND_ROBIN, LOAD_BALANCING_STRATEGY_LEAST_CONNECTED)
@@ -97,8 +97,8 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor CONNECTION_TIMEOUT = new PropertyDescriptor.Builder()
             .name("neo4j-max-connection-time-out")
-            .displayName("Neo4J Max Connection Time Out (seconds)")
-            .description("The maximum time for establishing connection to the Neo4j")
+            .displayName("Thời gian chờ kết nối tối đa Neo4J (giây)")
+            .description("Thời gian tối đa để thiết lập kết nối đến Neo4j.")
             .defaultValue("5 seconds")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -108,8 +108,8 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor MAX_CONNECTION_POOL_SIZE = new PropertyDescriptor.Builder()
             .name("neo4j-max-connection-pool-size")
-            .displayName("Neo4J Max Connection Pool Size")
-            .description("The maximum connection pool size for Neo4j.")
+            .displayName("Kích thước vùng chứa kết nối tối đa Neo4J")
+            .description("Kích thước vùng chứa kết nối tối đa cho Neo4j.")
             .defaultValue("100")
             .required(true)
             .addValidator(StandardValidators.POSITIVE_INTEGER_VALIDATOR)
@@ -119,8 +119,8 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor MAX_CONNECTION_ACQUISITION_TIMEOUT = new PropertyDescriptor.Builder()
             .name("neo4j-max-connection-acquisition-timeout")
-            .displayName("Neo4J Max Connection Acquisition Timeout")
-            .description("The maximum connection acquisition timeout.")
+            .displayName("Thời gian chờ lấy kết nối tối đa Neo4J")
+            .description("Thời gian chờ tối đa để lấy một kết nối.")
             .defaultValue("60 second")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -130,8 +130,8 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor IDLE_TIME_BEFORE_CONNECTION_TEST = new PropertyDescriptor.Builder()
             .name("neo4j-idle-time-before-test")
-            .displayName("Neo4J Idle Time Before Connection Test")
-            .description("The idle time before connection test.")
+            .displayName("Thời gian chờ trước khi kiểm tra kết nối Neo4J")
+            .description("Thời gian chờ (idle) trước khi thực hiện kiểm tra kết nối.")
             .defaultValue("60 seconds")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -141,8 +141,8 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor MAX_CONNECTION_LIFETIME = new PropertyDescriptor.Builder()
             .name("neo4j-max-connection-lifetime")
-            .displayName("Neo4J Max Connection Lifetime")
-            .description("The maximum connection lifetime")
+            .displayName("Tuổi thọ kết nối tối đa Neo4J")
+            .description("Tuổi thọ tối đa của một kết nối.")
             .defaultValue("3600 seconds")
             .required(true)
             .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
@@ -152,8 +152,8 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor ENCRYPTION = new PropertyDescriptor.Builder()
             .name("neo4j-driver-tls-encryption-enabled")
-            .displayName("Neo4J Driver TLS Encryption")
-            .description("Is the driver using TLS encryption ?")
+            .displayName("Mã hóa TLS cho trình điều khiển Neo4J")
+            .description("Trình điều khiển có sử dụng mã hóa TLS không?")
             .defaultValue("true")
             .required(true)
             .allowableValues("true","false")
@@ -163,8 +163,7 @@ public class Neo4JCypher3ClientService extends AbstractControllerService impleme
 
     public static final PropertyDescriptor SSL_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
             .name("SSL Context Service")
-            .description("The SSL Context Service used to provide client certificate information for TLS/SSL "
-                    + "connections.")
+            .description("Dịch vụ Bối cảnh SSL được sử dụng để cung cấp thông tin chứng chỉ máy khách cho các kết nối TLS/SSL.")
             .required(false)
             .identifiesControllerService(SSLContextService.class)
             .build();

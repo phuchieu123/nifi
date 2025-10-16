@@ -1307,13 +1307,13 @@ public class SiteToSiteRestApiClient implements Closeable {
         }
     }
 
-    private static String resolveBaseUrl(final String clusterUrl) {
-        Objects.requireNonNull(clusterUrl, "clusterUrl cannot be null.");
+  private static String resolveBaseUrl(final String clusterUrl) {
+        Objects.requireNonNull(clusterUrl, "clusterUrl không được rỗng (null).");
         final URI uri;
         try {
             uri = new URI(clusterUrl.trim());
         } catch (final URISyntaxException e) {
-            throw new IllegalArgumentException("The specified URL is malformed: " + clusterUrl);
+            throw new IllegalArgumentException("URL được chỉ định bị lỗi định dạng : " + clusterUrl);
         }
 
         return resolveBaseUrl(uri);

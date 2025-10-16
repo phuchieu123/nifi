@@ -147,7 +147,7 @@ public abstract class AbstractCassandraProcessor extends AbstractProcessor {
             .build();
 
     static final PropertyDescriptor CHARSET = new PropertyDescriptor.Builder()
-            .name("Bộ ký tự")
+            .name("Character Set")
             .description("Chỉ định bộ ký tự của dữ liệu bản ghi.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
@@ -156,12 +156,12 @@ public abstract class AbstractCassandraProcessor extends AbstractProcessor {
             .build();
 
     static final Relationship REL_SUCCESS = new Relationship.Builder()
-            .name("thành công")
+            .name("success")
             .description("Một FlowFile được chuyển đến mối quan hệ này nếu hoạt động hoàn thành thành công.")
             .build();
 
     static final Relationship REL_FAILURE = new Relationship.Builder()
-            .name("thất bại")
+            .name("failure")
             .description("Một FlowFile được chuyển đến mối quan hệ này nếu hoạt động thất bại.")
             .build();
 

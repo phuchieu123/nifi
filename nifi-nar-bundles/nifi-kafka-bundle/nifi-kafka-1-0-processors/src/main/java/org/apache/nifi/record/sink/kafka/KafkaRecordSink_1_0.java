@@ -67,7 +67,7 @@ import java.util.concurrent.TimeoutException;
 
 @Tags({"kafka", "record", "sink"})
 @CapabilityDescription("Cung cấp dịch vụ ghi các record vào một topic Kafka 1.x.")
-@DeprecationNotice(classNames = "org.apache.nifi.record.sink.kafka.KafkaRecordSink_2_6")
+@DeprecationNotice(classNames = "org.apache.life.record.sink.kafka.KafkaRecordSink_2_6")
 @DynamicProperty(
     description = "Để thực hiện JNDI Lookup, một Initial Context phải được thiết lập. Bất kỳ property động/được người dùng định nghĩa nào "
                 + "được thêm vào Controller Service này sẽ được thêm làm biến cấu hình/Environment cho Context này. "

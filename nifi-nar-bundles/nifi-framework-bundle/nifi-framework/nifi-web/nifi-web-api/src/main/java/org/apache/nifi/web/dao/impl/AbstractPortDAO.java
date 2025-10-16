@@ -97,21 +97,21 @@ public abstract class AbstractPortDAO extends ComponentDAO implements PortDAO {
     private List<String> validateProposedConfiguration(final Port port, final PortDTO portDTO) {
         List<String> validationErrors = new ArrayList<>();
 
-        if (isNotNull(portDTO.getName()) && portDTO.getName().trim().isEmpty()) {
-            validationErrors.add("The name of the port must be specified.");
+      if (isNotNull(portDTO.getName()) && portDTO.getName().trim().isEmpty()) {
+            validationErrors.add("Tên của cổng phải được chỉ định.");
         }
         if (isNotNull(portDTO.getConcurrentlySchedulableTaskCount()) && portDTO.getConcurrentlySchedulableTaskCount() <= 0) {
-            validationErrors.add("Concurrent tasks must be a positive integer.");
+            validationErrors.add("Tác vụ đồng thời phải là một số nguyên dương.");
         }
 
-        // Although StandardProcessGroup.addIn/OutputPort has the similar validation,
-        // this validation is necessary to prevent a port becomes public with an existing port name.
+        // Mặc dù StandardProcessGroup.addIn/OutputPort có xác thực tương tự,
+        // xác thực này là cần thiết để ngăn một cổng trở thành công khai với tên cổng đã tồn tại.
         if (port instanceof PublicPort) {
             final String portName = isNotNull(portDTO.getName()) ? portDTO.getName() : port.getName();
-            // If there is any port with the same name, but different identifier, throw an error.
+            // Nếu có bất kỳ cổng nào có cùng tên, nhưng mã định danh khác, hãy ném ra một lỗi.
             if (getPublicPorts().stream()
                 .anyMatch(p -> portName.equals(p.getName()) && !port.getIdentifier().equals(p.getIdentifier()))) {
-                throw new IllegalStateException("Public port name must be unique throughout the flow.");
+                throw new IllegalStateException("Tên cổng công khai phải là duy nhất trong toàn bộ luồng.");
             }
         }
 
@@ -122,13 +122,12 @@ public abstract class AbstractPortDAO extends ComponentDAO implements PortDAO {
     public void verifyPublicPortUniqueness(final String portId, final String portName) {
         for (Port port : getPublicPorts()) {
             if (portId.equals(port.getIdentifier())) {
-                throw new IllegalStateException("Public port identifier must be unique throughout the flow.");
+                throw new IllegalStateException("Mã định danh cổng công khai phải là duy nhất trong toàn bộ luồng.");
             } else if(portName.equals(port.getName())) {
-                throw new IllegalStateException("Public port name must be unique throughout the flow.");
+                throw new IllegalStateException("Tên cổng công khai phải là duy nhất trong toàn bộ luồng.");
             }
         }
     }
-
     protected abstract Set<Port> getPublicPorts();
 
     protected abstract void handleStateTransition(final Port port, final ScheduledState proposedScheduledState) throws IllegalStateException;

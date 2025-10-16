@@ -57,17 +57,17 @@ import static org.apache.nifi.processors.stateful.analysis.AttributeRollingWindo
 @TriggerSerially
 @InputRequirement(InputRequirement.Requirement.INPUT_REQUIRED)
 @Tags({"Attribute Expression Language", "state", "data science", "rolling", "window"})
-@CapabilityDescription("Track a Rolling Window based on evaluating an Expression Language expression on each FlowFile and add that value to the processor's state. Each FlowFile will be emitted " +
-        "with the count of FlowFiles and total aggregate value of values processed in the current time window.")
+@CapabilityDescription("Theo dõi một cửa sổ cuộn (Rolling Window) dựa trên việc đánh giá biểu thức Ngôn ngữ Biểu thức (Expression Language) trên từng FlowFile và thêm giá trị đó vào trạng thái của bộ xử lý. Mỗi FlowFile sẽ được xuất ra " +
+        "với số lượng FlowFile và tổng giá trị tổng hợp của các giá trị được xử lý trong cửa sổ thời gian hiện tại.")
 @WritesAttributes({
-        @WritesAttribute(attribute = ROLLING_WINDOW_VALUE_KEY, description = "The rolling window value (sum of all the values stored)."),
-        @WritesAttribute(attribute = ROLLING_WINDOW_COUNT_KEY, description = "The count of the number of FlowFiles seen in the rolling window."),
-        @WritesAttribute(attribute = ROLLING_WINDOW_MEAN_KEY, description = "The mean of the FlowFiles seen in the rolling window."),
-        @WritesAttribute(attribute = ROLLING_WINDOW_VARIANCE_KEY, description = "The variance of the FlowFiles seen in the rolling window."),
-        @WritesAttribute(attribute = ROLLING_WINDOW_STDDEV_KEY, description = "The standard deviation (positive square root of the variance) of the FlowFiles seen in the rolling window.")
+        @WritesAttribute(attribute = ROLLING_WINDOW_VALUE_KEY, description = "Giá trị của cửa sổ cuộn (tổng của tất cả các giá trị được lưu trữ)."),
+        @WritesAttribute(attribute = ROLLING_WINDOW_COUNT_KEY, description = "Số lượng FlowFile được ghi nhận trong cửa sổ cuộn."),
+        @WritesAttribute(attribute = ROLLING_WINDOW_MEAN_KEY, description = "Giá trị trung bình của các FlowFile trong cửa sổ cuộn."),
+        @WritesAttribute(attribute = ROLLING_WINDOW_VARIANCE_KEY, description = "Phương sai của các FlowFile trong cửa sổ cuộn."),
+        @WritesAttribute(attribute = ROLLING_WINDOW_STDDEV_KEY, description = "Độ lệch chuẩn (căn bậc hai của phương sai) của các FlowFile trong cửa sổ cuộn.")
 })
-@Stateful(scopes = {Scope.LOCAL}, description = "Store the values backing the rolling window. This includes storing the individual values and their time-stamps or the batches of values and their " +
-        "counts.")
+@Stateful(scopes = {Scope.LOCAL}, description = "Lưu trữ các giá trị sao lưu cửa sổ cuộn. Điều này bao gồm lưu trữ các giá trị riêng lẻ và dấu thời gian của chúng hoặc các lô giá trị và " +
+        "đếm.")
 public class AttributeRollingWindow extends AbstractProcessor {
 
     public static final String COUNT_KEY = "count";
@@ -83,30 +83,31 @@ public class AttributeRollingWindow extends AbstractProcessor {
     public static final int COUNT_APPEND_KEY_LENGTH = 6;
 
     static final PropertyDescriptor VALUE_TO_TRACK = new PropertyDescriptor.Builder()
-            .displayName("Value to track")
-            .name("Value to track")
-            .description("The expression on which to evaluate each FlowFile. The result of the expression will be added to the rolling window value.")
-            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .addValidator(StandardValidators.ATTRIBUTE_EXPRESSION_LANGUAGE_VALIDATOR)
-            .required(true)
-            .build();
-    static final PropertyDescriptor TIME_WINDOW = new PropertyDescriptor.Builder()
-            .displayName("Time window")
-            .name("Time window")
-            .description("The time window on which to calculate the rolling window.")
-            .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
-            .required(true)
-            .build();
-    static final PropertyDescriptor SUB_WINDOW_LENGTH = new PropertyDescriptor.Builder()
-            .displayName("Sub-window length")
-            .name("Sub-window length")
-            .description("When set, values will be batched into sub-windows of the set length. This allows for much larger length total windows to be set but sacrifices some precision. If this is " +
-                    "not set (or is 0) then each value is stored in state with the timestamp of when it was received. After the length of time stated in " + TIME_WINDOW.getDisplayName() +
-                    " elaspes the value will be removed. If this is set, values will be batched together every X amount of time (where X is the time period set for this property) and removed " +
-                    "all at once.")
-            .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
-            .required(false)
-            .build();
+        .displayName("Giá trị cần theo dõi")
+        .name("Value to track")
+        .description("Biểu thức được dùng để đánh giá trên từng FlowFile. Kết quả của biểu thức này sẽ được thêm vào giá trị của cửa sổ cuộn (rolling window).")
+        .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
+        .addValidator(StandardValidators.ATTRIBUTE_EXPRESSION_LANGUAGE_VALIDATOR)
+        .required(true)
+        .build();
+
+static final PropertyDescriptor TIME_WINDOW = new PropertyDescriptor.Builder()
+        .displayName("Khoảng thời gian cửa sổ")
+        .name("Time window")
+        .description("Khoảng thời gian được sử dụng để tính toán cửa sổ cuộn.")
+        .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
+        .required(true)
+        .build();
+
+static final PropertyDescriptor SUB_WINDOW_LENGTH = new PropertyDescriptor.Builder()
+        .displayName("Độ dài cửa sổ con")
+        .name("Sub-window length")
+        .description("Khi được thiết lập, các giá trị sẽ được gom thành các cửa sổ con có độ dài xác định. Điều này cho phép thiết lập tổng cửa sổ dài hơn nhưng giảm độ chính xác. Nếu không được thiết lập (hoặc là 0) thì mỗi giá trị sẽ được lưu cùng dấu thời gian khi nhận. Sau khi khoảng thời gian trong "
+                + TIME_WINDOW.getDisplayName() + " trôi qua, giá trị đó sẽ bị loại bỏ. Nếu được thiết lập, các giá trị sẽ được gom nhóm lại theo mỗi khoảng X thời gian (với X là giá trị được cấu hình cho thuộc tính này) và bị xóa cùng lúc.")
+        .addValidator(StandardValidators.TIME_PERIOD_VALIDATOR)
+        .required(false)
+        .build();
+
 
 
     private final Set<Relationship> relationships;
@@ -117,17 +118,20 @@ public class AttributeRollingWindow extends AbstractProcessor {
 
     // relationships
     public static final Relationship REL_SUCCESS = new Relationship.Builder()
-            .description("All FlowFiles are successfully processed are routed here")
-            .name("success")
-            .build();
+        .description("Tất cả các FlowFile được xử lý thành công sẽ được chuyển đến đây.")
+        .name("success")
+        .build();
+
     public static final Relationship REL_FAILED_SET_STATE = new Relationship.Builder()
-            .name("set state fail")
-            .description("When state fails to save when processing a FlowFile, the FlowFile is routed here.")
-            .build();
+        .name("set state fail")
+        .description("Khi không thể lưu trạng thái trong quá trình xử lý FlowFile, FlowFile sẽ được chuyển đến đây.")
+        .build();
+
     public static final Relationship REL_FAILURE = new Relationship.Builder()
-            .name("failure")
-            .description("When a FlowFile fails for a reason other than failing to set state it is routed here.")
-            .build();
+        .name("failure")
+        .description("Khi FlowFile bị lỗi do nguyên nhân khác ngoài lỗi lưu trạng thái, nó sẽ được chuyển đến đây.")
+        .build();
+
 
     {
         final Set<Relationship> relationshipSet = new HashSet<>();

@@ -95,7 +95,7 @@ public class TestAbstractSingleAttributeBasedControllerServiceLookup {
         testSubject.onEnabled(new MockConfigurationContext(properties, serviceLookup));
 
         ProcessException e = assertThrows(ProcessException.class, () -> testSubject.lookupService(null));
-        assertEquals("Attributes map is null", e.getMessage());
+        assertEquals("Bản đồ thuộc tính (attributes) bị null", e.getMessage());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class TestAbstractSingleAttributeBasedControllerServiceLookup {
         // WHEN
         testSubject.onEnabled(new MockConfigurationContext(properties, serviceLookup));
         ProcessException e = assertThrows(ProcessException.class, () -> testSubject.lookupService(new HashMap<>()));
-        assertEquals("Attributes must contain an attribute name '" + LOOKUP_ATTRIBUTE + "'", e.getMessage());
+        assertEquals("Thuộc tính phải chứa tên thuộc tính '" + LOOKUP_ATTRIBUTE + "'", e.getMessage());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class TestAbstractSingleAttributeBasedControllerServiceLookup {
         // WHEN
         testSubject.onEnabled(new MockConfigurationContext(properties, serviceLookup));
         ProcessException e = assertThrows(ProcessException.class, () -> testSubject.lookupService(createAttributes(lookupServiceKey)));
-        assertEquals("No ControllerService found for lookupAttribute", e.getMessage());
+        assertEquals("Không tìm thấy ControllerService cho lookupAttribute", e.getMessage());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class TestAbstractSingleAttributeBasedControllerServiceLookup {
         // THEN
         assertThat(
                 actual.stream().map(ValidationResult::getExplanation).collect(Collectors.toList()),
-                hasItem(containsString("at least one " + SERVICE_TYPE.getSimpleName() + " must be defined via dynamic properties"))
+                hasItem(containsString("ít nhất một " + SERVICE_TYPE.getSimpleName() + " phải được định nghĩa thông qua các thuộc tính động"))
         );
     }
 
@@ -194,7 +194,7 @@ public class TestAbstractSingleAttributeBasedControllerServiceLookup {
         // THEN
         assertThat(
                 actual.stream().map(ValidationResult::getExplanation).collect(Collectors.toList()),
-                hasItem(containsString("the current service cannot be registered as a " + SERVICE_TYPE.getSimpleName() + " to lookup"))
+                hasItem(containsString("dịch vụ hiện tại không thể được đăng ký làm " + SERVICE_TYPE.getSimpleName() + " để tra cứu"))
         );
     }
 
@@ -211,9 +211,9 @@ public class TestAbstractSingleAttributeBasedControllerServiceLookup {
         // THEN
         assertThat(
                 actual.stream().map(ValidationResult::getExplanation).collect(Collectors.toList()),
-                hasItems(
-                        containsString("the current service cannot be registered as a " + SERVICE_TYPE.getSimpleName() + " to lookup"),
-                        containsString("at least one " + SERVICE_TYPE.getSimpleName() + " must be defined via dynamic properties")
+               hasItems(
+                    containsString("dịch vụ hiện tại không thể được đăng ký làm " + SERVICE_TYPE.getSimpleName() + " để tra cứu"),
+                    containsString("ít nhất một " + SERVICE_TYPE.getSimpleName() + " phải được định nghĩa thông qua các thuộc tính động")
                 )
         );
     }

@@ -128,34 +128,34 @@ import static org.apache.nifi.processor.util.StandardValidators.createDirectoryE
     @SystemResourceConsideration(resource= SystemResource.MEMORY),
     @SystemResourceConsideration(resource= SystemResource.NETWORK)
 })
-@DynamicProperty(name="Any Parameter name", value="Any value", description = "Any dynamic property that is added will be provided to the stateless flow as a Parameter. The name of the property will" +
-    " be the name of the Parameter, and the value of the property will be the value of the Parameter. Because Parameter values may or may not be sensitive, all dynamic properties will be considered" +
-    " sensitive in order to protect their integrity.")
+@DynamicProperty(name="Tên tham số bất kỳ", value="Any value", description = "Bất kỳ thuộc tính động nào được thêm vào sẽ được cung cấp cho luồng không trạng thái dưới dạng Tham số. Tên của thuộc tính sẽ là" +
+    " tên của Tham số, và giá trị của thuộc tính sẽ là giá trị của Tham số. Vì giá trị Tham số có thể nhạy cảm hoặc không, tất cả các thuộc tính động sẽ được coi là" +
+    " nhạy cảm để bảo vệ tính toàn vẹn của chúng.")
 @InputRequirement(Requirement.INPUT_ALLOWED)
-@CapabilityDescription("Runs the configured dataflow using the Stateless NiFi engine. Please see documentation in order to understand the differences between the traditional NiFi runtime engine and" +
-    " the Stateless NiFi engine. If the Processor is configured with an incoming connection, the incoming FlowFiles will be queued up into the specified Input Port in the dataflow. Data that is" +
-    " transferred out of the flow via an Output Port will be sent to the 'output' relationship, and an attribute will be added to indicate which Port that FlowFile was transferred to. See" +
-    " Additional Details for more information.")
+@CapabilityDescription("Chạy luồng dữ liệu đã cấu hình bằng cách sử dụng công cụ Life không trạng thái. Vui lòng xem tài liệu để hiểu sự khác biệt giữa công cụ thời gian chạy Life truyền thống và" +
+    " công cụ Life không trạng thái. Nếu Bộ xử lý được cấu hình với một kết nối đến, các FlowFile đến sẽ được xếp hàng vào Cổng đầu vào được chỉ định trong luồng dữ liệu. Dữ liệu được" +
+    " chuyển ra khỏi luồng thông qua một Cổng đầu ra sẽ được gửi đến mối quan hệ 'đầu ra', và một thuộc tính sẽ được thêm vào để chỉ ra FlowFile đó đã được chuyển đến Cổng nào. Xem" +
+    " Chi tiết bổ sung để biết thêm thông tin.")
 @WritesAttributes({
-    @WritesAttribute(attribute="output.port.name", description = "The name of the Output Port that the FlowFile was transferred to"),
-    @WritesAttribute(attribute="failure.port.name", description = "If one or more FlowFiles is routed to one of the Output Ports that is configured as a Failure Port, the input FlowFile (if any) " +
-        "will have this attribute added to it, indicating the name of the Port that caused the dataflow to be considered a failure.")
+    @WritesAttribute(attribute="output.port.name", description = "Tên của Cổng đầu ra mà FlowFile đã được chuyển đến"),
+    @WritesAttribute(attribute="failure.port.name", description = "Nếu một hoặc nhiều FlowFile được định tuyến đến một trong các Cổng đầu ra được cấu hình là Cổng thất bại, FlowFile đầu vào (nếu có) " +
+        "sẽ được thêm thuộc tính này, cho biết tên của Cổng đã khiến luồng dữ liệu bị coi là thất bại.")
 })
 public class ExecuteStateless extends AbstractProcessor implements Searchable {
-    public static final AllowableValue SPEC_FROM_FILE = new AllowableValue("Use Local File", "Use Local File or URL",
-        "Dataflow to run is stored as a file on the NiFi server or at a URL that is accessible to the NiFi server");
-    public static final AllowableValue SPEC_FROM_REGISTRY = new AllowableValue("Use NiFi Registry", "Use NiFi Registry", "Dataflow to run is stored in NiFi Registry");
+    public static final AllowableValue SPEC_FROM_FILE = new AllowableValue("Sử dụng tệp cục bộ", "Sử dụng tệp cục bộ hoặc URL",
+        "Luồng dữ liệu để chạy được lưu trữ dưới dạng một tệp trên máy chủ Life hoặc tại một URL có thể truy cập được bởi máy chủ Life");
+    public static final AllowableValue SPEC_FROM_REGISTRY = new AllowableValue("Sử dụng Life Registry", "Sử dụng Life Registry", "Luồng dữ liệu để chạy được lưu trữ trong Life Registry");
 
-    public static final AllowableValue CONTENT_STORAGE_HEAP = new AllowableValue("Store Content on Heap", "Store Content on Heap",
-        "The FlowFile content will be stored on the NiFi JVM's heap. This is the most " +
-        "efficient option for small FlowFiles but can quickly exhaust the heap with larger FlowFiles, resulting in Out Of Memory Errors and node instability.");
-    public static final AllowableValue CONTENT_STORAGE_DISK = new AllowableValue("Store Content on Disk", "Store Content on Disk",
-        "The FlowFile content will be stored on disk, within the configured Work Directory. The content will still be cleared between invocations and will not be persisted across restarts.");
+    public static final AllowableValue CONTENT_STORAGE_HEAP = new AllowableValue("Lưu trữ nội dung trên Heap", "Lưu trữ nội dung trên Heap",
+        "Nội dung của FlowFile sẽ được lưu trữ trên heap của JVM Life. Đây là " +
+        "tùy chọn hiệu quả nhất cho các FlowFile nhỏ nhưng có thể nhanh chóng làm cạn kiệt heap với các FlowFile lớn hơn, dẫn đến Lỗi hết bộ nhớ và mất ổn định của node.");
+    public static final AllowableValue CONTENT_STORAGE_DISK = new AllowableValue("Lưu trữ nội dung trên đĩa", "Lưu trữ nội dung trên đĩa",
+        "Nội dung của FlowFile sẽ được lưu trữ trên đĩa, trong Thư mục làm việc đã được cấu hình. Nội dung vẫn sẽ được xóa giữa các lần gọi và sẽ không được lưu trữ qua các lần khởi động lại.");
 
     public static final PropertyDescriptor DATAFLOW_SPECIFICATION_STRATEGY = new Builder()
         .name("Dataflow Specification Strategy")
-        .displayName("Dataflow Specification Strategy")
-        .description("Specifies how the Processor should obtain a copy of the dataflow that it is to run")
+        .displayName("Chiến lược đặc tả luồng dữ liệu")
+        .description("Chỉ định cách Bộ xử lý nên lấy một bản sao của luồng dữ liệu mà nó sẽ chạy")
         .required(true)
         .allowableValues(SPEC_FROM_FILE, SPEC_FROM_REGISTRY)
         .defaultValue(SPEC_FROM_FILE.getValue())
@@ -163,8 +163,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor DATAFLOW_FILE = new Builder()
         .name("Dataflow File")
-        .displayName("Dataflow File/URL")
-        .description("The filename or URL that specifies the dataflow that is to be run")
+        .displayName("Tệp/URL luồng dữ liệu")
+        .description("Tên tệp hoặc URL chỉ định luồng dữ liệu sẽ được chạy")
         .required(true)
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE, ResourceType.URL)
         .dependsOn(DATAFLOW_SPECIFICATION_STRATEGY, SPEC_FROM_FILE)
@@ -172,8 +172,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor REGISTRY_URL = new Builder()
         .name("Registry URL")
-        .displayName("Registry URL")
-        .description("The URL of the NiFi Registry to retrieve the flow from")
+        .displayName("URL của Registry")
+        .description("URL của Life Registry để lấy luồng từ đó")
         .required(true)
         .addValidator(URL_VALIDATOR)
         .dependsOn(DATAFLOW_SPECIFICATION_STRATEGY, SPEC_FROM_REGISTRY)
@@ -181,8 +181,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor SSL_CONTEXT_SERVICE = new Builder()
         .name("Registry SSL Context Service")
-        .displayName("Registry SSL Context Service")
-        .description("The SSL Context Service to use for interacting with the NiFi Registry")
+        .displayName("Dịch vụ Bối cảnh SSL của Registry")
+        .description("Dịch vụ Bối cảnh SSL để sử dụng khi tương tác với Life Registry")
         .required(false)
         .identifiesControllerService(SSLContextService.class)
         .dependsOn(DATAFLOW_SPECIFICATION_STRATEGY, SPEC_FROM_REGISTRY)
@@ -190,8 +190,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor COMMS_TIMEOUT = new Builder()
         .name("Communications Timeout")
-        .displayName("Communications Timeout")
-        .description("Specifies how long to wait before timing out when attempting to communicate with NiFi Registry")
+        .displayName("Thời gian chờ giao tiếp")
+        .description("Chỉ định thời gian chờ trước khi hết giờ khi cố gắng giao tiếp với Life Registry")
         .required(true)
         .addValidator(TIME_PERIOD_VALIDATOR)
         .dependsOn(DATAFLOW_SPECIFICATION_STRATEGY, SPEC_FROM_REGISTRY)
@@ -200,8 +200,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor BUCKET = new Builder()
         .name("Registry Bucket")
-        .displayName("Registry Bucket")
-        .description("The name of the Bucket in the NiFi Registry that the flow should retrieved from")
+        .displayName("Bucket của Registry")
+        .description("Tên của Bucket trong Life Registry nơi luồng sẽ được lấy từ đó")
         .required(true)
         .addValidator(NON_EMPTY_VALIDATOR)
         .dependsOn(DATAFLOW_SPECIFICATION_STRATEGY, SPEC_FROM_REGISTRY)
@@ -209,8 +209,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor FLOW_NAME = new Builder()
         .name("Flow Name")
-        .displayName("Flow Name")
-        .description("The name of the flow in the NiFi Registry")
+        .displayName("Tên luồng")
+        .description("Tên của luồng trong Life Registry")
         .required(true)
         .addValidator(NON_EMPTY_VALIDATOR)
         .dependsOn(DATAFLOW_SPECIFICATION_STRATEGY, SPEC_FROM_REGISTRY)
@@ -218,8 +218,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor FLOW_VERSION = new Builder()
         .name("Flow Version")
-        .displayName("Flow Version")
-        .description("The version of the flow in the NiFi Registry that should be retrieved. If not specified, the latest version will always be used.")
+        .displayName("Phiên bản luồng")
+        .description("Phiên bản của luồng trong Life Registry sẽ được lấy. Nếu không được chỉ định, phiên bản mới nhất sẽ luôn được sử dụng.")
         .required(false)
         .addValidator(POSITIVE_INTEGER_VALIDATOR)
         .dependsOn(DATAFLOW_SPECIFICATION_STRATEGY, SPEC_FROM_REGISTRY)
@@ -227,8 +227,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor INPUT_PORT = new Builder()
         .name("Input Port")
-        .displayName("Input Port")
-        .description("Specifies the name of the Input Port to send incoming FlowFiles to. This property is required if this processor has any incoming connections.")
+        .displayName("Cổng đầu vào")
+        .description("Chỉ định tên của Cổng đầu vào để gửi các FlowFile đến. Thuộc tính này là bắt buộc nếu bộ xử lý này có bất kỳ kết nối đến nào.")
         .required(false)
         .addValidator(NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
@@ -236,9 +236,9 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor FAILURE_PORTS = new Builder()
         .name("Failure Ports")
-        .displayName("Failure Ports")
-        .description("A comma-separated list of the names of Output Ports that exist at the root level of the dataflow. If any FlowFile is routed to one of the Ports whose name is listed here, the " +
-            "dataflow will be considered a failure, and the incoming FlowFile (if any) will be routed to 'failure'. If not specified, all Output Ports will be considered successful.")
+        .displayName("Các cổng thất bại")
+        .description("Một danh sách các tên Cổng đầu ra được phân tách bằng dấu phẩy, tồn tại ở cấp gốc của luồng dữ liệu. Nếu bất kỳ FlowFile nào được định tuyến đến một trong các Cổng có tên được liệt kê ở đây, " +
+            "luồng dữ liệu sẽ được coi là thất bại, và FlowFile đầu vào (nếu có) sẽ được định tuyến đến 'thất bại'. Nếu không được chỉ định, tất cả các Cổng đầu ra sẽ được coi là thành công.")
         .required(false)
         .addValidator(NON_EMPTY_VALIDATOR)
         .expressionLanguageSupported(NONE)
@@ -246,9 +246,9 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor DATAFLOW_TIMEOUT = new Builder()
         .name("Dataflow Timeout")
-        .displayName("Dataflow Timeout")
-        .description("If the flow does not complete within this amount of time, the incoming FlowFile, if any, will be routed to the timeout relationship," +
-            "the dataflow will be cancelled, and the invocation will end.")
+        .displayName("Thời gian chờ luồng dữ liệu")
+        .description("Nếu luồng không hoàn thành trong khoảng thời gian này, FlowFile đầu vào, nếu có, sẽ được định tuyến đến mối quan hệ hết thời gian," +
+            "luồng dữ liệu sẽ bị hủy, và quá trình gọi sẽ kết thúc.")
         .required(true)
         .addValidator(TIME_PERIOD_VALIDATOR)
         .expressionLanguageSupported(FLOWFILE_ATTRIBUTES)
@@ -257,11 +257,11 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor LIB_DIRECTORY = new Builder()
         .name("NAR Directory")
-        .displayName("NAR Directory")
-        .description("This directory has three roles: " +
-            "1) it contains the NiFi Stateless NAR and other necessary libraries required for the Stateless engine to be bootstrapped, " +
-            "2) it can contain extensions that should be loaded by the Stateless engine, " +
-            "3) it is used by the Stateless engine to download extensions into.")
+        .displayName("Thư mục NAR")
+        .description("Thư mục này có ba vai trò: " +
+            "1) nó chứa Life Stateless NAR và các thư viện cần thiết khác để khởi động công cụ không trạng thái, " +
+            "2) nó có thể chứa các tiện ích mở rộng nên được tải bởi công cụ không trạng thái, " +
+            "3) nó được sử dụng bởi công cụ không trạng thái để tải các tiện ích mở rộng vào.")
         .required(true)
         .addValidator(createDirectoryExistsValidator(false, false))
         .defaultValue("./lib")
@@ -269,12 +269,12 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor ADDITIONAL_LIB_DIRECTORIES = new Builder()
         .name("additional-nar-directories")
-        .displayName("Additional NAR Directories")
-        .description("A comma-separated list of paths for directories that contain extensions that " +
-                "should be loaded by the stateless engine. The engine will not download any " +
-                "extensions into these directories or write to them but will read any NAR files " +
-                "that are found within these directories. The engine will not recurse into " +
-                "subdirectories of these directories.")
+        .displayName("Các thư mục NAR bổ sung")
+        .description("Một danh sách các đường dẫn được phân tách bằng dấu phẩy cho các thư mục chứa các tiện ích mở rộng nên " +
+                "được tải bởi công cụ không trạng thái. Công cụ sẽ không tải bất kỳ " +
+                "tiện ích mở rộng nào vào các thư mục này hoặc ghi vào chúng nhưng sẽ đọc bất kỳ tệp NAR nào " +
+                "được tìm thấy trong các thư mục này. Công cụ sẽ không duyệt đệ quy vào " +
+                "các thư mục con của các thư mục này.")
         .required(false)
         .addValidator(StandardValidators.createListValidator(true, true,
                 StandardValidators.createDirectoryExistsValidator(false, false)))
@@ -282,8 +282,8 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor WORKING_DIRECTORY = new Builder()
         .name("Work Directory")
-        .displayName("Work Directory")
-        .description("A directory that can be used to create temporary files, such as expanding NAR files, temporary FlowFile content, caching the dataflow, etc.")
+        .displayName("Thư mục làm việc")
+        .description("Một thư mục có thể được sử dụng để tạo các tệp tạm thời, chẳng hạn như giải nén tệp NAR, nội dung FlowFile tạm thời, lưu vào bộ nhớ đệm luồng dữ liệu, v.v.")
         .required(true)
         .addValidator(createDirectoryExistsValidator(false, true))
         .defaultValue("./work")
@@ -291,26 +291,26 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor KRB5_CONF = new Builder()
         .name("Krb5 Conf File")
-        .displayName("Krb5 Conf File")
-        .description("The KRB5 Conf file to use for configuring components that rely on Kerberos")
+        .displayName("Tệp cấu hình Krb5")
+        .description("Tệp KRB5 Conf để sử dụng cho việc cấu hình các thành phần dựa vào Kerberos")
         .required(false)
         .identifiesExternalResource(ResourceCardinality.SINGLE, ResourceType.FILE)
         .build();
 
     public static final PropertyDescriptor STATELESS_SSL_CONTEXT_SERVICE = new Builder()
         .name("Stateless SSL Context Service")
-        .displayName("Stateless SSL Context Service")
-        .description("The SSL Context to use as the Stateless System SSL Context")
+        .displayName("Dịch vụ Bối cảnh SSL không trạng thái")
+        .description("Bối cảnh SSL để sử dụng làm Bối cảnh SSL Hệ thống không trạng thái")
         .required(false)
         .identifiesControllerService(SSLContextService.class)
         .build();
 
     public static final PropertyDescriptor MAX_INGEST_FLOWFILES = new Builder()
         .name("Max Ingest FlowFiles")
-        .displayName("Max Ingest FlowFiles")
-        .description("During the course of a stateless dataflow, some processors may require more data than they have available in order to proceed. For example, MergeContent may require a minimum " +
-            "number of FlowFiles before it can proceed. In this case, the dataflow may bring in additional data from its source Processor. However, this data may all be held in memory, so this " +
-            "property provides a mechanism for limiting the maximum number of FlowFiles that the source Processor can ingest before it will no longer be triggered to ingest additional data.")
+        .displayName("Số FlowFile nhập tối đa")
+        .description("Trong quá trình chạy luồng dữ liệu không trạng thái, một số bộ xử lý có thể yêu cầu nhiều dữ liệu hơn so với dữ liệu có sẵn để tiếp tục. Ví dụ, MergeContent có thể yêu cầu một " +
+            "số lượng FlowFile tối thiểu trước khi có thể tiếp tục. Trong trường hợp này, luồng dữ liệu có thể lấy thêm dữ liệu từ Bộ xử lý nguồn của nó. Tuy nhiên, dữ liệu này có thể được giữ trong bộ nhớ, vì vậy " +
+            "thuộc tính này cung cấp một cơ chế để giới hạn số lượng FlowFile tối đa mà bộ xử lý nguồn có thể nhập trước khi nó không còn được kích hoạt để nhập thêm dữ liệu.")
         .required(false)
         .addValidator(POSITIVE_INTEGER_VALIDATOR)
         .expressionLanguageSupported(NONE)
@@ -318,10 +318,10 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor MAX_INGEST_DATA_SIZE = new Builder()
         .name("Max Ingest Data Size")
-        .displayName("Max Ingest Data Size")
-        .description("During the course of a stateless dataflow, some processors may require more data than they have available in order to proceed. For example, MergeContent may require a minimum " +
-            "number of FlowFiles before it can proceed. In this case, the dataflow may bring in additional data from its source Processor. However, this data may all be held in memory, so this " +
-            "property provides a mechanism for limiting the maximum amount of data that the source Processor can ingest before it will no longer be triggered to ingest additional data.")
+        .displayName("Kích thước dữ liệu nhập tối đa")
+        .description("Trong quá trình chạy luồng dữ liệu không trạng thái, một số bộ xử lý có thể yêu cầu nhiều dữ liệu hơn so với dữ liệu có sẵn để tiếp tục. Ví dụ, MergeContent có thể yêu cầu một " +
+            "số lượng FlowFile tối thiểu trước khi có thể tiếp tục. Trong trường hợp này, luồng dữ liệu có thể lấy thêm dữ liệu từ Bộ xử lý nguồn của nó. Tuy nhiên, dữ liệu này có thể được giữ trong bộ nhớ, vì vậy " +
+            "thuộc tính này cung cấp một cơ chế để giới hạn lượng dữ liệu tối đa mà bộ xử lý nguồn có thể nhập trước khi nó không còn được kích hoạt để nhập thêm dữ liệu.")
         .required(false)
         .addValidator(DATA_SIZE_VALIDATOR)
         .expressionLanguageSupported(NONE)
@@ -329,9 +329,9 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor CONTENT_STORAGE_STRATEGY = new Builder()
         .name("Content Storage Strategy")
-        .displayName("Content Storage Strategy")
-        .description("Specifies where the content of FlowFiles that the Stateless dataflow is operating on should be stored. Note that the data is always considered temporary and may be deleted at " +
-            "any time. It is not intended to be persisted across restarted.")
+        .displayName("Chiến lược lưu trữ nội dung")
+        .description("Chỉ định nơi nội dung của các FlowFile mà luồng dữ liệu không trạng thái đang hoạt động sẽ được lưu trữ. Lưu ý rằng dữ liệu luôn được coi là tạm thời và có thể bị xóa bất cứ " +
+            "lúc nào. Nó không nhằm mục đích được lưu trữ qua các lần khởi động lại.")
         .required(true)
         .allowableValues(CONTENT_STORAGE_HEAP, CONTENT_STORAGE_DISK)
         .defaultValue(CONTENT_STORAGE_DISK.getValue())
@@ -339,10 +339,10 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor MAX_INPUT_FLOWFILE_SIZE = new Builder()
         .name("Max Input FlowFile Size")
-        .displayName("Max Input FlowFile Size")
-        .description("This Processor is configured to load all incoming FlowFiles into memory. Because of that, it is important to limit the maximum size of " +
-            "any incoming FlowFile that would get loaded into memory, in order to prevent Out Of Memory Errors and excessive Garbage Collection. Any FlowFile whose content " +
-            "size is greater than the configured size will be routed to failure and not sent to the Stateless Engine.")
+        .displayName("Kích thước FlowFile đầu vào tối đa")
+        .description("Bộ xử lý này được cấu hình để tải tất cả các FlowFile đến vào bộ nhớ. Do đó, điều quan trọng là phải giới hạn kích thước tối đa của " +
+            "bất kỳ FlowFile đến nào sẽ được tải vào bộ nhớ, để ngăn chặn Lỗi hết bộ nhớ và thu gom rác quá mức. Bất kỳ FlowFile nào có " +
+            "kích thước nội dung lớn hơn kích thước đã cấu hình sẽ được định tuyến đến thất bại và không được gửi đến Công cụ không trạng thái.")
         .required(true)
         .dependsOn(CONTENT_STORAGE_STRATEGY, CONTENT_STORAGE_HEAP)
         .addValidator(DATA_SIZE_VALIDATOR)
@@ -352,9 +352,9 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     public static final PropertyDescriptor STATUS_TASK_INTERVAL = new Builder()
             .name("Status Task Interval")
-            .displayName("Status Task Interval")
-            .description("The Stateless engine periodically logs the status of the dataflow's processors.  This property allows the interval to be changed, or the status logging " +
-                    "to be skipped altogether if the property is not set.")
+            .displayName("Khoảng thời gian tác vụ trạng thái")
+            .description("Công cụ không trạng thái định kỳ ghi lại trạng thái của các bộ xử lý của luồng dữ liệu. Thuộc tính này cho phép thay đổi khoảng thời gian, hoặc bỏ qua " +
+                    "việc ghi lại trạng thái hoàn toàn nếu thuộc tính không được đặt.")
             .required(false)
             .addValidator(StandardValidators.createTimePeriodValidator(10, TimeUnit.SECONDS, 24, TimeUnit.HOURS))
             .expressionLanguageSupported(NONE)
@@ -362,20 +362,20 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
 
     static final Relationship REL_ORIGINAL = new Relationship.Builder()
         .name("original")
-        .description("For any incoming FlowFile that is successfully processed, the original incoming FlowFile will be transferred to this Relationship")
+        .description("Đối với bất kỳ FlowFile đến nào được xử lý thành công, FlowFile đến ban đầu sẽ được chuyển đến Mối quan hệ này")
         .autoTerminateDefault(true)
         .build();
     static final Relationship REL_OUTPUT = new Relationship.Builder()
         .name("output")
-        .description("Any FlowFiles that are transferred to an Output Port in the configured dataflow will be routed to this Relationship")
+        .description("Bất kỳ FlowFile nào được chuyển đến một Cổng đầu ra trong luồng dữ liệu đã cấu hình sẽ được định tuyến đến Mối quan hệ này")
         .build();
     static final Relationship REL_FAILURE = new Relationship.Builder()
         .name("failure")
-        .description("If the dataflow fails to process an incoming FlowFile, that FlowFile will be routed to this relationship")
+        .description("Nếu luồng dữ liệu không xử lý được một FlowFile đến, FlowFile đó sẽ được định tuyến đến mối quan hệ này")
         .build();
     static final Relationship REL_TIMEOUT = new Relationship.Builder()
         .name("timeout")
-        .description("If the dataflow fails to complete in the configured amount of time, any incoming FlowFile will be routed to this relationship")
+        .description("Nếu luồng dữ liệu không hoàn thành trong khoảng thời gian đã cấu hình, bất kỳ FlowFile đến nào sẽ được định tuyến đến mối quan hệ này")
         .build();
 
 
@@ -615,14 +615,14 @@ public class ExecuteStateless extends AbstractProcessor implements Searchable {
             return;
         }
 
-        // Create a FlowFile in this NiFi instance for each FlowFile that was output by the Stateless dataflow.
+        // Create a FlowFile in this Life instance for each FlowFile that was output by the Stateless dataflow.
         // We cannot simply transfer the output FlowFiles because they belong to a different, internal session and their content may not be persisted.
         // Therefore, we create our own FlowFile whose parent is the input FlowFile (if one exists) and then add the attributes and contents as necessary.
         final Set<FlowFile> createdSet;
         try {
             createdSet = createOutputFlowFiles(optionalResult.get(), session, flowFile);
         } catch (final IOException e) {
-            getLogger().error("Failed to write FlowFile contents that were output from Stateless Flow to the NiFi content repository for {}. Routing to failure.", flowFile, e);
+            getLogger().error("Failed to write FlowFile contents that were output from Stateless Flow to the Life content repository for {}. Routing to failure.", flowFile, e);
             if (flowFile != null) {
                 session.transfer(flowFile, REL_FAILURE);
             }
